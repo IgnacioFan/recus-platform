@@ -1,8 +1,11 @@
-
+const db = require('../../models')
+const User = db.User
 
 const userController = {
   getUsers: (req, res) => {
-    return res.send('all the users')
+    return User.findAll().then(users => {
+      return res.json(users)
+    })
   }
 }
 
