@@ -6,8 +6,10 @@ module.exports = (sequelize, DataTypes) => {
     option: DataTypes.JSON,
     image: DataTypes.STRING,
     description: DataTypes.TEXT,
-    CategoryId: DataTypes.CategoryId
-  }, {});
+    CategoryId: DataTypes.INTEGER
+  }, {
+      timestamps: false
+    });
   Dish.associate = function (models) {
     Dish.belongsTo(models.Category)
   };
