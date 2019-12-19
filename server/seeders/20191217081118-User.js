@@ -1,5 +1,6 @@
 'use strict';
 const bcrpty = require('bcrypt')
+const faker = require('faker/locale/zh_TW')
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
@@ -9,6 +10,7 @@ module.exports = {
       password: bcrpty.hashSync('12345678', 10),
       name: 'root',
       email: 'root@example.com',
+      image: faker.image.people(),
       isAdmin: true,
       isValid: true,
       createdAt: new Date(),
@@ -20,6 +22,7 @@ module.exports = {
       password: bcrpty.hashSync('12345678', 10),
       name: 'Nacho',
       email: 'user1@example.com',
+      image: faker.image.people(),
       isAdmin: false,
       isValid: true,
       createdAt: new Date(),
@@ -31,6 +34,7 @@ module.exports = {
       password: bcrpty.hashSync('12345678', 10),
       name: 'yoshi',
       email: 'user2@example.com',
+      image: faker.image.people(),
       isAdmin: false,
       isValid: true,
       createdAt: new Date(),

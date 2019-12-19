@@ -2,12 +2,14 @@
 module.exports = (sequelize, DataTypes) => {
   const Dish = sequelize.define('Dish', {
     name: DataTypes.STRING,
-    price: DataTypes.STRING,
-    UserId: DataTypes.INTEGER,
-    option: DataTypes.JSON
+    price: DataTypes.INTEGER,
+    option: DataTypes.JSON,
+    image: DataTypes.STRING,
+    description: DataTypes.TEXT,
+    CategoryId: DataTypes.CategoryId
   }, {});
-  Dish.associate = function(models) {
-    // associations can be defined here
+  Dish.associate = function (models) {
+    Dish.belongsTo(models.Category)
   };
   return Dish;
 };
