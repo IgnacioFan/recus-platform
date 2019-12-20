@@ -10,11 +10,11 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   Order.associate = function (models) {
     Order.belongsTo(models.User)
-    // Order.belongsToMany(models.Dish, {
-    //   through: models.Dish,
-    //   foreignKey: 'DishId',
-    //   as: 'sumOfDishes'
-    // })
+    Order.belongsToMany(models.Dish, {
+      through: models.DishCombination,
+      foreignKey: 'OrderId',
+      as: 'sumOfDishes'
+    })
   };
   return Order;
 };

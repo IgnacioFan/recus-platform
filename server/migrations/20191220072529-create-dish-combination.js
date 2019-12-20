@@ -14,19 +14,9 @@ module.exports = {
       },
       DishId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
-        reference: {
-          model: 'Dishes',
-          key: 'id'
-        }
       },
       OrderId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
-        reference: {
-          model: 'Orders',
-          key: 'id'
-        }
       }
     });
   },

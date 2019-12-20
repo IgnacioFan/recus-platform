@@ -4,8 +4,10 @@ const Category = db.Category
 
 
 const dishController = {
-  getDishes: (req, res) => {
-
+  getDish: (req, res) => {
+    return Dish.findAll({ where: { CategoryId: req.params.id }, limit: 6 }).then(dishes => {
+      return res.json(dishes)
+    })
   }
 }
 

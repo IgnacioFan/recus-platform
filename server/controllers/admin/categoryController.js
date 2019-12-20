@@ -9,7 +9,7 @@ const categoryController = {
     })
   },
   getCategory: (req, res) => {
-    return Category.findByPk(req.params.id, { include: [Dish] })
+    return Category.findByPk(req.params.id, { include: [{ model: Dish, limit: 6 }] })
       .then(category => {
         return res.json(category)
       })
