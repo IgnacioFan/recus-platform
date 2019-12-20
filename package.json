@@ -12,6 +12,7 @@
   "license": "MIT",
   "dependencies": {
     "bcrypt": "^3.0.7",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "faker": "^4.1.0",
     "mysql2": "^2.0.2",
@@ -20,5 +21,13 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.2"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IgnacioFan/recus-platform.git"
+  },
+  "bugs": {
+    "url": "https://github.com/IgnacioFan/recus-platform/issues"
+  },
+  "homepage": "https://github.com/IgnacioFan/recus-platform#readme"
 }
