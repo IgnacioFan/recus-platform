@@ -8,8 +8,12 @@ module.exports = (sequelize, DataTypes) => {
     tableNum: DataTypes.INTEGER,
     UserId: DataTypes.INTEGER
   }, {});
-  Order.associate = function(models) {
-    // associations can be defined here
+  Order.associate = function (models) {
+    Order.belongsToMany(models.Dish, {
+      through: models.Dish,
+      foreignKey: 'DishId',
+      as: 'sumOfDishes'
+    })
   };
   return Order;
 };
