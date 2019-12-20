@@ -16,4 +16,7 @@ router.get('/searchUser', userController.searchUser)
 router.get('/categories', categoryController.getCategories)
 router.get('/categories/:id', categoryController.getCategory)
 
+router.get('/signup', userController.signUpPage)
+router.post('/signup', userController.signUp)
+
 module.exports = router

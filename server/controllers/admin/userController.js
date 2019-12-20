@@ -1,5 +1,6 @@
 const db = require('../../models')
 const User = db.User
+const bcrypt = require('bcryptjs')
 
 const userController = {
   getUsers: (req, res) => {
@@ -31,6 +32,20 @@ const userController = {
         return res.json({ status: 'error', msg: 'Can find the the user name!' })
       }
       return res.json(user)
+    })
+  },
+  // Signup signin routes
+  signUpPage: (req, res) => {
+    return res.render('signup')
+  },
+
+  signUp: (req, res) => {
+    User.create({
+      name: req.body.name,
+      email: req.body.email,
+      password: bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10), null)
+    }).then(user => {
+      return res.redirect('/signin')
     })
   }
 }
