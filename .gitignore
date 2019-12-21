@@ -1,1 +1,4 @@
 node_modules
+
+server/test/sum.js
+server/test/test.js
