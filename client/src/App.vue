@@ -1,14 +1,19 @@
 <template>
-  <div id="app">
-    <router-view />
+  <div id="restaurant-forum">
+    <main role="main">
+      <router-view />
+    </main>
   </div>
 </template>
 
 <script>
 import "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
+
 export default {
-  name: "App"
+  components: {}
 };
 </script>
 
+<style scoped>
+</style>
