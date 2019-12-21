@@ -1,6 +1,7 @@
 const db = require('../../models')
 const User = db.User
 const bcrypt = require('bcryptjs')
+const Op = require('sequelize').Op
 // JWT
 const jwt = require('jsonwebtoken')
 const passportJWT = require('passport-jwt')
