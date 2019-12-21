@@ -10,12 +10,10 @@ module.exports = {
       },
       state: {
         type: Sequelize.STRING,
-        allowNull: false,
         default: "pending"
       },
       amount: {
         type: Sequelize.INTEGER,
-        allowNull: false,
         default: 0
       },
       memo: {
@@ -31,11 +29,7 @@ module.exports = {
       },
       UserId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
-        reference: {
-          model: 'Users',
-          key: 'id'
-        }
+        default: 0
       },
       createdAt: {
         allowNull: false,

@@ -12,6 +12,11 @@ module.exports = (sequelize, DataTypes) => {
     });
   Dish.associate = function (models) {
     Dish.belongsTo(models.Category)
+    Dish.belongsToMany(models.Order, {
+      through: models.DishCombination,
+      foreignKey: 'DishId',
+      as: 'sumOfOrders'
+    })
   };
   return Dish;
 };
