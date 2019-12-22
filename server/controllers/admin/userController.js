@@ -23,12 +23,12 @@ const userController = {
   },
 
   searchUser: (req, res) => {
-    if (req.query.name == null) {
-      return res.json({ status: 'error', msg: 'Input field should not be blank!' })
+    if (!req.query.phone) {
+      return res.json({ status: 'error', msg: '請輸入電話!' })
     }
-    User.findOne({ where: { name: req.query.name } }).then(user => {
-      if (user == null) {
-        return res.json({ status: 'error', msg: 'Can find the the user name!' })
+    User.findOne({ where: { phone: req.query.phone } }).then(user => {
+      if (!user) {
+        return res.json({ status: 'error', msg: '找不到會員!' })
       }
       return res.json(user)
     })

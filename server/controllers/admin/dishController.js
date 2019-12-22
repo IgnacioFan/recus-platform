@@ -5,7 +5,12 @@ const Category = db.Category
 
 const dishController = {
   getDish: (req, res) => {
-    return Dish.findAll({ where: { CategoryId: req.params.id }, limit: 6 }).then(dishes => {
+
+    // if categoryId is 1,2,3,4
+    if (Number(req.query.categoryId) <= 0) {
+      return
+    }
+    return Dish.findAll({ where: { CategoryId: Number(req.query.categoryId) } }).then(dishes => {
       return res.json(dishes)
     })
   }
