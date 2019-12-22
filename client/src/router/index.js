@@ -19,6 +19,11 @@ const routes = [{
   component: () =>
     import ('../views/SignUp.vue')
 }, {
+  path: '/order',
+  name: 'Order',
+  component: () =>
+    import ('../views/Order.vue')
+}, {
   path: '*',
   name: 'not-found',
   component: () =>
@@ -30,6 +35,7 @@ const router = new VueRouter({
   mode: 'history',
   routes
 })
+
 
 router.beforeEach(async(to, from, next) => {
   if (!credit && to.name !== 'SignIn' && to.name !== 'SignUp') {
@@ -53,5 +59,4 @@ router.beforeEach(async(to, from, next) => {
 
   next();
 })
-
 export default router

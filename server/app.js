@@ -4,6 +4,8 @@ if (process.env.NODE_ENV !== 'production') {
 }
 const routes = require('./routes/api/index')
 const port = process.env.PORT || 3000
+const cors = require('cors')
+const bodyParser = require('body-parser')
 const app = new express()
 const cors = require('cors')
 const bodyParser = require('body-parser')
@@ -25,6 +27,7 @@ app.use((req, res, next) => {
   res.locals.user = req.user
   next()
 })
+
 
 // use router
 app.use('/api/', routes)

@@ -14,6 +14,8 @@ const authenticatedAdmin = (req, res, next) => {
 }
 
 const userController = require('../../controllers/admin/userController')
+const dishController = require('../../controllers/admin/dishController')
+const orderController = require('../../controllers/admin/orderController')
 const categoryController = require('../../controllers/admin/categoryController')
 
 
@@ -31,5 +33,9 @@ router.get('/categories/:id', categoryController.getCategory)
 
 router.post('/signup', userController.signUp)
 router.post('/signin', userController.signIn)
+
+router.get('/dishes/:id', dishController.getDish)
+router.post('/orders', orderController.postOrders)
+
 
 module.exports = router
