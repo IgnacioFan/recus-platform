@@ -5,12 +5,14 @@ if (process.env.NODE_ENV !== 'production') {
 const routes = require('./routes/api/index')
 const port = process.env.PORT || 3000
 const app = new express()
+const cors = require('cors')
 const bodyParser = require('body-parser')
 const flash = require('connect-flash')
 const session = require('express-session')
 const passport = require('./config/passport')
 
 // use middleware
+app.use(cors())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(session({ secret: 'secret', resave: false, saveUninitialized: false }))
 app.use(flash())

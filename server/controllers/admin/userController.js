@@ -71,8 +71,10 @@ const userController = {
 
   signIn: (req, res) => {
     // 檢查必要資料
+    console.log(req.body)
+    console.log(req.body.password)
     if (!req.body.account || !req.body.password) {
-      return res.json({ status: 'error', message: "required fields didn't exist" })
+      return res.status(401).json({ status: 'error', message: "required fields didn't exist" })
     }
     // 檢查 user 是否存在與密碼是否正確
     let username = req.body.account
