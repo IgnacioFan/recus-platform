@@ -6,8 +6,10 @@ export default {
       return apiHelper.get('/categories')
     }
   },
-  getDish({ page, categoryId }) {
-    const searchParams = new URLSearchParams({ page, categoryId })
-    return apiHelper.get(`/order?${searchParams.toString()}`)
+  dishes: {
+    get({ categoryId }) {
+      const searchParams = new URLSearchParams({ categoryId })
+      return apiHelper.get(`/dishes?${searchParams.toString()}`)
+    }
   }
 }

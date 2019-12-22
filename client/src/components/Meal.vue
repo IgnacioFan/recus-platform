@@ -14,116 +14,22 @@
     </div>
     <ul class="nav nav-pills my-4">
       <li v-for="category in categories" :key="category.id" class="nav-item">
-        <router-link class="nav-link" :to="{}">{{ category.name }}</router-link>
+        <router-link
+          class="nav-link"
+          :to="{ name: 'Order', query: { categoryId: category.id } }"
+        >{{ category.name }}</router-link>
       </li>
     </ul>
     <div class="row border border-warning meal">
-      <div class="col-lg-4 col-xl-3 dish border border-dark">
-        <h5>菜名</h5>
+      <div v-for="dish in dishes" :key="dish.id" class="col-lg-4 col-xl-3 dish border border-dark">
+        <router-link class :to="{ }">
+          <h5 class="dishName">{{ dish.name }}</h5>
+        </router-link>
         <div class="row">
           <div class="col-auto mr-auto px-0">
-            <span>價格：180</span>
+            <span>價格：{{ dish.price }}</span>
           </div>
-          <button class="btn btn-primary">說明</button>
-        </div>
-      </div>
-      <div class="col-lg-4 col-xl-3 dish border border-dark">
-        <h5>菜名</h5>
-        <div class="row">
-          <div class="col-auto mr-auto px-0">
-            <span>價格：180</span>
-          </div>
-          <button class="btn btn-primary">說明</button>
-        </div>
-      </div>
-      <div class="col-lg-4 col-xl-3 dish border border-dark">
-        <h5>菜名</h5>
-        <div class="row">
-          <div class="col-auto mr-auto px-0">
-            <span>價格：180</span>
-          </div>
-          <button class="btn btn-primary">說明</button>
-        </div>
-      </div>
-      <div class="col-lg-4 col-xl-3 dish border border-dark">
-        <h5>菜名</h5>
-        <div class="row">
-          <div class="col-auto mr-auto px-0">
-            <span>價格：180</span>
-          </div>
-          <button class="btn btn-primary">說明</button>
-        </div>
-      </div>
-      <div class="col-lg-4 col-xl-3 dish border border-dark">
-        <h5>菜名</h5>
-        <div class="row">
-          <div class="col-auto mr-auto px-0">
-            <span>價格：180</span>
-          </div>
-          <button class="btn btn-primary">說明</button>
-        </div>
-      </div>
-      <div class="col-lg-4 col-xl-3 dish border border-dark">
-        <h5>菜名</h5>
-        <div class="row">
-          <div class="col-auto mr-auto px-0">
-            <span>價格：180</span>
-          </div>
-          <button class="btn btn-primary">說明</button>
-        </div>
-      </div>
-      <div class="col-lg-4 col-xl-3 dish border border-dark">
-        <h5>菜名</h5>
-        <div class="row">
-          <div class="col-auto mr-auto px-0">
-            <span>價格：180</span>
-          </div>
-          <button class="btn btn-primary">說明</button>
-        </div>
-      </div>
-      <div class="col-lg-4 col-xl-3 dish border border-dark">
-        <h5>菜名</h5>
-        <div class="row">
-          <div class="col-auto mr-auto px-0">
-            <span>價格：180</span>
-          </div>
-          <button class="btn btn-primary">說明</button>
-        </div>
-      </div>
-      <div class="col-lg-4 col-xl-3 dish border border-dark">
-        <h5>菜名</h5>
-        <div class="row">
-          <div class="col-auto mr-auto px-0">
-            <span>價格：180</span>
-          </div>
-          <button class="btn btn-primary">說明</button>
-        </div>
-      </div>
-      <div class="col-lg-4 col-xl-3 dish border border-dark">
-        <h5>菜名</h5>
-        <div class="row">
-          <div class="col-auto mr-auto px-0">
-            <span>價格：180</span>
-          </div>
-          <button class="btn btn-primary">說明</button>
-        </div>
-      </div>
-      <div class="col-lg-4 col-xl-3 dish border border-dark">
-        <h5>菜名</h5>
-        <div class="row">
-          <div class="col-auto mr-auto px-0">
-            <span>價格：180</span>
-          </div>
-          <button class="btn btn-primary">說明</button>
-        </div>
-      </div>
-      <div class="col-lg-4 col-xl-3 dish border border-dark">
-        <h5>菜名</h5>
-        <div class="row">
-          <div class="col-auto mr-auto px-0">
-            <span>價格：180</span>
-          </div>
-          <button class="btn btn-primary">說明</button>
+          <router-link class="btn btn-primary" :to="{ }">說明</router-link>
         </div>
       </div>
     </div>
@@ -136,25 +42,47 @@ import orderAPI from "./../apis/order";
 export default {
   data() {
     return {
-      categories: []
+      categories: [],
+      dishes: []
     };
   },
   created() {
     this.fetchCategories();
+    const { categoryId = 1 } = this.$route.query;
+    this.fetchDishes({ categoryId });
+  },
+  beforeRouteUpdate(to, from, next) {
+    const { categoryId = 1 } = to.query;
+    this.fetchDishes(categoryId);
+    next();
   },
   methods: {
     async fetchCategories() {
       try {
         const response = await orderAPI.categories.get();
-        // STEP 2：將 response 中的 data 和 statusText 取出
         const { data, statusText } = response;
-        // STEP 3：如果 statusText 不是 OK 的話則進入錯誤處理
         if (statusText !== "OK") {
           throw new Error(statusText);
         }
-        // STEP 4：將從伺服器取得的 data 帶入 Vue 內
         this.categories = data;
       } catch (error) {
+        // eslint-disable-next-line
+        console.log("error", error);
+      }
+    },
+    async fetchDishes(categoryId) {
+      try {
+        const response = await orderAPI.dishes.get(categoryId);
+        const { data, statusText } = response;
+        if (statusText !== "OK") {
+          throw new Error(statusText);
+        }
+        this.dishes = data;
+      } catch (error) {
+        this.$swal({
+          type: "warning",
+          title: "無法取得資料，請稍後再試"
+        });
         // eslint-disable-next-line
         console.log("error", error);
       }
@@ -165,14 +93,14 @@ export default {
 
 <style scoped>
 .meal {
-  height: calc(100vh - 240px);
+  max-height: calc(100vh - 240px);
   overflow: auto;
 }
 .dish {
   max-height: 100px;
   padding: 15px 15px;
 }
-.dish h5 {
+.dishName {
   margin-bottom: 15px;
 }
 .dish span {
