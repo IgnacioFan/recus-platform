@@ -2,7 +2,7 @@ const db = require('../../models')
 const User = db.User
 const bcrypt = require('bcryptjs')
 const Op = require('sequelize').Op
-// JWT
+  // JWT
 const jwt = require('jsonwebtoken')
 const passportJWT = require('passport-jwt')
 const ExtractJwt = passportJWT.ExtractJwt
@@ -100,7 +100,12 @@ const userController = {
         message: 'ok',
         token: token,
         user: {
-          id: user.id, account: user.account, phone: user.phone, name: user.name, email: user.email, isAdmin: user.isAdmin
+          id: user.id,
+          account: user.account,
+          phone: user.phone,
+          name: user.name,
+          email: user.email,
+          isAdmin: user.isAdmin
         }
       })
     })

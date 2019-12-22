@@ -26,11 +26,10 @@ router.get('/users', userController.getUsers)
 router.get('/users/:id', userController.getUser)
 
 router.get('/searchUser', userController.searchUser)
-router.get('/categories', categoryController.getCategories)
+router.get('/categories', authenticated, categoryController.getCategories)
 router.get('/categories/:id', categoryController.getCategory)
 
 router.post('/signup', userController.signUp)
 router.post('/signin', userController.signIn)
-
 
 module.exports = router

@@ -1,31 +1,62 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import NotFound from '../views/NotFound.vue'
-import SignIn from '../views/SignIn.vue'
+const credit = JSON.parse(localStorage.getItem('credit'));
 
 Vue.use(VueRouter)
 
-const routes = [
-  {
-    path: '/signin',
-    name: 'sign-in',
-    component: SignIn
-  },
-  {
-    path: '/signup',
-    name: 'sign-up',
-    component: () => import('../views/SignUp.vue')
-  },
-  {
-    path: '*',
-    name: 'not-found',
-    component: NotFound
-  }
-]
+const routes = [{
+  path: '/',
+  name: 'root',
+  redirect: '/signin'
+}, {
+  path: '/home',
+  name: 'home',
+  component: () =>
+    import ('../views/Home.vue')
+}, {
+  path: '/signin',
+  name: 'sign-in',
+  component: () =>
+    import ('../views/SignIn.vue')
+}, {
+  path: '/signup',
+  name: 'sign-up',
+  component: () =>
+    import ('../views/SignUp.vue')
+}, {
+  path: '*',
+  name: 'not-found',
+  component: () =>
+    import ('../views/NotFound.vue')
+}]
 
 const router = new VueRouter({
   linkExactActiveClass: 'active',
+  mode: 'history',
   routes
+})
+
+router.beforeEach(async(to, from, next) => {
+  if (!credit && to.name !== 'SignIn' && to.name !== 'SignUp') {
+    next('/signin');
+    return;
+  }
+
+  if (credit) {
+    if (to.name === 'SignIn' || to.name === 'Signup') {
+      next('/homed');
+      return;
+    }
+  }
+
+  if (credit && credit.user.isAdmin === false) {
+    if (to.path.includes('/admin')) {
+      next('/404');
+      return;
+    }
+  }
+
+  next();
 })
 
 export default router

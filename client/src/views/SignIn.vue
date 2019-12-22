@@ -2,25 +2,25 @@
   <div class="container py-5">
     <form class="w-100" @submit.prevent.stop="handleSubmit">
       <div class="text-center mb-4">
-        <h1 class="h3 mb-3 font-weight-normal">會員登入</h1>
+        <h1 class="h3 mb-3 font-weight-normal">Sign In</h1>
       </div>
 
       <div class="form-label-group mb-2">
-        <label for="account">帳號或手機號碼</label>
+        <label for="account">手機號碼</label>
         <input
           id="account"
           v-model="account"
           name="account"
-          type="account"
+          type="text"
           class="form-control"
-          placeholder="Account or Phone"
-          required
+          placeholder="09XXXXXXX"
+          :disabled="isProcessing"
           autofocus
         />
       </div>
 
       <div class="form-label-group mb-3">
-        <label for="password">密碼</label>
+        <label for="password">Password</label>
         <input
           id="password"
           v-model="password"
@@ -29,27 +29,32 @@
           class="form-control"
           placeholder="Password"
           required
+          :disabled="isProcessing"
+          autocomplete
         />
       </div>
-      <hr />
 
-      <button class="btn btn-primary mb-3 float-right" type="submit" :disabled="isProcessing">登入</button>
+      <button
+        class="btn btn-lg btn-primary btn-block mb-3"
+        type="submit"
+        :disabled="isProcessing"
+      >Submit</button>
 
-      <div class="text-center mb-3 float-left">
+      <div class="text-center mb-3">
         <p>
-          <router-link to="/signup">建立帳號</router-link>
+          <router-link to="/signup">Sign Up</router-link>
         </p>
       </div>
+
+      <p class="mt-5 mb-3 text-muted text-center">&copy; 2017-2018</p>
     </form>
   </div>
 </template>
 
 <script>
 import authorizationAPI from "./../apis/authorization";
-import { Toast } from "./../utils/helpers";
 
 export default {
-  /* eslint-disable */
   name: "SignIn",
   data() {
     return {
@@ -59,45 +64,58 @@ export default {
     };
   },
   methods: {
-    handleSubmit() {
-      if (!this.account || !this.password) {
-        Toast.fire({
-          type: "warning",
-          title: "請填入 account 和 password"
-        });
-        return;
-      }
+    async handleSubmit() {
+      try {
+        this.isProcessing = true;
 
-      console.log(this.account);
-      console.log(this.password);
-      this.isProcessing = true;
-
-      authorizationAPI
-        .signIn({
-          account: this.account,
-          password: this.password
-        })
-        .then(response => {
-          // 取得 API 請求後的資料
-          const { data } = response;
-          // 將 token 存放在 localStorage 內
-          localStorage.setItem("token", data.token);
-          console.log(data);
-          // 成功登入後轉址到首頁
-          this.$router.push("/");
-        })
-        .catch(error => {
-          // 將密碼欄位清空
-          this.password = "";
-
-          // 顯示錯誤提示
-          Toast.fire({
+        if (!this.account || !this.password) {
+          this.$swal({
             type: "warning",
-            title: "您輸入的帳號密碼錯誤"
+            title: "帳號與密碼不可空白"
           });
           this.isProcessing = false;
-          console.log(error);
+          return;
+        }
+
+        // send log in form to API
+        const response = await authorizationAPI.signIn({
+          account: this.account,
+          password: this.password
         });
+
+        const { data, statusText } = response;
+
+        if (statusText !== "OK" || data.status !== "success") {
+          throw new Error(statusText);
+        }
+
+        // store jwt in localstorage
+        localStorage.setItem("token", data.token);
+
+        this.$store.commit("setCurrentUser", data.user);
+
+        this.$router.push("/home");
+
+        this.$swal({
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 3000,
+          type: "success",
+          title: "成功登入",
+          text: ""
+        });
+      } catch (error) {
+        this.password = "";
+        this.isProcessing = false;
+
+        this.$swal({
+          type: "error",
+          title: "Oops...",
+          text: "請確認您的帳號密碼",
+          footer: '<a href="/signup">建立帳號?</a>'
+        });
+      }
     }
   }
 };
