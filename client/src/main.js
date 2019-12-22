@@ -11,6 +11,7 @@ Vue.config.productionTip = false
 
 new Vue({
   router,
+  VueSweetalert2,
   store,
   render: h => h(App)
 }).$mount('#app')
