@@ -9,11 +9,6 @@ const routes = [{
   name: 'root',
   redirect: '/signin'
 }, {
-  path: '/home',
-  name: 'home',
-  component: () =>
-    import ('../views/Home.vue')
-}, {
   path: '/signin',
   name: 'sign-in',
   component: () =>
@@ -44,7 +39,7 @@ router.beforeEach(async(to, from, next) => {
 
   if (credit) {
     if (to.name === 'SignIn' || to.name === 'Signup') {
-      next('/homed');
+      next('/not-found');
       return;
     }
   }
