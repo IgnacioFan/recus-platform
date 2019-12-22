@@ -10,13 +10,15 @@ module.exports = {
       },
       quantity: {
         type: Sequelize.INTEGER,
-        default: 0
+        allowNull: false
       },
       DishId: {
         type: Sequelize.INTEGER,
+        allowNull: false
       },
       OrderId: {
         type: Sequelize.INTEGER,
+        allowNull: false
       }
     });
   },
