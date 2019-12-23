@@ -1,12 +1,23 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+const credit = JSON.parse(localStorage.getItem('credit'));
 
 Vue.use(VueRouter)
 
 const routes = [{
   path: '/',
   name: 'root',
-  redirect: '/order'
+  redirect: '/signin'
+}, {
+  path: '/signin',
+  name: 'sign-in',
+  component: () =>
+    import ('../views/SignIn.vue')
+}, {
+  path: '/signup',
+  name: 'sign-up',
+  component: () =>
+    import ('../views/SignUp.vue')
 }, {
   path: '/order',
   name: 'Order',
@@ -25,4 +36,27 @@ const router = new VueRouter({
   routes
 })
 
+
+router.beforeEach(async(to, from, next) => {
+  if (!credit && to.name !== 'SignIn' && to.name !== 'SignUp') {
+    next('/signin');
+    return;
+  }
+
+  if (credit) {
+    if (to.name === 'SignIn' || to.name === 'Signup') {
+      next('/not-found');
+      return;
+    }
+  }
+
+  if (credit && credit.user.isAdmin === false) {
+    if (to.path.includes('/admin')) {
+      next('/404');
+      return;
+    }
+  }
+
+  next();
+})
 export default router
