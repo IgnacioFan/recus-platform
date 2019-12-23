@@ -10,9 +10,9 @@ require('dotenv').config()
 
 let jwtOptions = {}
 jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken()
-jwtOptions.secretOrKey = process.env.JWT_SECRET
+jwtOptions.secretOrKey = process.env.JWT_SECRET || "alphacamp"
 
-let strategy = new JwtStrategy(jwtOptions, function (jwt_payload, next) {
+let strategy = new JwtStrategy(jwtOptions, function(jwt_payload, next) {
   User.findByPk(jwt_payload.id)
     .then(user => {
       if (!user) return next(null, false)

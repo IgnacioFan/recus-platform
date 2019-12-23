@@ -70,9 +70,6 @@ const userController = {
   },
 
   signIn: (req, res) => {
-    // 檢查必要資料
-    console.log(req.body)
-    console.log(req.body.password)
     if (!req.body.account || !req.body.password) {
       return res.status(401).json({ status: 'error', message: "required fields didn't exist" })
     }
@@ -94,7 +91,7 @@ const userController = {
       }
       // 簽發 token
       var payload = { id: user.id }
-      var token = jwt.sign(payload, process.env.JWT_SECRET)
+      var token = jwt.sign(payload, process.env.JWT_SECRET || "alphacamp")
       return res.json({
         status: 'success',
         message: 'ok',
