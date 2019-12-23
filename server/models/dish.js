@@ -1,4 +1,6 @@
 'use strict';
+const Op = require('sequelize').Op
+
 module.exports = (sequelize, DataTypes) => {
   const Dish = sequelize.define('Dish', {
     name: DataTypes.STRING,
@@ -11,6 +13,18 @@ module.exports = (sequelize, DataTypes) => {
       indexes: [
         { unique: true, fields: ['name'] }
       ],
+      scopes: {
+        priceRange(low, high) {
+          return {
+            where: {
+              price: {
+                [Op.lte]: high,
+                [Op.gte]: low
+              }
+            }
+          }
+        }
+      },
       timestamps: false
     });
   Dish.associate = function (models) {

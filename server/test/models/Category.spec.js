@@ -15,7 +15,7 @@ const {
 const db = require('../../models')
 const CategoryModel = require('../../models/category')
 
-describe('# Category Model', function () {
+describe('# Category Model', () => {
   const Category = CategoryModel(sequelize, dataTypes)
   const category = new Category()
 
@@ -25,7 +25,15 @@ describe('# Category Model', function () {
     ['name'].forEach(checkPropertyExists(category))
   })
 
-  context('check associations', function () {
+  context('check associations', () => {
+    const Dish = 'Dish'
 
+    before(() => {
+      Category.associate({ Dish })
+    })
+
+    it('defined a hasMany association with Dish', () => {
+      expect(Category.hasMany).to.have.been.calledWith(Dish)
+    })
   })
 })

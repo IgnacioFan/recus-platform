@@ -6,7 +6,11 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: false
     });
   Tag.associate = function (models) {
-    // associations can be defined here
+    Tag.belongsToMany(models.Dish, {
+      through: models.DishAttachment,
+      foreignKey: 'TagId',
+      as: 'hasDishes'
+    })
   };
   return Tag;
 };
