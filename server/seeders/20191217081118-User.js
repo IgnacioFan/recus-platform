@@ -1,5 +1,5 @@
 'use strict';
-const bcrpty = require('bcrypt')
+const bcrpty = require('bcryptjs')
 const faker = require('faker/locale/zh_TW')
 
 module.exports = {
