@@ -16,7 +16,7 @@
       <li v-for="category in categories" :key="category.id" class="nav-item">
         <router-link
           class="nav-link"
-          :to="{ name: 'Order', query: { categoryId: category.id } }"
+          :to="{ name: 'order', query: { categoryId: category.id } }"
         >{{ category.name }}</router-link>
       </li>
     </ul>
@@ -40,21 +40,16 @@
 import orderAPI from "./../apis/order";
 
 export default {
+  props: {
+    initialDishes: {
+      type: Array
+    }
+  },
   data() {
     return {
       categories: [],
-      dishes: []
+      dishes: this.initialDishes
     };
-  },
-  created() {
-    this.fetchCategories();
-    const { categoryId = 1 } = this.$route.query;
-    this.fetchDishes({ categoryId });
-  },
-  beforeRouteUpdate(to, from, next) {
-    const { categoryId = 1 } = to.query;
-    this.fetchDishes(categoryId);
-    next();
   },
   methods: {
     async fetchCategories() {
@@ -69,23 +64,17 @@ export default {
         // eslint-disable-next-line
         console.log("error", error);
       }
-    },
-    async fetchDishes(categoryId) {
-      try {
-        const response = await orderAPI.dishes.get(categoryId);
-        const { data, statusText } = response;
-        if (statusText !== "OK") {
-          throw new Error(statusText);
-        }
-        this.dishes = data;
-      } catch (error) {
-        this.$swal({
-          type: "warning",
-          title: "無法取得資料，請稍後再試"
-        });
-        // eslint-disable-next-line
-        console.log("error", error);
-      }
+    }
+  },
+  created() {
+    this.fetchCategories();
+  },
+  watch: {
+    initialDishes(dishes) {
+      this.dishes = {
+        ...this.dishes,
+        ...dishes
+      };
     }
   }
 };
