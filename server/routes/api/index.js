@@ -30,7 +30,7 @@ router.get('/users/:id', userController.getUser)
 // 管理員點餐功能
 router.get('/searchUser', userController.searchUser)
 router.get('/categories', authenticated, categoryController.getCategories)
-router.get('/dish', dishController.getDish)
+router.get('/dishes', dishController.getDish)
 router.post('/orders', orderController.postOrders)
 
 // 管理員訂單功能
