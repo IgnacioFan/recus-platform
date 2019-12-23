@@ -34,7 +34,7 @@ router.get('/categories/:id', categoryController.getCategory)
 router.post('/signup', userController.signUp)
 router.post('/signin', userController.signIn)
 
-router.get('/dishes/:id', dishController.getDish)
+router.get('/dishes', dishController.getDish)
 router.post('/orders', orderController.postOrders)
 
 
