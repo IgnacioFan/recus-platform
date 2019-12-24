@@ -12,22 +12,27 @@ const routes = [{
   path: '/signin',
   name: 'sign-in',
   component: () =>
-    import ('../views/SignIn.vue')
+    import('../views/SignIn.vue')
 }, {
   path: '/signup',
   name: 'sign-up',
   component: () =>
-    import ('../views/SignUp.vue')
+    import('../views/SignUp.vue')
 }, {
   path: '/order',
   name: 'Order',
   component: () =>
-    import ('../views/Order.vue')
+    import('../views/Order.vue')
+},
+{
+  path: '/members',
+  name: 'members',
+  component: () => import('../views/MemberManage.vue')
 }, {
   path: '*',
   name: 'not-found',
   component: () =>
-    import ('../views/NotFound.vue')
+    import('../views/NotFound.vue')
 }]
 
 const router = new VueRouter({
@@ -37,7 +42,7 @@ const router = new VueRouter({
 })
 
 
-router.beforeEach(async(to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   if (!credit && to.name !== 'SignIn' && to.name !== 'SignUp') {
     next('/signin');
     return;
