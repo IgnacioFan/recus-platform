@@ -1,6 +1,27 @@
 const db = require('../../models')
+const events = require('events')
+const stateMachine = new events.EventEmitter()
 const Order = db.Order
 const DishCombination = db.DishCombination
+
+stateMachine.on('prev', (order) => {
+  let prevState
+  if (order.state === 'pending') return
+  if (order.state === 'making') prevState = 'pending'
+  if (order.state === 'unpaid') prevState = 'making'
+  if (order.state === 'paid') prevState = 'unpaid'
+  order.update({ state: prevState })
+})
+
+stateMachine.on('next', (order) => {
+  let nextState
+  if (order.state === 'pending') nextState = 'making'
+  if (order.state === 'making') nextState = 'unpaid'
+  if (order.state === 'unpaid') nextState = 'paid'
+  if (order.state === 'paid') return
+  order.update({ state: nextState })
+})
+
 
 const orderController = {
   postOrders: (req, res) => {
@@ -87,12 +108,21 @@ const orderController = {
     })
   },
 
-  // 改變訂單的狀態
-  changeStateOrder: (req, res) => {
-    if (!req.query.state) return res.json({ status: 'error', msg: '沒有取得狀態' })
+  // 訂單狀態往後
+  prevStateOrder: (req, res) => {
+    Order.findByPk(req.params.id).then(order => {
+      console.log(order.state)
+      stateMachine.emit('prev', order)
+      return res.json(order)
+    })
+  },
 
-    return Order.findByPk(req.params.id).then(order => {
-      order.update()
+  // 訂單狀態往前
+  nextStateOrder: (req, res) => {
+    Order.findByPk(req.params.id).then(order => {
+      console.log(order.state)
+      stateMachine.emit('next', order)
+      return res.json(order)
     })
   },
 
