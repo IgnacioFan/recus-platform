@@ -25,6 +25,8 @@ stateMachine.on('next', (order) => {
 
 const orderController = {
   postOrders: (req, res) => {
+    console.log(req.body)
+      // console.log(typeof req.body.dishes)
     if (req.body.dishes.length === 0) {
       return res.json({ status: 'error', msg: '請輸入至少一樣菜單' })
     }
