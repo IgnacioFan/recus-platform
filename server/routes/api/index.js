@@ -28,7 +28,7 @@ router.get('/users', userController.getUsers)
 router.get('/users/:id', userController.getUser)
 
 // 管理員點餐功能
-router.get('/search-user', userController.searchUser)
+router.get('/searchUser', userController.searchUser)
 router.get('/categories', authenticated, categoryController.getCategories)
 router.get('/dishes', dishController.getDish)
 router.post('/orders', orderController.postOrders)
