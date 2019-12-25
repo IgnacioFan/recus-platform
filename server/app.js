@@ -1,15 +1,19 @@
-const express = require('express')
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
 }
+
+const express = require('express')
 const routes = require('./routes/api/index')
 const port = process.env.PORT || 3000
 const cors = require('cors')
 const bodyParser = require('body-parser')
-const app = new express()
 const flash = require('connect-flash')
 const session = require('express-session')
 const passport = require('./config/passport')
+
+const app = new express()
+
+
 
 // use middleware
 app.use(cors())

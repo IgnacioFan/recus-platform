@@ -23,13 +23,16 @@ module.exports = {
         allowNull: false
       },
       name: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        default: ''
       },
       email: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        default: ''
       },
       image: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        default: ''
       },
       isAdmin: {
         type: Sequelize.BOOLEAN,

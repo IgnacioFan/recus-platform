@@ -27,15 +27,19 @@ router.get('/', (req, res) => {
 router.get('/users', userController.getUsers)
 router.get('/users/:id', userController.getUser)
 
+// 管理員點餐功能
 router.get('/searchUser', userController.searchUser)
 router.get('/categories', authenticated, categoryController.getCategories)
+router.get('/dishes', dishController.getDish)
+router.post('/orders', orderController.postOrders)
+
+// 管理員訂單功能
+//router.get('/orders')
 router.get('/categories/:id', categoryController.getCategory)
 
 router.post('/signup', userController.signUp)
 router.post('/signin', userController.signIn)
 
-router.get('/dishes', dishController.getDish)
-router.post('/orders', orderController.postOrders)
 
 
 module.exports = router
