@@ -30,6 +30,7 @@ const userController = {
   },
 
   searchUser: (req, res) => {
+
     if (!req.query.phone) {
       return res.json({ status: 'error', msg: '請輸入電話!' })
     }
