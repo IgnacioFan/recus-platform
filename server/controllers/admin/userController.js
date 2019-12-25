@@ -30,12 +30,12 @@ const userController = {
   },
 
   searchUser: (req, res) => {
-    if (req.query.name == null) {
+    if (req.query.phone == null) {
       return res.json({ status: 'error', msg: 'Input field should not be blank!' })
     }
-    User.findOne({ where: { name: req.query.name } }).then(user => {
+    User.findOne({ where: { phone: req.query.phone } }).then(user => {
       if (user == null) {
-        return res.json({ status: 'error', msg: 'Can find the the user name!' })
+        return res.json({ status: 'error', msg: 'Can find the the user phone!' })
       }
       return res.json(user)
     })

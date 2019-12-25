@@ -4,6 +4,8 @@ const DishCombination = db.DishCombination
 
 const orderController = {
   postOrders: (req, res) => {
+    console.log(req.body)
+      // console.log(typeof req.body.dishes)
     if (req.body.dishes.length === 0) {
       return res.json({ status: 'error', msg: 'please, choose one dish at least' })
     }
