@@ -9,7 +9,13 @@ module.exports = (sequelize, DataTypes) => {
     image: DataTypes.STRING,
     isAdmin: DataTypes.BOOLEAN,
     isValid: DataTypes.BOOLEAN
-  }, {});
+  }, {
+      scopes: {
+        'excludedAdmin': {
+          where: { 'isAdmin': false }
+        }
+      }
+    });
   User.associate = function (models) {
     User.hasMany(models.Order)
   };

@@ -28,7 +28,7 @@ router.get('/users', userController.getUsers)
 router.get('/users/:id', userController.getUser)
 
 // 管理員點餐功能
-router.get('/searchUser', userController.searchUser)
+router.get('/search-user', userController.searchUser)
 router.get('/categories', authenticated, categoryController.getCategories)
 router.get('/dishes', dishController.getDish)
 router.post('/orders', orderController.postOrders)
@@ -37,6 +37,16 @@ router.post('/orders', orderController.postOrders)
 //router.get('/orders')
 router.get('/categories/:id', categoryController.getCategory)
 
+// 今日訂單
+router.get('/orders', orderController.getOrders)
+router.get('/orders/:id', orderController.getOrder)
+
+// 
+router.post('/categories', categoryController.addCategory)
+router.put('/categories/:id', categoryController.updateCategory)
+router.delete('/categories/:id', categoryController.removeCategory)
+
+// 登入/登出
 router.post('/signup', userController.signUp)
 router.post('/signin', userController.signIn)
 
