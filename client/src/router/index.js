@@ -28,6 +28,11 @@ const routes = [{
   path: '/members',
   name: 'members',
   component: () => import('../views/MemberManage.vue')
+},
+{
+  path: '/members/search',
+  name: 'memberseach',
+  component: () => import('../views/MemberManage.vue')
 }, {
   path: '*',
   name: 'not-found',
