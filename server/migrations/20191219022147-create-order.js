@@ -16,12 +16,17 @@ module.exports = {
         type: Sequelize.INTEGER,
         default: 0
       },
+      quantity: {
+        type: Sequelize.INTEGER,
+        default: 0
+      },
       memo: {
         type: Sequelize.STRING,
         default: 'none'
       },
       isTakingAway: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
+        default: false
       },
       tableNum: {
         type: Sequelize.INTEGER,

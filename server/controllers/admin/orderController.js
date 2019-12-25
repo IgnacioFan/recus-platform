@@ -7,26 +7,33 @@ const orderController = {
     console.log(req.body)
       // console.log(typeof req.body.dishes)
     if (req.body.dishes.length === 0) {
-      return res.json({ status: 'error', msg: 'please, choose one dish at least' })
+      return res.json({ status: 'error', msg: '請輸入至少一樣菜單' })
     }
     let quantity = 0
     let amount = 0
-    let dishCombo = []
+    let comboDishes = []
     req.body.dishes.forEach(dish => {
       quantity = quantity + dish.quantity
       amount = amount + dish.price * dish.quantity
-      dishCombo.push({ DishId: dish.id, quantity: dish.quantity })
+      comboDishes.push({ DishId: dish.id, quantity: dish.quantity })
     })
+    if (Number(req.body.amount) !== amount) {
+      return res.json({ status: 'error', msg: '總額不符' })
+    }
+    if (req.body.isTakingAway === 0) {
+      if (req.body.tableNum === null) {
+        return res.json({ status: 'error', msg: '內用請輸入桌號' })
+      }
+    }
     return Order.create({
       quantiy: quantity,
       amount: amount,
-      state: req.body.state,
       memo: req.body.memo,
       tableNum: req.body.tableNum,
       isTakingAway: req.body.isTakingAway,
       UserId: req.body.UserId != null ? req.body.UserId : null
     }).then(order => {
-      dishCombo.forEach(item => {
+      comboDishes.forEach(item => {
         DishCombination.create({
           OrderId: order.id,
           DishId: item.DishId,

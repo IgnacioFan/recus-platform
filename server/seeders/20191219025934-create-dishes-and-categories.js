@@ -1,5 +1,5 @@
 'use strict';
-const faker = require('faker/locale/zh_TW')
+const faker = require('faker')
 
 module.exports = {
   up: (queryInterface, Sequelize) => {

@@ -41,7 +41,7 @@ describe('# User Model', function () {
     })
   })
 
-  context('User does not exist', function () {
+  context('CRUD', function () {
     let data = null
 
     it('create a new User', function (done) {
