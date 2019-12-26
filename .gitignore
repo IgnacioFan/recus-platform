@@ -1,7 +1,0 @@
-node_modules
-temp/
-upload/
-*config.json
-server/package.json
-server/test/sum.js
-server/test/test.js
