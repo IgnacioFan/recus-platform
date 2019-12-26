@@ -102,6 +102,8 @@
 </template>
 
 <script>
+import usersAPI from "./../apis/users";
+
 const dummyData = {
   users: [
     {
@@ -188,47 +190,92 @@ export default {
     }
   },
   created() {
-    this.fetchProfiles();
+    const { page } = this.$route.query;
+    this.fetchProfiles({ page });
+  },
+  beforeRouteUpdate(to, from, next) {
+    const { page } = to.query;
+    this.fetchRestaurants({ page });
+    next();
   },
   methods: {
-    fetchProfiles() {
-      this.totalPage = dummyData.totalPage;
-      this.currentPage = dummyData.currentPage;
-      this.users = dummyData.users
-        .map(user => {
-          if (user.id !== dummyUser.user.id) {
-            return {
-              ...user,
-              consumeCount: user.Orders.length
-            };
+    async fetchProfiles({ page = 1 }) {
+      try {
+        const { data, statusText } = await usersAPI.getMembers({ page });
+
+        if (statusText !== "OK") {
+          throw new Error(statusText);
+        }
+
+        this.totalPage = data.totalPage;
+        this.currentPage = data.currentPage;
+        this.users = data.users
+          .map(user => {
+            if (user.id !== dummyUser.user.id) {
+              return {
+                ...user,
+                consumeCount: user.Orders.length
+              };
+            } else {
+              return {
+                ...user,
+                consumeCount: user.Orders.length,
+                isSelf: true
+              };
+            }
+          })
+          .sort((a, b) => Number(a.id) - Number(b.id));
+      } catch (error) {
+        Toast.fire({
+          type: "error",
+          title: "無法取得資料，請稍後再試"
+        });
+      }
+    },
+    async deleteUser(userId) {
+      try {
+        const { data, statusText } = await usersAPI.deleteUser({
+          userId
+        });
+
+        if (statusText !== "OK" || data.status !== "success") {
+          throw new Error(statusText);
+        }
+
+        this.user = this.user.filter(user => user.id !== userId);
+      } catch (error) {
+        Toast.fire({
+          type: "error",
+          title: "無法將使用者移除，請稍後再試"
+        });
+      }
+    },
+    async toggleIsAdmin(userId) {
+      try {
+        const { data, statusText } = await usersAPI.deleteUser({
+          userId
+        });
+
+        if (statusText !== "OK" || data.status !== "success") {
+          throw new Error(statusText);
+        }
+
+        this.users = this.users.map(user => {
+          if (user.id !== userId) {
+            return user;
           } else {
             return {
               ...user,
-              consumeCount: user.Orders.length,
-              isSelf: true
+              isAdmin: !user.isAdmin
             };
           }
-        })
-        .sort((a, b) => Number(a.id) - Number(b.id));
-      this.users = dummyData.users.map(user => ({
-        ...user,
-        consumeCount: user.Orders.length
-      }));
-    },
-    deleteUser(userId) {
-      this.user = this.user.filter(user => user.id !== userId);
-    },
-    toggleIsAdmin(userId) {
-      this.users = this.users.map(user => {
-        if (user.id !== userId) {
-          return user;
-        } else {
-          return {
-            ...user,
-            isAdmin: !user.isAdmin
-          };
-        }
-      });
+        });
+      } catch (error) {
+        Toast.fire({
+          type: "error",
+          title: "無法切換使用者權限，請稍後再試"
+        });
+      }
     }
   }
 };

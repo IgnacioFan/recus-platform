@@ -27,7 +27,7 @@ const userController = {
       const page = Number(req.query.page) || 1
       const totalPage = Math.ceil(user.count / pageLimit)
       const data = user.rows
-      return res.render('restaurants', {
+      return res.json({
         users: data,
         currentPage: page,
         totalPage: totalPage
