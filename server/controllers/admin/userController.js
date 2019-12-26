@@ -1,8 +1,9 @@
 const db = require('../../models')
 const User = db.User
+const Order = db.Order
 const bcrypt = require('bcryptjs')
 const Op = require('sequelize').Op
-  // JWT
+// JWT
 const jwt = require('jsonwebtoken')
 const passportJWT = require('passport-jwt')
 const ExtractJwt = passportJWT.ExtractJwt
@@ -16,17 +17,56 @@ const userController = {
     })
   },
 
+  getUsersPag: (req, res) => {
+    const pageLimit = 10
+    let offset = 0
+    if (req.query.page) {
+      offset = (req.query.page - 1) * pageLimit
+    }
+    User.findAndCountAll({ include: Oeder, offset: offset, limit: pageLimit }).then(user => {
+      const page = Number(req.query.page) || 1
+      const totalPage = Math.ceil(user.count / pageLimit)
+      const data = user.rows
+      return res.render('restaurants', {
+        users: data,
+        currentPage: page,
+        totalPage: totalPage
+      })
+    })
+  },
+
   getUser: (req, res) => {
     if (Number(req.params.id) <= 0) {
       return res.json({ status: 'error', msg: 'No such user!' })
     }
     User.findByPk(req.params.id).then(user => {
       if (user == null) {
-        return res.res.json({ status: 'error', msg: 'No such user!' })
+        return res.json({ status: 'error', msg: 'No such user!' })
       }
       console.log('user', user)
       return res.json(user)
     })
+  },
+
+  deleteUser: (req, res) => {
+    return User.findByPk(req.params.id)
+      .then((user) => {
+        user.destroy()
+          .then((user) => {
+            return res.json({ status: 'success', msg: 'The user has been deleted.' })
+          })
+      })
+  },
+
+  toggleAdmin: (req, res) => {
+    return User.findByPk(req.params.id)
+      .then((user) => {
+        user.update({
+          isAdmin: !user.isAdmin
+        }).then((user) => {
+          return res.json({ status: 'success', msg: 'Toggled user admin.' })
+        })
+      })
   },
 
   searchUser: (req, res) => {
@@ -36,6 +76,18 @@ const userController = {
     User.findOne({ where: { name: req.query.name } }).then(user => {
       if (user == null) {
         return res.json({ status: 'error', msg: 'Can find the the user name!' })
+      }
+      return res.json(user)
+    })
+  },
+
+  searchPhone: (req, res) => {
+    if (req.query.phone == null) {
+      return res.json({ status: 'error', msg: 'Input field should not be blank!' })
+    }
+    User.findOne({ where: { name: req.query.phone } }).then(user => {
+      if (user == null) {
+        return res.json({ status: 'error', msg: 'Can find the the user phone!' })
       }
       return res.json(user)
     })

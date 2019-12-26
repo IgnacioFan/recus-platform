@@ -26,8 +26,13 @@ router.get('/', (req, res) => {
 
 router.get('/users', userController.getUsers)
 router.get('/users/:id', userController.getUser)
+router.get('/members', userController.getUsersPag)
+router.delete('/members/;id', userController.deleteUser)
+router.put('/members/admin/:id', userController.toggleAdmin)
 
 router.get('/searchUser', userController.searchUser)
+router.get('/members/search', userController.Phone)
+
 router.get('/categories', authenticated, categoryController.getCategories)
 router.get('/categories/:id', categoryController.getCategory)
 

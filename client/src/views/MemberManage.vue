@@ -192,25 +192,24 @@ export default {
   },
   methods: {
     fetchProfiles() {
-      (this.totalPage = dummyData.totalPage),
-        (this.currentPage = dummyData.currentPage),
-        (this.users = dummyData.users
-          .map(user => {
-            if (user.id !== dummyUser.user.id) {
-              return {
-                ...user,
-                consumeCount: user.Orders.length
-              };
-            } else {
-              return {
-                ...user,
-                consumeCount: user.Orders.length,
-                isSelf: true
-              };
-            }
-          })
-          .sort((a, b) => Number(a.id) - Number(b.id)));
-
+      this.totalPage = dummyData.totalPage;
+      this.currentPage = dummyData.currentPage;
+      this.users = dummyData.users
+        .map(user => {
+          if (user.id !== dummyUser.user.id) {
+            return {
+              ...user,
+              consumeCount: user.Orders.length
+            };
+          } else {
+            return {
+              ...user,
+              consumeCount: user.Orders.length,
+              isSelf: true
+            };
+          }
+        })
+        .sort((a, b) => Number(a.id) - Number(b.id));
       this.users = dummyData.users.map(user => ({
         ...user,
         consumeCount: user.Orders.length
