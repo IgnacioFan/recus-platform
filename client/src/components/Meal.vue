@@ -12,7 +12,7 @@
       <div
         v-for="dish in dishes"
         :key="dish.id"
-        @click.stop.prevent="addToList(dish.name,dish.price)"
+        @click.stop.prevent="addToList(dish.id,dish.name,dish.price)"
         class="col-lg-4 col-xl-3 dish border border-dark"
       >
         <h5 class="dishName">{{ dish.name }}</h5>
@@ -91,7 +91,7 @@ export default {
         console.log("error", error);
       }
     },
-    addToList(dishName, dishPrice) {
+    addToList(dishId,dishName, dishPrice) {
       this.$swal
         .fire({
           title: "<h1>請選擇數量</h1>",
@@ -106,9 +106,10 @@ export default {
         })
         .then(result => {
           if (+result.value > 0) {
-            this.dishId = this.dishId + 1;
+            // eslint-disable-next-line
+            console.log("dishId", dishId);
             this.$emit("after-add-to-order", {
-              id: this.dishId,
+              id: dishId,
               name: dishName,
               price: dishPrice,
               quantity: result.value

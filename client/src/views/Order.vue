@@ -129,7 +129,7 @@ export default {
             text: ""
           });
         } else {
-          this.addDishes.user = data.phone;
+          this.addDishes.user = data.id;
           this.user = { name: data.name, phone: "" };
         }
       } catch (error) {

@@ -109,7 +109,9 @@ export default {
           UserId: this.addDishes.user,
           tableNum: this.tableNum,
           isTakingAway: this.isTakingAway,
-          memo: this.memo
+          memo: this.memo,
+          quantity: this.addDishes.quantity,
+          amount: this.addDishes.amount
         });
         // eslint-disable-next-line
         const { data, statusText } = response;
