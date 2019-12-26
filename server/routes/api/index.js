@@ -37,6 +37,18 @@ router.post('/orders', orderController.postOrders)
 //router.get('/orders')
 router.get('/categories/:id', categoryController.getCategory)
 
+
+// 今日訂單
+router.get('/orders', orderController.getOrders)
+router.get('/orders/:id', orderController.getOrder)
+router.put('/orders/:id/prevState', orderController.prevStateOrder)
+router.put('/orders/:id/nextState', orderController.nextStateOrder)
+// 
+router.post('/categories', categoryController.addCategory)
+router.put('/categories/:id', categoryController.updateCategory)
+router.delete('/categories/:id', categoryController.removeCategory)
+
+// 登入/登出
 router.post('/signup', userController.signUp)
 router.post('/signin', userController.signIn)
 

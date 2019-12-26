@@ -9,11 +9,11 @@ const dishController = {
     if (Number(req.query.categoryId) <= 0) {
       return
     }
-    
+
     let whereQuery = {}
     categoryId = Number(req.query.categoryId)
     whereQuery['CategoryId'] = categoryId
-    
+
     return Dish.findAll({ where: whereQuery }).then(dishes => {
 
       return res.json(dishes)
