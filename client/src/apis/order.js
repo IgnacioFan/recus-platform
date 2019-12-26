@@ -19,8 +19,8 @@ export default {
     }
   },
   list: {
-    post({ dishes, UserId, tableNum, isTakingAway, memo }) {
-      return apiHelper.post(`/orders`, { dishes, UserId, tableNum, isTakingAway, memo })
+    post({ dishes, UserId, tableNum, isTakingAway, memo, quantity, amount }) {
+      return apiHelper.post(`/orders`, { dishes, UserId, tableNum, isTakingAway, memo, quantity, amount })
     }
   }
 }
