@@ -20,7 +20,7 @@ const routes = [{
     import('../views/SignUp.vue')
 }, {
   path: '/order',
-  name: 'Order',
+  name: 'order',
   component: () =>
     import('../views/Order.vue')
 },
@@ -55,7 +55,7 @@ router.beforeEach(async (to, from, next) => {
 
   if (credit) {
     if (to.name === 'SignIn' || to.name === 'Signup') {
-      next('/not-found');
+      next('/order');
       return;
     }
   }

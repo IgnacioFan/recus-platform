@@ -94,7 +94,7 @@ export default {
 
         this.$store.commit("setCurrentUser", data.user);
 
-        this.$router.push("/home");
+        this.$router.push("/order");
 
         this.$swal({
           toast: true,

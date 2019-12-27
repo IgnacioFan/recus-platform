@@ -2,6 +2,13 @@ node_modules
 temp/
 upload/
 *config.json
+
+server/config/config.json
+
 server/package.json
 server/test/sum.js
 server/test/test.js
+
+.env
+
+.travis.yml

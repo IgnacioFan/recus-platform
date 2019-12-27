@@ -1,35 +1,24 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Dishes', {
+    return queryInterface.createTable('DishAttachments', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      name: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      price: {
+      TagId: {
         type: Sequelize.INTEGER,
         allowNull: false
       },
-      UserId: {
+      DishId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
-        reference: {
-          model: 'Users',
-          key: 'id'
-        }
-      },
-      option: {
-        type: Sequelize.JSON
+        allowNull: false
       }
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Dishes');
+    return queryInterface.dropTable('DishAttachments');
   }
 };

@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: false
     });
   DishCombination.associate = function (models) {
-    // associations can be defined here
+
   };
   return DishCombination;
 };

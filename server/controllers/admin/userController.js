@@ -37,13 +37,14 @@ const userController = {
 
   getUser: (req, res) => {
     if (Number(req.params.id) <= 0) {
-      return res.json({ status: 'error', msg: 'No such user!' })
+      return res.json({ status: 'error', msg: '查無資料!' })
     }
-    User.findByPk(req.params.id).then(user => {
+    // 取出單一會員，且排除管理者
+    User.scope('excludedAdmin').findByPk(req.params.id).then(user => {
       if (user == null) {
-        return res.json({ status: 'error', msg: 'No such user!' })
+        return res.json({ status: 'error', msg: '查無資料!' })
       }
-      console.log('user', user)
+      //console.log('user', user)
       return res.json(user)
     })
   },
@@ -70,12 +71,14 @@ const userController = {
   },
 
   searchUser: (req, res) => {
-    if (req.query.name == null) {
-      return res.json({ status: 'error', msg: 'Input field should not be blank!' })
+    // 電話不為空值
+    if (!req.query.phone) {
+      return res.json({ status: 'error', msg: '請輸入電話!' })
     }
-    User.findOne({ where: { name: req.query.name } }).then(user => {
-      if (user == null) {
-        return res.json({ status: 'error', msg: 'Can find the the user name!' })
+    // 搜尋單一會員，且排除管理者
+    User.scope('excludedAdmin').findOne({ where: { phone: req.query.phone } }).then(user => {
+      if (!user) {
+        return res.json({ status: 'error', msg: '查無資料!確認電話是否輸入錯誤!' })
       }
       return res.json(user)
     })
@@ -95,7 +98,7 @@ const userController = {
   // Signup signin routes
   signUp: (req, res) => {
     if (req.body.passwordCheck !== req.body.password) {
-      return res.json({ status: 'error', message: '兩次密碼輸入不同！' })
+      return res.json({ status: 'error', msg: '兩次密碼輸入不同！' })
     } else {
       User.findOne({
         where: {
@@ -106,7 +109,7 @@ const userController = {
         }
       }).then(user => {
         if (user) {
-          return res.json({ status: 'error', message: '信箱重複！' })
+          return res.json({ status: 'error', msg: '信箱重複！' })
         } else {
           User.create({
             account: req.body.account,
@@ -114,7 +117,7 @@ const userController = {
             email: req.body.email,
             password: bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10), null)
           }).then(user => {
-            return res.json({ status: 'success', message: '成功註冊帳號！' })
+            return res.json({ status: 'success', msg: '成功註冊帳號！' })
           })
         }
       })
@@ -122,11 +125,8 @@ const userController = {
   },
 
   signIn: (req, res) => {
-    // 檢查必要資料
-    console.log(req.body)
-    console.log(req.body.password)
     if (!req.body.account || !req.body.password) {
-      return res.status(401).json({ status: 'error', message: "required fields didn't exist" })
+      return res.status(401).json({ status: 'error', msg: "required fields didn't exist" })
     }
     // 檢查 user 是否存在與密碼是否正確
     let username = req.body.account
@@ -140,13 +140,13 @@ const userController = {
         ]
       }
     }).then(user => {
-      if (!user) return res.status(401).json({ status: 'error', message: 'no such user found' })
+      if (!user) return res.status(401).json({ status: 'error', msg: 'no such user found' })
       if (!bcrypt.compareSync(password, user.password)) {
-        return res.status(401).json({ status: 'error', message: 'passwords did not match' })
+        return res.status(401).json({ status: 'error', msg: 'passwords did not match' })
       }
       // 簽發 token
       var payload = { id: user.id }
-      var token = jwt.sign(payload, process.env.JWT_SECRET)
+      var token = jwt.sign(payload, process.env.JWT_SECRET || "alphacamp")
       return res.json({
         status: 'success',
         message: 'ok',
