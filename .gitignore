@@ -7,5 +7,3 @@ server/test/sum.js
 server/test/test.js
 
 .env
-
-.travis.yml
