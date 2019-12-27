@@ -34,6 +34,11 @@ const routes = [{
   name: 'memberseach',
   component: () => import('../views/MemberManage.vue')
 }, {
+  path: '/orders',
+  name: 'day-orders',
+  component: () =>
+    import ('../views/DayOrders.vue')
+}, {
   path: '*',
   name: 'not-found',
   component: () =>

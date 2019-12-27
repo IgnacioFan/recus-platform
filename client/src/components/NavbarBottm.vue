@@ -1,9 +1,9 @@
 <template>
-  <div class="row">
-    <router-link class="btn btn-primary col p-3" to="/">
+  <div class="row fixed-bottom">
+    <router-link class="btn btn-primary col p-3" :to="{ name: 'order'}">
       <p>店內點餐</p>
     </router-link>
-    <router-link class="btn btn-primary col p-3" to="/">
+    <router-link class="btn btn-primary col p-3" :to="{ name: 'day-orders'}">
       <p>當日訂單</p>
     </router-link>
     <router-link class="btn btn-primary col p-3" to="/">
