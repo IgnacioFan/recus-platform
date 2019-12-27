@@ -94,9 +94,14 @@ const orderController = {
     }
 
     if (state !== '') {
-      return Order.scope('todayOrder').findAll({ where: { state: state } }).then(orders => {
-        return res.json(orders)
-      })
+      return Order.scope('todayOrder').findAll(
+        {
+          include: [{ model: db.Dish, attributes: ['name'], as: 'sumOfDishes', through: { attributes: ['quantity'] } }]
+          , where: { state: state }
+        }).then(orders => {
+
+          return res.json(orders)
+        })
     } else {
       return res.json({ status: 'error', msg: '404' })
     }
