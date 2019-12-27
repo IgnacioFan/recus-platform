@@ -3,7 +3,7 @@
     <NavbarTop />
     <div class="row" style="height:100%;">
       <div class="col-8 border border-dark p-0" style="height:calc(100vh - 107px);">
-        <div class="container">
+        <div class="">
           <MealTabs :user="user" @after-search-user="afterSearchUser" />
           <Meal
             :initial-dishes="dishes"
@@ -60,8 +60,8 @@ export default {
     this.fetchDishes({ categoryId });
   },
   beforeRouteUpdate(to, from, next) {
-    const { categoryId } = to.query;
-    this.fetchDishes({ categoryId: categoryId });
+    const { categoryId = 1 } = to.query;
+    this.fetchDishes({ categoryId });
     next();
   },
   methods: {
@@ -129,7 +129,7 @@ export default {
             text: ""
           });
         } else {
-          this.addDishes.user = data.phone;
+          this.addDishes.user = data.id;
           this.user = { name: data.name, phone: "" };
         }
       } catch (error) {

@@ -44,7 +44,6 @@ export default {
       this.$emit("after-search-user", this.userPhone);
     }
   },
-  created() {},
   watch: {
     user(userData) {
       this.userData = {

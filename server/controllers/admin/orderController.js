@@ -26,7 +26,7 @@ stateMachine.on('next', (order) => {
 const orderController = {
   postOrders: (req, res) => {
     console.log(req.body)
-      // console.log(typeof req.body.dishes)
+    // console.log(typeof req.body.dishes)
     if (req.body.dishes.length === 0) {
       return res.json({ status: 'error', msg: '請輸入至少一樣菜單' })
     }
@@ -94,9 +94,14 @@ const orderController = {
     }
 
     if (state !== '') {
-      return Order.scope('todayOrder').findAll({ where: { state: state } }).then(orders => {
-        return res.json(orders)
-      })
+      return Order.scope('todayOrder').findAll(
+        {
+          include: [{ model: db.Dish, attributes: ['name'], as: 'sumOfDishes', through: { attributes: ['quantity'] } }]
+          , where: { state: state }
+        }).then(orders => {
+
+          return res.json(orders)
+        })
     } else {
       return res.json({ status: 'error', msg: '404' })
     }
@@ -113,7 +118,6 @@ const orderController = {
   // 訂單狀態往後
   prevStateOrder: (req, res) => {
     Order.findByPk(req.params.id).then(order => {
-      console.log(order.state)
       stateMachine.emit('prev', order)
       return res.json(order)
     })
@@ -122,18 +126,32 @@ const orderController = {
   // 訂單狀態往前
   nextStateOrder: (req, res) => {
     Order.findByPk(req.params.id).then(order => {
-      console.log(order.state)
       stateMachine.emit('next', order)
       return res.json(order)
     })
   },
 
-  // 修改訂單
-  updateOrder: (req, res) => {
+  // 刪除訂單(弱刪除)
+  removeOrder: (req, res) => {
+    Order.findByPk(req.params.id).then(order => {
+      order.destroy()
+      return res.json({ status: 'success', msg: '成功刪除了此訂單' })
+    })
+  },
 
+  getPendingNums: (req, res) => {
+    Order.scope('todayOrder').count({ where: { state: 'pending' } }).then((nums => {
+      return res.json(nums)
+    }))
+  },
+
+  getUnpaidNums: (req, res) => {
+    Order.scope('todayOrder').count({ where: { state: 'unpaid' } }).then((nums => {
+      return res.json(nums)
+    }))
   }
 
-  // 刪除訂單(弱刪除)
+
 }
 
 module.exports = orderController

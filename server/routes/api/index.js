@@ -26,9 +26,14 @@ router.get('/', (req, res) => {
 
 router.get('/users', userController.getUsers)
 router.get('/users/:id', userController.getUser)
+router.get('/members', userController.getUsersPag)
+router.delete('/members/;id', userController.deleteUser)
+router.put('/members/admin/:id', userController.toggleAdmin)
 
 // 管理員點餐功能
 router.get('/searchUser', userController.searchUser)
+router.get('/members/search', userController.Phone)
+
 router.get('/categories', authenticated, categoryController.getCategories)
 router.get('/dishes', dishController.getDish)
 router.post('/orders', orderController.postOrders)
@@ -40,9 +45,13 @@ router.get('/categories/:id', categoryController.getCategory)
 
 // 今日訂單
 router.get('/orders', orderController.getOrders)
+router.get('/orders/pendingNums', orderController.getPendingNums)
+router.get('/orders/unpaidNums', orderController.getUnpaidNums)
 router.get('/orders/:id', orderController.getOrder)
 router.put('/orders/:id/prevState', orderController.prevStateOrder)
 router.put('/orders/:id/nextState', orderController.nextStateOrder)
+router.delete('/orders/:id', orderController.removeOrder)
+
 // 
 router.post('/categories', categoryController.addCategory)
 router.put('/categories/:id', categoryController.updateCategory)

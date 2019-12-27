@@ -9,8 +9,13 @@ module.exports = (sequelize, DataTypes) => {
     memo: DataTypes.STRING,
     isTakingAway: DataTypes.BOOLEAN,
     tableNum: DataTypes.INTEGER,
-    UserId: DataTypes.INTEGER
+    UserId: DataTypes.INTEGER,
+    //deletedAt: DataTypes.Date
   }, {
+      defaultScope: {
+        //where: { deleted_at: null }
+        //paranoid: false
+      },
       scopes: {
         todayOrder: {
           where: {
