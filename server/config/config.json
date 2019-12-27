@@ -1,11 +1,10 @@
 {
   "development": {
     "username": "root",
-    "password": "password",
+    "password": "sh940718",
     "database": "recus_platform_dev",
     "host": "127.0.0.1",
-    "dialect": "mysql",
-    "operatorsAliases": true
+    "dialect": "mysql"
   },
   "test": {
     "username": "root",
