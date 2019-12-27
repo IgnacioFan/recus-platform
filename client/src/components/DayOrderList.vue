@@ -1,52 +1,73 @@
 <template>
-  <div class="container">
-    <div class="row my-2">
-      <h5 class="col-auto mr-auto px-0">清單</h5>
-      <h5 class="col-auto">總數：{{this.addDishes.quantity}}件</h5>
-    </div>
-    <div class="border border-warning list">
-      <div
-        v-for="dish in this.addDishes.list"
-        :key="dish.id"
-        class="dish border border-dark rounded-lg"
-      >
-        <h5 class="mb-1">{{dish.name}}</h5>
-        <div class="row">
-          <div class="col-auto mr-auto px-0">
-            <span>數量：{{dish.quantity}}</span>
-          </div>
-          <button
-            class="btn btn-primary"
-            @click.stop.prevent="handleDeleteButtonClick(dish.id,dish.quantity,dish.price)"
-          >刪除</button>
-        </div>
-      </div>
-    </div>
-    <h5 class="my-2">備註</h5>
-    <textarea class="w-100" v-model="memo" name="memo" id rows="3"></textarea>
-    <div class="row my-2">
-      <button class="btn btn-primary col py-2" @click.stop.prevent="tableNumber">內用</button>
-      <button class="btn btn-primary col py-2" @click.stop.prevent="takingAway">外帶</button>
-      <button
-        v-show="this.tableNum>0 || this.isTakingAway>0"
-        class="btn btn-primary col py-2"
-        @click.stop.prevent="submitOrder"
-      >新增</button>
-    </div>
-    <h5 class="text-right">金額：{{this.addDishes.amount}}元</h5>
+  <div class="row">
+    <table
+      v-for="order in orders"
+      :key="order.id"
+      class="col-3 table table-striped table-bordered table-hover"
+    >
+      <thead>
+        <tr>
+          <th>
+            <div class="d-flex justify-content-between">
+              <small>{{order.createdAt | timeFrom}}</small>
+              <h4 class="mr-5">{{order.id}}</h4>
+              <button class="btn btn-primary" @click.stop.prevent="deleteOrder(order.id)">刪除</button>
+            </div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div>
+              <h4>Dish Name</h4>
+              <div class="d-flex justify-content-between">
+                <p class="mb-0 d-inline-block">LS、NE</p>
+                <p class="d-inline-block">數量：{{order.quantity}}</p>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr class="note">
+          <td>
+            <h4>{{order.memo}}</h4>
+            <div class="row my-2">
+              <button
+                class="col-4 btn btn-primary"
+                @click.stop.prevent="stateSwitch(`prevState`, order.id)"
+              >未處理</button>
+              <h4 class="col-4 text-center">{{order.state}}</h4>
+              <button
+                class="col-4 btn btn-primary"
+                @click.stop.prevent="stateSwitch(`nextState`, order.id)"
+              >未結帳</button>
+            </div>
+            <h5 v-if="order.isTakingAway" class="float-left">外帶</h5>
+            <h5 v-else class="float-left">桌號: {{order.memo}}</h5>
+            <h5 class="float-right">總額: {{order.amount}}</h5>
+          </td>
+        </tr>
+      </tfoot>
+    </table>
   </div>
 </template>
 
 <script>
+import { timeFromFilter } from "./../utils/mixins";
 import orderAPI from "./../apis/order";
 
 export default {
+  mixins: [timeFromFilter],
   props: {
-    addDishes: {}
+    initialOrders: {
+      type: Array
+    }
   },
   data() {
     return {
-      dishesData: this.addDishes,
+      orders: this.initialOrders,
       tableNum: 0,
       isTakingAway: 0,
       memo: "",
@@ -56,11 +77,11 @@ export default {
   },
   created() {},
   methods: {
-    handleDeleteButtonClick(dishId, quantity, price) {
-      this.addDishes.quantity =
-        Number(this.addDishes.quantity) - Number(quantity);
-      this.addDishes.amount = this.addDishes.amount - price * quantity;
-      this.$emit("after-delete-dish", dishId);
+    stateSwitch(state, orderId) {
+      this.$emit("after-order-state-switch", { state, orderId });
+    },
+    deleteOrder(orderId) {
+      this.$emit("after-delete-order", orderId);
     },
     tableNumber() {
       this.$swal
@@ -109,9 +130,7 @@ export default {
           UserId: this.addDishes.user,
           tableNum: this.tableNum,
           isTakingAway: this.isTakingAway,
-          memo: this.memo,
-          quantity: this.addDishes.quantity,
-          amount: this.addDishes.amount
+          memo: this.memo
         });
         // eslint-disable-next-line
         const { data, statusText } = response;
@@ -137,10 +156,10 @@ export default {
     }
   },
   watch: {
-    addDishes(dishesData) {
-      this.dishesData = {
-        ...this.dishesData,
-        ...dishesData
+    initialOrders(orders) {
+      this.orders = {
+        ...this.orders,
+        ...orders
       };
     }
   }
@@ -148,17 +167,7 @@ export default {
 </script>
 
 <style scoped>
-.list {
-  height: calc(100vh - 350px);
-  overflow: auto;
-}
-.dish {
-  padding: 15px 15px;
-}
-.dish h5 {
-  margin-bottom: 15px;
-}
-.dish span {
-  line-height: 2.2;
+.note-text {
+  overflow-wrap: break-word;
 }
 </style>

@@ -1,5 +1,6 @@
 <template>
   <nav class="text-right">
+    <h1 class="d-inline float-left">{{this.initialTitle}}</h1>
     <router-link to="/" class="mr-3">儀錶板</router-link>
     <router-link to="/" class="mr-3">未處理(N)</router-link>
     <router-link to="/" class="mr-3">未結帳(N)</router-link>
@@ -14,7 +15,11 @@
 
 <script>
 export default {
-  computed: {},
+  props: {
+    initialTitle: {
+      type: String
+    }
+  },
   methods: {
     logout() {
       this.$store.commit("revokeAuthentication");
