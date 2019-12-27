@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <ul class="nav nav-pills my-4">
+    <ul class="nav nav-pills my-2">
       <li v-for="category in categories" :key="category.id" class="nav-item">
         <router-link
           class="nav-link"
@@ -142,11 +142,10 @@ export default {
 
 <style scoped>
 .meal {
-  max-height: calc(100vh - 240px);
+  max-height: calc(100vh - 210px);
   overflow: auto;
 }
 .dish {
-  max-height: 100px;
   padding: 15px 15px;
 }
 .dishName {
