@@ -1,5 +1,6 @@
 const db = require('../../models')
 const User = db.User
+const Order = db.Order
 const bcrypt = require('bcryptjs')
 const Op = require('sequelize').Op
 // JWT
@@ -13,6 +14,24 @@ const userController = {
     return User.findAll().then(users => {
       //console.log(users)
       return res.json(users)
+    })
+  },
+
+  getUsersPag: (req, res) => {
+    const pageLimit = 10
+    let offset = 0
+    if (req.query.page) {
+      offset = (req.query.page - 1) * pageLimit
+    }
+    User.findAndCountAll({ include: Oeder, offset: offset, limit: pageLimit }).then(user => {
+      const page = Number(req.query.page) || 1
+      const totalPage = Math.ceil(user.count / pageLimit)
+      const data = user.rows
+      return res.json({
+        users: data,
+        currentPage: page,
+        totalPage: totalPage
+      })
     })
   },
 
@@ -30,6 +49,27 @@ const userController = {
     })
   },
 
+  deleteUser: (req, res) => {
+    return User.findByPk(req.params.id)
+      .then((user) => {
+        user.destroy()
+          .then((user) => {
+            return res.json({ status: 'success', msg: 'The user has been deleted.' })
+          })
+      })
+  },
+
+  toggleAdmin: (req, res) => {
+    return User.findByPk(req.params.id)
+      .then((user) => {
+        user.update({
+          isAdmin: !user.isAdmin
+        }).then((user) => {
+          return res.json({ status: 'success', msg: 'Toggled user admin.' })
+        })
+      })
+  },
+
   searchUser: (req, res) => {
     // 電話不為空值
     if (!req.query.phone) {
@@ -39,6 +79,18 @@ const userController = {
     User.scope('excludedAdmin').findOne({ where: { phone: req.query.phone } }).then(user => {
       if (!user) {
         return res.json({ status: 'error', msg: '查無資料!確認電話是否輸入錯誤!' })
+      }
+      return res.json(user)
+    })
+  },
+
+  searchPhone: (req, res) => {
+    if (req.query.phone == null) {
+      return res.json({ status: 'error', msg: 'Input field should not be blank!' })
+    }
+    User.findOne({ where: { name: req.query.phone } }).then(user => {
+      if (user == null) {
+        return res.json({ status: 'error', msg: 'Can find the the user phone!' })
       }
       return res.json(user)
     })
