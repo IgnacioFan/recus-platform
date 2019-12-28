@@ -32,7 +32,7 @@ router.put('/members/admin/:id', userController.toggleAdmin)
 
 // 管理員點餐功能
 router.get('/searchUser', userController.searchUser)
-router.get('/members/search', userController.Phone)
+router.get('/members/search', userController.searchPhone)
 
 router.get('/categories', authenticated, categoryController.getCategories)
 router.get('/dishes', dishController.getDish)

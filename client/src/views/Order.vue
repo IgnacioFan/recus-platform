@@ -3,7 +3,7 @@
     <NavbarTop />
     <div class="row" style="height:100%;">
       <div class="col-8 border border-dark p-0" style="height:calc(100vh - 107px);">
-        <div class="">
+        <div class>
           <MealTabs :user="user" @after-search-user="afterSearchUser" />
           <Meal
             :initial-dishes="dishes"
@@ -110,6 +110,7 @@ export default {
         amount: 0
       };
       this.user.name = "";
+      this.user.temp = "";
     },
     async afterSearchUser(userPhone) {
       try {

@@ -17,13 +17,13 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
+        <tr v-for="dish in order.sumOfDishes" :key="dish.id">
           <td>
             <div>
-              <h4>Dish Name</h4>
+              <h4>{{dish.name}}</h4>
               <div class="d-flex justify-content-between">
                 <p class="mb-0 d-inline-block">LS、NE</p>
-                <p class="d-inline-block">數量：{{order.quantity}}</p>
+                <p class="d-inline-block">數量：{{dish.DishCombination.quantity}}</p>
               </div>
             </div>
           </td>
@@ -34,18 +34,37 @@
           <td>
             <h4>{{order.memo}}</h4>
             <div class="row my-2">
+              <div class="col-4" v-show="order.state === `pending`"></div>
               <button
+                v-show="order.state !== `pending`"
                 class="col-4 btn btn-primary"
                 @click.stop.prevent="stateSwitch(`prevState`, order.id)"
-              >未處理</button>
-              <h4 class="col-4 text-center">{{order.state}}</h4>
+              >
+                <svg style="width:20px;height:24px" viewBox="6 1 20 24">
+                  <path
+                    fill="#f4f4f4"
+                    d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z"
+                  />
+                </svg>
+                {{stateBtn.left}}
+              </button>
+              <h4 class="col-4 text-center p-0 text-capitalize">{{order.state}}</h4>
               <button
+                v-show="order.state !== `paid`"
                 class="col-4 btn btn-primary"
                 @click.stop.prevent="stateSwitch(`nextState`, order.id)"
-              >未結帳</button>
+              >
+                {{stateBtn.right}}
+                <svg style="width:20px;height:24px" viewBox="0 2 15 24">
+                  <path
+                    fill="#f4f4f4"
+                    d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"
+                  />
+                </svg>
+              </button>
             </div>
             <h5 v-if="order.isTakingAway" class="float-left">外帶</h5>
-            <h5 v-else class="float-left">桌號: {{order.memo}}</h5>
+            <h5 v-else class="float-left">桌號: {{order.tableNum}}</h5>
             <h5 class="float-right">總額: {{order.amount}}</h5>
           </td>
         </tr>
@@ -56,23 +75,24 @@
 
 <script>
 import { timeFromFilter } from "./../utils/mixins";
-import orderAPI from "./../apis/order";
 
 export default {
   mixins: [timeFromFilter],
   props: {
-    initialOrders: {
-      type: Array
+    initialOrders: {},
+    stateButton: {
+      type: Object
     }
   },
   data() {
     return {
-      orders: this.initialOrders,
+      orders: this.initialOrders.orders,
       tableNum: 0,
       isTakingAway: 0,
       memo: "",
       quantity: 0,
-      amount: 0
+      amount: 0,
+      stateBtn: this.stateButton
     };
   },
   created() {},
@@ -82,84 +102,20 @@ export default {
     },
     deleteOrder(orderId) {
       this.$emit("after-delete-order", orderId);
-    },
-    tableNumber() {
-      this.$swal
-        .fire({
-          title: "<h1>請輸入桌號</h1>",
-          type: "info",
-          input: "number",
-          html: "",
-          showCloseButton: true,
-          showCancelButton: true,
-          focusConfirm: false,
-          confirmButtonText: '<i class="fa fa-thumbs-up"></i> 確認',
-          cancelButtonText: '<i class="fa fa-thumbs-down"></i> 返回'
-        })
-        .then(result => {
-          if (+result.value > 0) {
-            this.isTakingAway = 0;
-            this.tableNum = +result.value;
-            this.$swal({
-              type: "success",
-              title: "成功新增桌號"
-            });
-          } else {
-            this.$swal({
-              type: "warning",
-              title: "未新增桌號"
-            });
-          }
-        });
-    },
-    takingAway() {
-      this.isTakingAway = 1;
-      this.tableNum = 0;
-      this.$swal({
-        type: "success",
-        title: "已選擇外帶"
-      });
-    },
-    async submitOrder() {
-      try {
-        if (this.addDishes.list.length === 0) {
-          throw new Error(statusText);
-        }
-        const response = await orderAPI.list.post({
-          dishes: this.addDishes.list,
-          UserId: this.addDishes.user,
-          tableNum: this.tableNum,
-          isTakingAway: this.isTakingAway,
-          memo: this.memo
-        });
-        // eslint-disable-next-line
-        const { data, statusText } = response;
-        if (statusText !== "OK") {
-          throw new Error(statusText);
-        }
-        this.$emit("after-submit-order");
-        this.tableNum = 0;
-        this.isTakingAway = 0;
-        this.memo = "";
-        this.$swal({
-          type: "success",
-          title: "成功新增清單"
-        });
-      } catch (error) {
-        this.$swal({
-          type: "warning",
-          title: "未新增清單"
-        });
-        // eslint-disable-next-line
-        console.log("error", error);
-      }
     }
   },
   watch: {
     initialOrders(orders) {
+      this.orders = {};
       this.orders = {
         ...this.orders,
         ...orders
+      };
+    },
+    stateButton(stateBtn) {
+      this.stateBtn = {
+        ...this.stateBtn,
+        ...stateBtn
       };
     }
   }
