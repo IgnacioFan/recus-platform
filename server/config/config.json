@@ -7,8 +7,6 @@
     "dialect": "mysql"
   },
   "test": {
-    //"username": "root",
-    //"password": "password",
     "username": "travis",
     "database": "recus_platform_test",
     "host": "127.0.0.1",
