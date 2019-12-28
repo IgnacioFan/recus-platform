@@ -1,4 +1,4 @@
-<template>
+<template lang="zh-TW">
   <div class="container">
     <div class="row mt-2">
       <div class="col-auto mr-auto px-0">
@@ -11,6 +11,7 @@
           <input
             class="form-control mr-sm-2"
             type="text"
+            value=""
             v-model="userPhone"
             placeholder="09xxxxxxxx"
           />
@@ -35,7 +36,7 @@ export default {
   data() {
     return {
       userData: this.user,
-      userPhone: "",
+      userPhone: this.user.temp,
       userName: this.user.name
     };
   },

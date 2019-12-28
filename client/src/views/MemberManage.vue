@@ -1,22 +1,17 @@
 <template>
-  <div class="container py-5">
-    <form action="/search" class="my-4">
-      <div class="form-row">
-        <div class="col-auto">
-          <input
-            type="text"
-            class="form-control"
-            name="keyword"
-            placeholder="輸入手機電話..."
-            v-model="phone"
-          />
-        </div>
-        <div class="col-auto">
-          <router-link :to="{name:'memberseach', query:{phone:phone}}">
-            <button type="button" class="btn btn-primary">搜尋</button>
-          </router-link>
-        </div>
-      </div>
+  <div>
+    <NavbarTop :initial-title="title" />
+    <form class="form-inline my-2 my-lg-0 d-inline-block" action="/search">
+      <input
+        class="form-control mr-sm-2"
+        type="text"
+        name="keyword"
+        v-model="phone"
+        placeholder="輸入手機電話..."
+      />
+      <router-link :to="{name:'memberseach', query:{phone:phone}}">
+        <button type="button" class="btn btn-primary">搜尋</button>
+      </router-link>
     </form>
 
     <table class="table">
@@ -98,60 +93,15 @@
         </li>
       </ul>
     </nav>
+    <NavbarBottm />
   </div>
 </template>
 
 <script>
+import NavbarTop from "./../components/NavbarTop";
+import NavbarBottm from "./../components/NavbarBottm";
 import usersAPI from "./../apis/users";
 
-const dummyData = {
-  users: [
-    {
-      id: 1,
-      account: "root",
-      phone: "0900",
-      password: "12345678",
-      name: "root",
-      email: "root@example.com",
-      image: "",
-      isAdmin: true,
-      isValid: true,
-      createdAt: "2019-11-20T06:25:42.685Z",
-      updatedAt: "2019-11-21T09:55:30.970Z",
-      Orders: [{ id: 1 }, { id: 2 }, { id: 3 }]
-    },
-    {
-      id: 2,
-      account: "user1",
-      phone: "0901",
-      password: "12345678",
-      name: "Nacho",
-      email: "user1@example.com",
-      image: "",
-      isAdmin: false,
-      isValid: true,
-      createdAt: "2019-11-20T06:25:42.685Z",
-      updatedAt: "2019-11-21T09:55:30.970Z",
-      Orders: [{ id: 1 }, { id: 2 }, { id: 3 }]
-    },
-    {
-      id: 3,
-      account: "user2",
-      phone: "0902",
-      password: "12345678",
-      name: "yoshi",
-      email: "user2@example.com",
-      image: "",
-      isAdmin: false,
-      isValid: true,
-      createdAt: "2019-11-20T06:25:42.685Z",
-      updatedAt: "2019-11-21T09:55:30.970Z",
-      Orders: [{ id: 1 }, { id: 2 }, { id: 3 }]
-    }
-  ],
-  currentPage: 1,
-  totalPage: 3
-};
 const dummyUser = {
   user: {
     id: 2,
@@ -170,9 +120,13 @@ const dummyUser = {
 };
 
 export default {
-  components: {},
+  components: {
+    NavbarTop,
+    NavbarBottm
+  },
   data() {
     return {
+      title: "會員管理",
       users: [],
       phone: undefined,
       totalPage: undefined,
@@ -195,7 +149,7 @@ export default {
   },
   beforeRouteUpdate(to, from, next) {
     const { page } = to.query;
-    this.fetchRestaurants({ page });
+    this.fetchProfiles({ page });
     next();
   },
   methods: {
@@ -226,7 +180,7 @@ export default {
           })
           .sort((a, b) => Number(a.id) - Number(b.id));
       } catch (error) {
-        Toast.fire({
+        this.$swal({
           type: "error",
           title: "無法取得資料，請稍後再試"
         });
@@ -244,7 +198,7 @@ export default {
 
         this.user = this.user.filter(user => user.id !== userId);
       } catch (error) {
-        Toast.fire({
+        this.$swal({
           type: "error",
           title: "無法將使用者移除，請稍後再試"
         });
@@ -271,7 +225,7 @@ export default {
           }
         });
       } catch (error) {
-        Toast.fire({
+        this.$swal({
           type: "error",
           title: "無法切換使用者權限，請稍後再試"
         });

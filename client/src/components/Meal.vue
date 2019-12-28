@@ -106,8 +106,6 @@ export default {
         })
         .then(result => {
           if (+result.value > 0) {
-            // eslint-disable-next-line
-            console.log("dishId", dishId);
             this.$emit("after-add-to-order", {
               id: dishId,
               name: dishName,
@@ -132,6 +130,7 @@ export default {
   },
   watch: {
     initialDishes(dishes) {
+      this.dishes = {}
       this.dishes = {
         ...this.dishes,
         ...dishes
