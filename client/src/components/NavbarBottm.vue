@@ -9,7 +9,7 @@
     <router-link class="btn btn-primary col p-3" :to="{ name: 'memberseach'}">
       <p>會員管理</p>
     </router-link>
-    <router-link class="btn btn-primary col p-3" :to="{ name: 'order'}">
+    <router-link class="btn btn-primary col p-3" to="{}">
       <p>菜單管理</p>
     </router-link>
   </div>
@@ -17,7 +17,6 @@
 
 <script>
 export default {
-  computed: {},
   methods: {
     logout() {
       this.$store.commit("revokeAuthentication");
