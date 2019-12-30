@@ -9,7 +9,7 @@ var expect = chai.expect;
 const db = require('../../models')
 
 
-describe('分類管理', () => {
+describe('菜單管理/菜單', () => {
   context('# dishes', () => {
 
     before(async () => {
