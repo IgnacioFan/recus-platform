@@ -3,7 +3,7 @@ const User = db.User
 const Order = db.Order
 const bcrypt = require('bcryptjs')
 const Op = require('sequelize').Op
-// JWT
+  // JWT
 const jwt = require('jsonwebtoken')
 const passportJWT = require('passport-jwt')
 const ExtractJwt = passportJWT.ExtractJwt
@@ -18,12 +18,12 @@ const userController = {
   },
 
   getUsersPag: (req, res) => {
-    const pageLimit = 10
+    const pageLimit = 14
     let offset = 0
     if (req.query.page) {
       offset = (req.query.page - 1) * pageLimit
     }
-    User.findAndCountAll({ include: Oeder, offset: offset, limit: pageLimit }).then(user => {
+    User.findAndCountAll({ include: Order, offset: offset, limit: pageLimit }).then(user => {
       const page = Number(req.query.page) || 1
       const totalPage = Math.ceil(user.count / pageLimit)
       const data = user.rows
