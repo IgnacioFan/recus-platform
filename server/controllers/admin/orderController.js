@@ -26,7 +26,7 @@ stateMachine.on('next', (order) => {
 const orderController = {
   postOrders: (req, res) => {
     console.log(req.body)
-    // console.log(typeof req.body.dishes)
+      // console.log(typeof req.body.dishes)
     if (req.body.dishes.length === 0) {
       return res.json({ status: 'error', msg: '請輸入至少一樣菜單' })
     }
@@ -37,11 +37,11 @@ const orderController = {
 
     // 計算總額與數量
     req.body.dishes.forEach(dish => {
-      quantity = quantity + dish.quantity
-      amount = amount + dish.price * dish.quantity
-      comboDishes.push({ DishId: dish.id, quantity: dish.quantity })
-    })
-    // 驗證總額
+        quantity = quantity + dish.quantity
+        amount = amount + dish.price * dish.quantity
+        comboDishes.push({ DishId: dish.id, quantity: dish.quantity })
+      })
+      // 驗證總額
     if (Number(req.body.amount) !== amount) {
       return res.json({ status: 'error', msg: '總額不符' })
     }
@@ -53,12 +53,13 @@ const orderController = {
     }
     // 新增訂單
     return Order.create({
+      state: "pending",
       quantiy: quantity,
       amount: amount,
       memo: req.body.memo,
       tableNum: req.body.tableNum,
       isTakingAway: req.body.isTakingAway,
-      UserId: req.body.UserId != null ? req.body.UserId : null
+      UserId: req.body.UserId !== "" ? req.body.UserId : null
     }).then(order => {
       // 新增菜單組合
       comboDishes.forEach(item => {
@@ -76,7 +77,7 @@ const orderController = {
   getOrders: (req, res) => {
     if (!req.query.state) return res.json({ status: 'error', msg: '沒有取得狀態' })
     let state = ""
-    // 尚未製作
+      // 尚未製作
     if (req.query.state === 'pending') {
       state = 'pending'
     } // 製作中
@@ -94,14 +95,13 @@ const orderController = {
     }
 
     if (state !== '') {
-      return Order.scope('todayOrder').findAll(
-        {
-          include: [{ model: db.Dish, attributes: ['name'], as: 'sumOfDishes', through: { attributes: ['quantity'] } }]
-          , where: { state: state }
-        }).then(orders => {
+      return Order.scope('todayOrder').findAll({
+        include: [{ model: db.Dish, attributes: ['name'], as: 'sumOfDishes', through: { attributes: ['quantity'] } }],
+        where: { state: state }
+      }).then(orders => {
 
-          return res.json(orders)
-        })
+        return res.json(orders)
+      })
     } else {
       return res.json({ status: 'error', msg: '404' })
     }

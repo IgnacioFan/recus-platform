@@ -44,12 +44,12 @@ router.get('/', (req, res) => {
 router.get('/users', userController.getUsers)
 router.get('/users/:id', userController.getUser)
 router.get('/members', userController.getUsersPag)
-router.delete('/members/;id', userController.deleteUser)
+router.delete('/members/:id', userController.deleteUser)
 router.put('/members/admin/:id', userController.toggleAdmin)
 
 // 管理員點餐功能
 router.get('/searchUser', userController.searchUser)
-//router.get('/members/search', userController.Phone)
+router.get('/members/search', userController.searchPhone)
 
 router.get('/categories', authenticated, categoryController.getCategories)
 

@@ -12,6 +12,7 @@
     <div class="border border-dark p-0 alist">
       <DayOrderList
         :initial-orders="orders"
+        :state-button="stateButton"
         @after-delete-order="afterDeleteOrder"
         @after-order-state-switch="afterOrderStateSwitch"
       />
@@ -36,12 +37,13 @@ export default {
     return {
       title: "當日訂單",
       categories: [
-        { id: "pending", name: "尚未製作" },
+        { id: "pending", name: "未製作" },
         { id: "making", name: "製作中" },
-        { id: "unpaid", name: "尚未結帳" },
-        { id: "paid", name: "已結帳的訂單" }
+        { id: "unpaid", name: "未結帳" },
+        { id: "paid", name: "已結帳" }
       ],
-      orders: [],
+      orders: {},
+      stateButton: {},
       addDishes: {
         list: [],
         user: "",
@@ -63,6 +65,22 @@ export default {
           throw new Error(statusText);
         }
         this.orders = data;
+        if (state.state === "pending") {
+          this.stateButton.left = "";
+          this.stateButton.right = "製作中";
+        }
+        if (state.state === "making") {
+          this.stateButton.left = "未製作";
+          this.stateButton.right = "未結帳";
+        }
+        if (state.state === "unpaid") {
+          this.stateButton.left = "製作中";
+          this.stateButton.right = "已結帳";
+        }
+        if (state.state === "paid") {
+          this.stateButton.left = "未結帳";
+          this.stateButton.right = "";
+        }
       } catch (error) {
         this.$swal({
           type: "warning",
@@ -72,10 +90,26 @@ export default {
         console.log("error", error);
       }
     },
-    afterDeleteOrder(orderId) {
-      this.addDishes.list = this.addDishes.list.filter(
-        dish => dish.id !== orderId
-      );
+    async afterDeleteOrder(orderId) {
+      try {
+        const response = await ordersAPI.orders.delete(orderId);
+        const { data, statusText } = response;
+        if (statusText !== "OK" || data.status !== "success") {
+          throw new Error(statusText);
+        }
+        this.orders = this.orders.filter(order => order.id !== orderId);
+        this.$swal({
+          type: "success",
+          title: data.msg
+        });
+      } catch (error) {
+        this.$swal({
+          type: "warning",
+          title: "無法取得資料，請稍後再試"
+        });
+        // eslint-disable-next-line
+        console.log("error", error);
+      }
     },
     async afterOrderStateSwitch(stateData) {
       try {
@@ -88,8 +122,6 @@ export default {
         this.orders = this.orders.filter(
           order => order.id !== stateData.orderId
         );
-        // eslint-disable-next-line
-        console.log("this.orders", this.orders);
       } catch (error) {
         this.$swal({
           type: "warning",

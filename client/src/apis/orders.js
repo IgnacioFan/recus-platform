@@ -5,6 +5,10 @@ export default {
     get({ state }) {
       const searchParams = new URLSearchParams({ state })
       return apiHelper.get(`/orders?${searchParams.toString()}`)
+    },
+    delete(orderId) {
+      const searchParams = new URLSearchParams(orderId)
+      return apiHelper.delete(`/orders/${searchParams.toString()}`)
     }
   },
   state: {
