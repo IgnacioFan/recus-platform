@@ -37,7 +37,7 @@ const categoryController = {
       // 如果category是空值
       if (!category) return res.json({ status: 'error', msg: '查無資料' })
       category.destroy()
-      return res.json({ status: 'success', msg: `${category.name}刪除成功` })
+      return res.json({ status: 'success', msg: `成功移除${category.name}` })
     })
   }
 }

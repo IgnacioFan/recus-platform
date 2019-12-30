@@ -34,6 +34,7 @@ const userController = require('../../controllers/admin/userController')
 const dishController = require('../../controllers/admin/dishController')
 const orderController = require('../../controllers/admin/orderController')
 const categoryController = require('../../controllers/admin/categoryController')
+const tagController = require('../../controllers/admin/tagController')
 
 
 // test router
@@ -67,6 +68,13 @@ router.post('/dishes', authenticatedAdmin, dishController.addDish)
 router.put('/dishes/:id', authenticatedAdmin, dishController.updateDish)
 router.delete('/dishes/:id', authenticatedAdmin, dishController.deleteDish)
 
+// 分類相關API
+
+// 標籤相關API
+router.get('/tags', authenticatedAdmin, tagController.getTags)
+router.post('/tags', authenticatedAdmin, tagController.addTag)
+router.put('/tags/:id', authenticatedAdmin, tagController.updateTag)
+router.delete('/tags/:id', authenticatedAdmin, tagController.deleteTag)
 
 // 訂單相關API
 router.get('/orders', orderController.getOrders)
