@@ -9,7 +9,7 @@
     <router-link class="btn btn-primary col p-3" :to="{ name: 'memberseach'}">
       <p>會員管理</p>
     </router-link>
-    <router-link class="btn btn-primary col p-3" to="{}">
+    <router-link class="btn btn-primary col p-3" :to="{ name: 'manage'}">
       <p>菜單管理</p>
     </router-link>
   </div>
