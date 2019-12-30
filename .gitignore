@@ -3,7 +3,8 @@ temp/
 upload/
 
 
-server/config/config.json
+
+server/config/
 
 server/package.json
 server/test/sum.js
