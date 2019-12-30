@@ -1,12 +1,8 @@
 node_modules
 temp/
 upload/
+*config.json
 
-
-
-server/config/
-
-server/package.json
 server/test/sum.js
 server/test/test.js
 
