@@ -10,9 +10,9 @@ const bodyParser = require('body-parser')
 const flash = require('connect-flash')
 const session = require('express-session')
 const passport = require('./config/passport')
+const helpers = require('./_helpers')
 
 const app = new express()
-
 
 
 // use middleware
@@ -26,7 +26,7 @@ app.use(passport.session())
 app.use((req, res, next) => {
   res.locals.success_messages = req.flash('success_messages')
   res.locals.error_messages = req.flash('error_messages')
-  res.locals.user = req.user
+  res.locals.user = helpers.getUser(req)
   next()
 })
 
@@ -35,3 +35,5 @@ app.use((req, res, next) => {
 app.use('/api/', routes)
 
 app.listen(port, () => console.log(`server is listening to port ${port}`))
+
+module.exports = app
