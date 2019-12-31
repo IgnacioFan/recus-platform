@@ -77,7 +77,7 @@ export default {
     },
     async toggleIsAdmin(userId) {
       try {
-        const { data, statusText } = await usersAPI.deleteUser({
+        const { data, statusText } = await usersAPI.toggleAdmin({
           userId
         });
 

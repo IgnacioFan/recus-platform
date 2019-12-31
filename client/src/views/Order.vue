@@ -1,6 +1,6 @@
 <template>
   <div>
-    <NavbarTop />
+    <NavbarTop :initial-title="title" />
     <div class="row" style="height:100%;">
       <div class="col-8 border border-dark p-0" style="height:calc(100vh - 107px);">
         <div class>
@@ -42,6 +42,7 @@ export default {
   },
   data() {
     return {
+      title: "店內點餐",
       dishes: [],
       addDishes: {
         list: [],
