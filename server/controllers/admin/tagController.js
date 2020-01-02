@@ -9,6 +9,12 @@ const tagController = {
     })
   },
 
+  getTag: (req, res) => {
+    Tag.findByPk(req.params.id).then(tag => {
+      return res.json(tag)
+    })
+  },
+
   addTag: (req, res) => {
     if (!req.body.name) return res.json({ status: 'error', msg: '請輸入標籤名稱' })
     Tag.findOne({ where: { name: req.body.name } }).then(tag => {

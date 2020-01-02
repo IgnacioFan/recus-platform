@@ -1,35 +1,35 @@
-// JWT
 const passport = require('passport')
-const db = require('../models')
-const User = db.User
-const jwt = require('jsonwebtoken')
 const passportJWT = require('passport-jwt')
 const ExtractJwt = passportJWT.ExtractJwt
 const JwtStrategy = passportJWT.Strategy
-require('dotenv').config()
 
-let jwtOptions = {}
+const db = require('../models')
+const User = db.User
+
+const jwtOptions = {}
 jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken()
-jwtOptions.secretOrKey = process.env.JWT_SECRET || "alphacamp"
+jwtOptions.secretOrKey = process.env.JWT_SECRET || 'alphacamp'
 
-let strategy = new JwtStrategy(jwtOptions, function(jwt_payload, next) {
-  User.findByPk(jwt_payload.id)
-    .then(user => {
-      if (!user) return next(null, false)
-      return next(null, user)
-    })
-})
-passport.use(strategy)
+passport.use(new JwtStrategy(jwtOptions, async (jwt_payload, done) => {
+  try {
+    const user = await User.findByPk(jwt_payload.id)
+    console.log('hi', user)
+    if (!user) return done(null, false)
+    return done(null, user)
+  } catch (err) {
+    done(err, false)
+  }
+}))
 
-// serialize and deserialize user
-passport.serializeUser((user, cb) => {
-  cb(null, user.id)
-})
-passport.deserializeUser((id, cb) => {
-  User.findByPk(id)
-    .then(user => {
-      return cb(null, user)
-    })
-})
+// // serialize and deserialize user
+// passport.serializeUser((user, cb) => {
+//   cb(null, user.id)
+// })
+// passport.deserializeUser((id, cb) => {
+//   User.findByPk(id)
+//     .then(user => {
+//       return cb(null, user)
+//     })
+// })
 
 module.exports = passport

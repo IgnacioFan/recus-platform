@@ -1,15 +1,64 @@
+const bcrypt = require('bcryptjs')
 const db = require('../../models')
 const User = db.User
 const Order = db.Order
-const bcrypt = require('bcryptjs')
 const Op = require('sequelize').Op
-  // JWT
+
+// Json Web Token
 const jwt = require('jsonwebtoken')
 const passportJWT = require('passport-jwt')
+// 
 const ExtractJwt = passportJWT.ExtractJwt
 const JwtStrategy = passportJWT.Strategy
 
 const userController = {
+
+  // 登入
+  signIn: (req, res) => {
+    if (!req.body.account || !req.body.password) {
+      return res.status(401).json({ status: 'error', msg: "必須輸入帳號/密碼" })
+    }
+    // 檢查 user 是否存在與密碼是否正確
+    let username = req.body.account
+    let password = req.body.password
+
+    // advanced: check format
+    // if input format is account, then check account, if input format is phone, then check phone
+    // =======
+
+    User.findOne({
+      where: {
+        [Op.or]: [
+          { account: username },
+          { phone: username }
+        ]
+      }
+    }).then(user => {
+      if (!user) return res.status(401).json({ status: 'error', msg: '該使用者不存在' })
+      if (!bcrypt.compareSync(password, user.password)) {
+        // status 401 no permission
+        return res.status(401).json({ status: 'error', msg: '密碼不合' })
+      }
+      // 簽發 token
+      var payload = { id: user.id }
+      var token = jwt.sign(payload, process.env.JWT_SECRET)
+      return res.json({
+        status: 'success',
+        message: 'ok',
+        token: token,
+        user: {
+          id: user.id,
+          account: user.account,
+          phone: user.phone,
+          name: user.name,
+          email: user.email,
+          isAdmin: user.isAdmin
+        }
+      })
+    })
+  },
+
+
   getUsers: (req, res) => {
     return User.findAll().then(users => {
       //console.log(users)
@@ -124,44 +173,6 @@ const userController = {
     }
   },
 
-  signIn: (req, res) => {
-    if (!req.body.account || !req.body.password) {
-      return res.status(401).json({ status: 'error', msg: "required fields didn't exist" })
-    }
-    // 檢查 user 是否存在與密碼是否正確
-    let username = req.body.account
-    let password = req.body.password
-
-    User.findOne({
-      where: {
-        [Op.or]: [
-          { account: username },
-          { phone: username }
-        ]
-      }
-    }).then(user => {
-      if (!user) return res.status(401).json({ status: 'error', msg: 'no such user found' })
-      if (!bcrypt.compareSync(password, user.password)) {
-        return res.status(401).json({ status: 'error', msg: 'passwords did not match' })
-      }
-      // 簽發 token
-      var payload = { id: user.id }
-      var token = jwt.sign(payload, process.env.JWT_SECRET || "alphacamp")
-      return res.json({
-        status: 'success',
-        message: 'ok',
-        token: token,
-        user: {
-          id: user.id,
-          account: user.account,
-          phone: user.phone,
-          name: user.name,
-          email: user.email,
-          isAdmin: user.isAdmin
-        }
-      })
-    })
-  }
 }
 
 module.exports = userController

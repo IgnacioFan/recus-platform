@@ -20,7 +20,7 @@ describe('菜單管理/菜單', () => {
       ).returns(true)
       this.getUser = sinon.stub(
         helpers, 'getUser'
-      ).returns({ isAdmin: true })
+      ).returns({ id: 1, isAdmin: true })
       //await db.User.create({})
       await db.Category.destroy({ where: {}, truncate: true })
       await db.Dish.destroy({ where: {}, truncate: true })

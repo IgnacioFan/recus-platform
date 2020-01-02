@@ -7,7 +7,7 @@ const routes = require('./routes/api/index')
 const port = process.env.PORT || 3000
 const cors = require('cors')
 const bodyParser = require('body-parser')
-const flash = require('connect-flash')
+//const flash = require('connect-flash')
 const session = require('express-session')
 const passport = require('./config/passport')
 const helpers = require('./_helpers')
@@ -18,21 +18,21 @@ const swaggerUi = require('swagger-ui-express')
 
 const app = new express()
 
-
 // use middleware
 app.use(cors())
+// parser json
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
-app.use(session({ secret: 'secret', resave: false, saveUninitialized: false }))
-app.use(flash())
-app.use(passport.initialize())
-app.use(passport.session())
-app.use((req, res, next) => {
-  res.locals.success_messages = req.flash('success_messages')
-  res.locals.error_messages = req.flash('error_messages')
-  res.locals.user = helpers.getUser(req)
-  next()
-})
+//app.use(session({ secret: 'secret', resave: false, saveUninitialized: false }))
+// app.use(flash())
+//app.use(passport.initialize())
+//app.use(passport.session())
+// app.use((req, res, next) => {
+//   res.locals.success_messages = req.flash('success_messages')
+//   res.locals.error_messages = req.flash('error_messages')
+//   res.locals.user = req.user
+//   next()
+// })
 
 
 // use router
