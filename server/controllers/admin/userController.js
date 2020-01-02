@@ -62,7 +62,21 @@ const userController = {
   getUsers: (req, res) => {
     return User.findAll().then(users => {
       //console.log(users)
-      return res.json(users)
+      return res.json({ users: users })
+    })
+  },
+
+  getUser: (req, res) => {
+    if (Number(req.params.id) <= 0) {
+      return res.json({ status: 'error', msg: 'user id is undefined' })
+    }
+    // 取出單一會員，且排除管理者
+    User.scope('excludedAdmin').findByPk(req.params.id).then(user => {
+      if (user == null) {
+        return res.json({ status: 'error', msg: 'no such user!' })
+      }
+      //console.log('user', user)
+      return res.json({ user: user })
     })
   },
 
@@ -81,20 +95,6 @@ const userController = {
         currentPage: page,
         totalPage: totalPage
       })
-    })
-  },
-
-  getUser: (req, res) => {
-    if (Number(req.params.id) <= 0) {
-      return res.json({ status: 'error', msg: '查無資料!' })
-    }
-    // 取出單一會員，且排除管理者
-    User.scope('excludedAdmin').findByPk(req.params.id).then(user => {
-      if (user == null) {
-        return res.json({ status: 'error', msg: '查無資料!' })
-      }
-      //console.log('user', user)
-      return res.json(user)
     })
   },
 

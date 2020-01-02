@@ -36,9 +36,9 @@ const getUser = (req, res, next) => {
 }
 
 const authenticatedAdmin = (req, res, next) => {
-  if (!req.user) return res.json({ status: 'error', message: 'permission denied for users' })
+  if (!req.user) return res.status(401).json({ status: 'error', msg: 'permission denied for users' })
   if (req.user.isAdmin !== true)
-    return res.status(401).json({ status: 'error', message: 'admin permission denied' })
+    return res.status(401).json({ status: 'error', msg: 'admin permission denied' })
   return next()
 }
 
@@ -52,34 +52,19 @@ router.get('/', authenticated, (req, res) => {
 router.post('/signup', userController.signUp)
 router.post('/signin', userController.signIn)
 
-
-router.get('/users', userController.getUsers)
-router.get('/users/:id', userController.getUser)
+// 使用者相關API
+router.get('/users', authenticated, getUser, authenticatedAdmin, userController.getUsers)
+router.get('/users/:id', authenticated, getUser, authenticatedAdmin, userController.getUser)
 router.get('/members', userController.getUsersPag)
 router.delete('/members/:id', userController.deleteUser)
 router.put('/members/admin/:id', userController.toggleAdmin)
-
-// 管理員點餐功能
-router.get('/searchUser', userController.searchUser)
 router.get('/members/search', userController.searchPhone)
-
-
-router.get('/categories', authenticated, categoryController.getCategories)
-
-router.post('/orders', orderController.postOrders)
-
-// 管理員訂單功能
-//router.get('/orders')
-router.get('/categories/:id', categoryController.getCategory)
-
 
 // 菜單相關API
 router.get('/dishes', authenticated, getUser, authenticatedAdmin, dishController.getDishWithCategory)
 router.post('/dishes', authenticated, getUser, authenticatedAdmin, dishController.addDish)
 router.put('/dishes/:id', authenticated, getUser, authenticatedAdmin, dishController.updateDish)
 router.delete('/dishes/:id', authenticated, getUser, authenticatedAdmin, dishController.deleteDish)
-
-// 分類相關API
 
 // 標籤相關API
 router.get('/tags', authenticated, getUser, authenticatedAdmin, tagController.getTags)
@@ -93,11 +78,14 @@ router.get('/orders', orderController.getOrders)
 router.get('/orders/pendingNums', orderController.getPendingNums)
 router.get('/orders/unpaidNums', orderController.getUnpaidNums)
 router.get('/orders/:id', orderController.getOrder)
+router.post('/orders', orderController.postOrders)
 router.put('/orders/:id/prevState', orderController.prevStateOrder)
 router.put('/orders/:id/nextState', orderController.nextStateOrder)
 router.delete('/orders/:id', orderController.removeOrder)
 
-// 
+// 分類相關API
+router.get('/categories', categoryController.getCategories)
+router.get('/categories/:id', categoryController.getCategory)
 router.post('/categories', categoryController.addCategory)
 router.put('/categories/:id', categoryController.updateCategory)
 router.delete('/categories/:id', categoryController.removeCategory)

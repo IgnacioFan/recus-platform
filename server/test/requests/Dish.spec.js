@@ -59,13 +59,14 @@ describe('# Admin::Dish Request', () => {
           //option: { 'sugar': ["no", "30%", "half", "70%", "full"] }
         })
         .expect(200)
-        .expect({ status: 'success', msg: 'successfully add a new dish' })
         .end(async (err, res) => {
+          if (err) return done(err)
           const dish = await db.Dish.findByPk(4, { include: [{ model: db.Tag, as: 'hasTags' }] })
           //console.log(dish.hasTags)
           expect(dish.name).to.be.equal('紅茶')
           expect(dish.price).to.be.equal(40)
           expect(dish.hasTags.length).to.be.equal(3)
+          expect({ status: 'success', msg: 'successfully add a new dish', dish: dish })
           //expect(dish.option.sugar).to.have.property('sugar')
           return done()
         })
@@ -85,6 +86,7 @@ describe('# Admin::Dish Request', () => {
         .send({ name: '阿里山紅茶', price: 60, CategoryId: 1, removeTags: [] })
         .expect(200)
         .end(async (err, res) => {
+          if (err) return done(err)
           const dish = await db.Dish.findByPk(4)
           expect(dish.name).to.be.not.equal('紅茶');
           expect(dish.name).to.be.equal('阿里山紅茶')
@@ -98,6 +100,7 @@ describe('# Admin::Dish Request', () => {
         .delete('/api/dishes/4')
         .expect(200)
         .end(async (err, res) => {
+          if (err) return done(err)
           const dish = await db.Dish.findByPk(4)
           expect(dish).to.be.null
           return done()

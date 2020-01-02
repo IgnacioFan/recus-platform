@@ -10,7 +10,7 @@ var should = chai.should();
 var expect = chai.expect;
 const db = require('../../models')
 
-describe('# Admin::Dish Management', () => {
+describe('# Admin::Dish Request', () => {
   context('go to Dish-Management feature', () => {
 
     before(async () => {
