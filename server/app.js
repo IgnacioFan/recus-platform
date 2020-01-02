@@ -7,10 +7,9 @@ const routes = require('./routes/api/index')
 const port = process.env.PORT || 3000
 const cors = require('cors')
 const bodyParser = require('body-parser')
-//const flash = require('connect-flash')
-const session = require('express-session')
-const passport = require('./config/passport')
-const helpers = require('./_helpers')
+
+// const passport = require('./config/passport')
+// const helpers = require('./_helpers')
 // 引入swagger
 const swaggerJsDoc = require('swagger-jsdoc')
 const swaggerUi = require('swagger-ui-express')
