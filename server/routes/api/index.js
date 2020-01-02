@@ -74,7 +74,7 @@ router.get('/categories/:id', categoryController.getCategory)
 
 
 // 菜單相關API
-router.get('/dishes', authenticated, getUser, authenticatedAdmin, dishController.getDish)
+router.get('/dishes', authenticated, getUser, authenticatedAdmin, dishController.getDishWithCategory)
 router.post('/dishes', authenticated, getUser, authenticatedAdmin, dishController.addDish)
 router.put('/dishes/:id', authenticated, getUser, authenticatedAdmin, dishController.updateDish)
 router.delete('/dishes/:id', authenticated, getUser, authenticatedAdmin, dishController.deleteDish)

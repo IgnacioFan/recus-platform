@@ -10,9 +10,8 @@ var should = chai.should();
 var expect = chai.expect;
 const db = require('../../models')
 
-
-describe('菜單管理/菜單', () => {
-  context('# dishes', () => {
+describe('# Admin::Dish Request', () => {
+  context('go to Dish-Management feature', () => {
 
     before(async () => {
       this.ensureAuthenticated = sinon.stub(
@@ -28,127 +27,101 @@ describe('菜單管理/菜單', () => {
       await db.DishAttachment.destroy({ where: {}, truncate: true })
       await db.Category.create({ name: 'new' })
       await db.Category.create({ name: 'coffee' })
+      await db.Dish.create({ name: 'mocha', price: 60, CategoryId: 1 })
       await db.Dish.create({ name: 'americana', price: 50, CategoryId: 2 })
       await db.Dish.create({ name: 'latei', price: 60, CategoryId: 2 })
-      await db.Dish.create({ name: 'mocha', price: 60, CategoryId: 1 })
       await ["濃韻", "熟茶", "日月潭"].forEach(item => {
         db.Tag.create({ name: item })
       })
     })
 
-    describe('get: api/dishes', () => {
-
-      it('get dishes dividing by different categories', (done) => {
-        request(app)
-          .get('/api/dishes?categoryId=2')
-          .set('Accept', 'application/json')
-          .expect(200)
-          .end(function (err, res) {
-            if (err) return done(err);
-            res.text.should.include('americana')
-            res.text.should.include('latei')
-            return done();
-          });
-      })
-
+    it('should get a certain category with its dishes', (done) => {
+      request(app)
+        .get('/api/dishes?categoryId=2')
+        .set('Accept', 'application/json')
+        .end(function (err, res) {
+          if (err) return done(err);
+          res.status.should.be.eql(200)
+          res.text.should.include('americana')
+          res.text.should.include('latei')
+          return done();
+        });
     })
 
-    describe('post: api/dishes', () => {
-
-      it('add a new dish, including category', (done) => {
-        request(app)
-          .post('/api/dishes')
-          .send({ name: '紅茶', price: 40, CategoryId: 1, tags: [1, 2, 3] })
-          .set('Accept', 'application/json')
-          .expect('Content-type', /json/)
-          .expect(200)
-          .end(function (err, res) {
-            if (err) return done(err)
-            //console.log(res.body)
-            db.Dish.findByPk(4).then(dish => {
-              dish.name.should.equal('紅茶');
-              return done();
-            })
-          })
-      })
-
-      it('there are 3 tag in Dish 4', (done) => {
-        db.Dish.findByPk(4, { include: [{ model: db.Tag, as: 'hasTags' }] }).then(dish => {
-          //console.log(dish)
+    it('should post a new dish, including category', (done) => {
+      request(app)
+        .post('/api/dishes')
+        .send({
+          name: '紅茶',
+          price: 40,
+          CategoryId: 1,
+          tags: [1, 2, 3],
+          //option: { 'sugar': ["no", "30%", "half", "70%", "full"] }
+        })
+        .expect(200)
+        .expect({ status: 'success', msg: 'successfully add a new dish' })
+        .end(async (err, res) => {
+          const dish = await db.Dish.findByPk(4, { include: [{ model: db.Tag, as: 'hasTags' }] })
+          //console.log(dish.hasTags)
           expect(dish.name).to.be.equal('紅茶')
+          expect(dish.price).to.be.equal(40)
           expect(dish.hasTags.length).to.be.equal(3)
-          done()
+          //expect(dish.option.sugar).to.have.property('sugar')
+          return done()
         })
-      })
-
     })
 
-    describe('put: api/dishes/:id', () => {
+    it('should not post a new dish', (done) => {
+      request(app)
+        .post('/api/dishes')
+        .expect(200)
+        .expect({ status: 'error', msg: 'dish name and price cannot be blank' }, done)
+    })
 
-      it('update dish name', (done) => {
-        request(app)
-          .put('/api/dishes/4')
-          .send({ name: '阿里山紅茶', price: 60, CategoryId: 1, removeTags: [1, 2] })
-          .set('Accept', 'application/json')
-          .expect('Content-type', /json/)
-          .expect(200)
-          .end(function (err, res) {
-            if (err) return done(err)
-            //console.log(res.body)
-            db.Dish.findByPk(4).then(dish => {
-              dish.name.should.not.equal('紅茶');
-              //dish.hasTags.length.should.equal(1);
-              return done();
-            })
-          })
-      })
 
-      it('there is 1 tag in Dish 4', (done) => {
-        db.Dish.findByPk(4, { include: [{ model: db.Tag, as: 'hasTags' }] }).then(dish => {
-          //console.log(dish)
-          expect(dish.price).to.be.equal(60)
-          expect(dish.hasTags.length).to.be.equal(1)
-          done()
+    it('should update specific dish', (done) => {
+      request(app)
+        .put('/api/dishes/4')
+        .send({ name: '阿里山紅茶', price: 60, CategoryId: 1, removeTags: [] })
+        .expect(200)
+        .end(async (err, res) => {
+          const dish = await db.Dish.findByPk(4)
+          expect(dish.name).to.be.not.equal('紅茶');
+          expect(dish.name).to.be.equal('阿里山紅茶')
+          return done();
+
         })
-      })
-
     })
 
-    describe('delete: api/dishes/:id', () => {
+    it('should delete Dish 4', (done) => {
+      request(app)
+        .delete('/api/dishes/4')
+        .expect(200)
+        .end(async (err, res) => {
+          const dish = await db.Dish.findByPk(4)
+          expect(dish).to.be.null
+          return done()
 
-      it('Dish 4 has deleteted', (done) => {
-        request(app)
-          .delete('/api/dishes/4')
-          .set('Accept', 'application/json')
-          .expect('Content-type', /json/)
-          .expect(200)
-          .end(function (err, res) {
-            if (err) return done(err);
-            db.Dish.findByPk(4).then(dish => {
-              expect(dish).to.be.null
-              done()
-            })
-          });
-      })
-
-      it('there is no tags with DishId 4', (done) => {
-        db.DishAttachment.findAll({ where: { DishId: 4 } }).then(tags => {
-          expect(tags.length).to.be.equal(0)
-          done()
         })
+    })
+
+    it('there is no tags with DishId 4', (done) => {
+      db.DishAttachment.findAll({ where: { DishId: 4 } }).then(tags => {
+        expect(tags.length).to.be.equal(0)
+        done()
       })
-
     })
 
-    after(async () => {
+  })
 
-      this.ensureAuthenticated.restore();
-      this.getUser.restore();
-      //await db.User.destroy({ where: {}, truncate: true })
-      await db.Category.destroy({ where: {}, truncate: true })
-      await db.Dish.destroy({ where: {}, truncate: true })
-      await db.Tag.destroy({ where: {}, truncate: true })
-      await db.DishAttachment.destroy({ where: {}, truncate: true })
-    })
+  after(async () => {
+
+    this.ensureAuthenticated.restore();
+    this.getUser.restore();
+    //await db.User.destroy({ where: {}, truncate: true })
+    await db.Category.destroy({ where: {}, truncate: true })
+    await db.Dish.destroy({ where: {}, truncate: true })
+    await db.Tag.destroy({ where: {}, truncate: true })
+    await db.DishAttachment.destroy({ where: {}, truncate: true })
   })
 })

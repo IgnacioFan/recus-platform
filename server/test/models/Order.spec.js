@@ -40,7 +40,7 @@ describe('# Order Model', function () {
     })
 
     it('read the Order', (done) => {
-      db.Order.scope('todayOrder').findOne().then(function (order) {
+      db.Order.findOne().then(function (order) {
         //console.log(order)
         expect(data.id).to.be.equal(order.id)
         //expect(data.createdAt).to.be.match(order.createdAt)
@@ -49,8 +49,8 @@ describe('# Order Model', function () {
     })
 
     it('update the amount and quantity', (done) => {
-      db.Order.update({ amount: 120, quantity: 3, createdAt: new Date().setMinutes(8) }, { where: { id: data.id } }).then(() => {
-        db.Order.scope('todayOrder').findOne().then((order) => {
+      db.Order.update({ amount: 120, quantity: 3 }, { where: { id: data.id } }).then(() => {
+        db.Order.findOne().then((order) => {
           //console.log(order)
           expect(data.amount).to.be.not.equal(order.amount)
           expect(data.quantity).to.be.not.equal(order.quantity)

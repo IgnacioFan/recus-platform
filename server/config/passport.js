@@ -21,15 +21,4 @@ passport.use(new JwtStrategy(jwtOptions, async (jwt_payload, done) => {
   }
 }))
 
-// // serialize and deserialize user
-// passport.serializeUser((user, cb) => {
-//   cb(null, user.id)
-// })
-// passport.deserializeUser((id, cb) => {
-//   User.findByPk(id)
-//     .then(user => {
-//       return cb(null, user)
-//     })
-// })
-
 module.exports = passport
