@@ -4,7 +4,7 @@
       <li v-for="category in categories" :key="category.id" class="nav-item">
         <router-link
           class="nav-link"
-          :to="{ name: 'manage', query: { categoryId: category.id } }"
+          :to="{ name: 'manage-dishes', query: { categoryId: category.id } }"
         >{{ category.name }}</router-link>
       </li>
     </ul>

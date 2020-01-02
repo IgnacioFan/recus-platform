@@ -33,5 +33,9 @@ table tr th {
     padding-bottom: 0;
 }
 
+::-webkit-scrollbar {
+    display: none;
+}
+
 
 /* =================================================== */
