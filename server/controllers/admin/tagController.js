@@ -29,9 +29,10 @@ const tagController = {
     Tag.findByPk(req.params.id).then(tag => {
       if (tag.name === req.body.name) {
         return res.json({ status: 'error', msg: '標籤名稱相同' })
+      } else {
+        tag.update({ name: req.body.name })
+        return res.json(tag)
       }
-      tag.update({ name: req.body.name })
-      return res.json(tag)
     })
   },
 

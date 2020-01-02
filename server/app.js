@@ -11,6 +11,10 @@ const flash = require('connect-flash')
 const session = require('express-session')
 const passport = require('./config/passport')
 const helpers = require('./_helpers')
+// 引入swagger
+const swaggerJsDoc = require('swagger-jsdoc')
+const swaggerUi = require('swagger-ui-express')
+
 
 const app = new express()
 
