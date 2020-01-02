@@ -9,13 +9,13 @@
         <form class="my-2">
           <div class="form-row">
             <div class="col-auto">
-              <input type="text" v-model="newCategoryName" class="form-control" placeholder="新增分類" />
+              <input type="text" v-model="newTagName" class="form-control" placeholder="新增標籤" />
             </div>
             <div class="col-auto">
               <button
                 type="button"
                 class="btn btn-primary"
-                @click.stop.prevent="createCategory"
+                @click.stop.prevent="createTag"
                 :disabled="isProcessing"
               >新增</button>
             </div>
@@ -29,15 +29,16 @@
         :initial-category="leftTableCategory"
         @after-editing-category="toggleIsEditing"
         @after-cancel-edit-category="handleCancel"
-        @after-update-category="updateCategory"
-        @after-delete-category="deleteCategory"
+        @after-update-category="updateTag"
+        @after-delete-category="deleteTag"
       />
+
       <CategoryTable
         :initial-category="rightTableCategory"
         @after-editing-category="toggleIsEditing"
         @after-cancel-edit-category="handleCancel"
-        @after-update-category="updateCategory"
-        @after-delete-category="deleteCategory"
+        @after-update-category="updateTag"
+        @after-delete-category="deleteTag"
       />
     </div>
 
@@ -62,47 +63,47 @@ export default {
   data() {
     return {
       title: "菜單管理",
-      newCategoryName: "",
-      categories: [],
+      newTagName: "",
+      tags: [],
       isProcessing: false
     };
   },
   computed: {
     leftTableCategory: function() {
-      let categoriesLength = this.categories.length - 1;
+      let tagsLength = this.tags.length - 1;
       let box = [];
-      for (let i = 0; i <= categoriesLength; i++) {
+      for (let i = 0; i <= tagsLength; i++) {
         if (i === 0 || i % 2 === 0) {
-          box.push(this.categories[i]);
+          box.push(this.tags[i]);
         }
       }
       return box;
     },
     rightTableCategory: function() {
-      let categoriesLength = this.categories.length - 1;
+      let tagsLength = this.tags.length - 1;
       let box = [];
-      for (let i = 0; i <= categoriesLength; i++) {
+      for (let i = 0; i <= tagsLength; i++) {
         if (i % 2 !== 0) {
-          box.push(this.categories[i]);
+          box.push(this.tags[i]);
         }
       }
       return box;
     }
   },
   created() {
-    this.fetchcategories();
+    this.fetchTags();
   },
   methods: {
-    async fetchcategories() {
+    async fetchTags() {
       try {
-        const response = await manageAPI.category.get();
+        const response = await manageAPI.tag.get();
         const { data, statusText } = response;
         if (statusText !== "OK") {
           throw new Error(statusText);
         }
 
-        this.categories = data.map(category => ({
-          ...category,
+        this.tags = data.map(tag => ({
+          ...tag,
           isEditing: false
         }));
       } catch (error) {
@@ -110,32 +111,32 @@ export default {
         console.log("error", error);
       }
     },
-    async createCategory() {
+    async createTag() {
       try {
         this.processing = true;
-        if (this.newCategoryName.trim() === "") {
+        if (this.newTagName.trim() === "") {
           this.$swal({
             type: "warning",
             title: "名稱不可空白"
           });
           return;
         }
-        const { data, statusText } = await manageAPI.category.post({
-          name: this.newCategoryName
+        const { data, statusText } = await manageAPI.tag.post({
+          name: this.newTagName
         });
 
         if (statusText !== "OK") {
           throw new Error(statusText);
         }
 
-        this.categories.push({
-          ...data.category,
+        this.tags.push({
+          ...data.tag,
           isEditing: false
         });
 
-        this.newCategoryName = "";
+        this.newTagName = "";
         this.isProcessing = false;
-        this.fetchcategories();
+        this.fetchTags();
 
         this.$swal({
           toast: true,
@@ -160,35 +161,35 @@ export default {
         console.log("error", error);
       }
     },
-    toggleIsEditing(categoryId) {
-      this.categories = this.categories.map(category => {
-        if (category.id !== categoryId) return category;
-        // 如果迴圈中的 category.id 是欲修改的 categoryId 則改變 isEditing 的值
+    toggleIsEditing(TagId) {
+      this.tags = this.tags.map(tag => {
+        if (tag.id !== TagId) return tag;
+        // 如果迴圈中的 tag.id 是欲修改的 tagId 則改變 isEditing 的值
         return {
-          ...category,
-          nameCached: category.name,
-          isEditing: !category.isEditing
+          ...tag,
+          nameCached: tag.name,
+          isEditing: !tag.isEditing
         };
       });
     },
-    handleCancel(categoryId) {
-      this.categories = this.categories.map(category => {
-        if (category.id !== categoryId) {
-          return category;
+    handleCancel(TagId) {
+      this.tags = this.tags.map(tag => {
+        if (tag.id !== TagId) {
+          return tag;
         }
 
         // 將原本的類別名稱還回去
         return {
-          ...category,
-          name: category.nameCached
+          ...tag,
+          name: tag.nameCached
         };
       });
-      this.toggleIsEditing(categoryId);
+      this.toggleIsEditing(TagId);
     },
-    async updateCategory({ categoryId, name }) {
+    async updateTag({ categoryId, name }) {
       try {
         // eslint-disable-next-line
-        const { data, statusText } = await manageAPI.category.put({
+        const { data, statusText } = await manageAPI.tag.put({
           categoryId,
           name
         });
@@ -211,20 +212,16 @@ export default {
         console.log("error", error);
       }
     },
-    async deleteCategory(categoryId) {
+    async deleteTag(TagId) {
       try {
         // eslint-disable-next-line
-        const { data, statusText } = await manageAPI.category.delete(
-          categoryId
-        );
+        const { data, statusText } = await manageAPI.tag.delete(TagId);
 
         if (statusText !== "OK") {
           throw new Error(statusText);
         }
 
-        this.categories = this.categories.filter(
-          category => category.id !== categoryId
-        );
+        this.tags = this.tags.filter(tag => tag.id !== TagId);
 
         this.$swal({
           toast: true,
