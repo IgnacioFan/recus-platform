@@ -7,11 +7,36 @@ const Op = require('sequelize').Op
 // Json Web Token
 const jwt = require('jsonwebtoken')
 const passportJWT = require('passport-jwt')
-// 
+  // 
 const ExtractJwt = passportJWT.ExtractJwt
 const JwtStrategy = passportJWT.Strategy
 
 const userController = {
+
+  // getCurrentUser
+  getCurrentUser: (req, res) => {
+
+    let TokenArray = req.headers.authorization.split(" ");
+    let authorization = TokenArray[1]
+
+    jwt.verify(authorization, process.env.JWT_SECRET, (err, authorizedData) => {
+
+      User.findOne({
+        where: {
+          id: authorizedData.id
+        }
+      }).then(user => {
+        return res.json({
+          id: user.id,
+          account: user.account,
+          phone: user.phone,
+          name: user.name,
+          email: user.email,
+          isAdmin: user.isAdmin
+        })
+      })
+    })
+  },
 
   // 登入
   signIn: (req, res) => {

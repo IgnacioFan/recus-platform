@@ -8,9 +8,11 @@ export default new Vuex.Store({
   state: {
     currentUser: {
       id: -1,
+      account: "",
+      phone: "",
+      image: '',
       name: '',
       email: '',
-      image: '',
       isAdmin: false
     },
     isAuthenticated: false,
@@ -18,6 +20,7 @@ export default new Vuex.Store({
   },
   mutations: {
     setCurrentUser(state, currentUser) {
+
       state.currentUser = {
           ...state.currentUser,
           // 將 API 取得的 currentUser 覆蓋掉 Vuex state 中的 currentUser
@@ -37,6 +40,7 @@ export default new Vuex.Store({
     }
   },
   actions: {
+
     async fetchCurrentUser({ commit }) {
       try {
         const { data, statusText } = await usersAPI.getCurrentUser()
@@ -47,9 +51,11 @@ export default new Vuex.Store({
 
         commit('setCurrentUser', {
           id: data.id,
+          account: data.account,
+          phone: data.phone,
+          image: data.image,
           name: data.name,
           email: data.email,
-          image: data.image,
           isAdmin: data.isAdmin
         })
         return true

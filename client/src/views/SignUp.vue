@@ -143,7 +143,7 @@ export default {
       });
 
       // TODO: 向後端驗證使用者登入資訊是否合法
-      console.log("data", data);
+      console.log("date", data);
     }
   }
 };
