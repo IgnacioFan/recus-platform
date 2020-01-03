@@ -32,7 +32,7 @@ const dishController = {
     if (Number(req.body.price) < 0)
       return res.json({ status: 'error', msg: 'price can not be negative' })
 
-    if (req.body.option && typeof (req.body.option) !== 'array')
+    if (req.body.option && typeof(req.body.option) !== 'array')
       return res.json({ status: 'error', msg: 'option is wrong format' })
 
     let dishObj = {
@@ -48,7 +48,7 @@ const dishController = {
       //console.log(dish)
       if (req.body.tags) {
         req.body.tags.forEach(tag => {
-          DishAttachment.create({ TagId: tag, DishId: dish.id })
+          DishAttachment.create({ TagId: tag.id, DishId: dish.id })
         })
       }
       return res.json({ status: 'success', msg: 'successfully add a new dish', dish: dish })
@@ -90,7 +90,7 @@ const dishController = {
           tag.destroy()
         })
         dish.destroy()
-        //console.log(`成功刪除${dish.name}！`)
+          //console.log(`成功刪除${dish.name}！`)
         return res.json({ status: 'success', msg: `成功刪除${dish.name}！` })
       })
     }).catch(err => {
