@@ -69,6 +69,7 @@ router.delete('/dishes/:id', authenticated, getUser, authenticatedAdmin, dishCon
 
 // 標籤相關API
 router.get('/tags', authenticated, getUser, authenticatedAdmin, tagController.getTags)
+router.get('/tag', tagController.searchTag)
 router.get('/tags/:id', authenticated, getUser, authenticatedAdmin, tagController.getTag)
 router.post('/tags', authenticated, getUser, authenticatedAdmin, tagController.addTag)
 router.put('/tags/:id', authenticated, getUser, authenticatedAdmin, tagController.updateTag)
