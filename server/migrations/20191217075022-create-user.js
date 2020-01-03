@@ -22,21 +22,9 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
-      name: {
+      role: {
         type: Sequelize.STRING,
-        default: ''
-      },
-      email: {
-        type: Sequelize.STRING,
-        default: ''
-      },
-      image: {
-        type: Sequelize.STRING,
-        default: ''
-      },
-      isAdmin: {
-        type: Sequelize.BOOLEAN,
-        default: false
+        defaultValue: 'member'
       },
       isValid: {
         type: Sequelize.BOOLEAN,
