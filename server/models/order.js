@@ -9,8 +9,7 @@ module.exports = (sequelize, DataTypes) => {
     memo: DataTypes.STRING,
     isTakingAway: DataTypes.BOOLEAN,
     tableNum: DataTypes.INTEGER,
-    UserId: DataTypes.INTEGER,
-    //deletedAt: DataTypes.Date
+    UserId: DataTypes.INTEGER
   }, {
       defaultScope: {
         //where: { deleted_at: null }
@@ -25,8 +24,9 @@ module.exports = (sequelize, DataTypes) => {
             }
           }
         }
-
-      }
+      },
+      deletedAt: 'destroyTime',
+      paranoid: true
     });
   Order.associate = function (models) {
     Order.belongsTo(models.User)

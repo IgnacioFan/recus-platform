@@ -4,20 +4,26 @@ module.exports = (sequelize, DataTypes) => {
     account: DataTypes.STRING,
     phone: DataTypes.STRING,
     password: DataTypes.STRING,
-    name: DataTypes.STRING,
-    email: DataTypes.STRING,
-    image: DataTypes.STRING,
-    isAdmin: DataTypes.BOOLEAN,
+    role: DataTypes.STRING,
     isValid: DataTypes.BOOLEAN
   }, {
       scopes: {
         'excludedAdmin': {
           where: { 'isAdmin': false }
         }
-      }
+      },
+      deletedAt: 'destroyTime',
+      paranoid: true
     });
   User.associate = function (models) {
-    User.hasMany(models.Order)
+    User.hasMany(models.Order),
+      User.belongsToMany(models.Tag, {
+        through: models.UserPreferred,
+        foreignKey: 'UserId',
+        as: 'preferredTags',
+        // hooks: true,
+        // onDelete: 'cascade'
+      })
   };
   return User;
 };
