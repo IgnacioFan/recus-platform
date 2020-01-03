@@ -4,18 +4,19 @@ const { Dish, DishAttachment } = db
 
 
 const dishController = {
-  getDish: (req, res) => {
+
+  // 取得某分類的所有品項
+  getDishWithCategory: (req, res) => {
     // if categoryId is 1,2,3,4
     if (Number(req.query.categoryId) <= 0) {
-      return
+      return res.json({ status: 'error', msg: 'wrong category id' })
     }
 
-    let whereQuery = {}
-    categoryId = Number(req.query.categoryId)
-    whereQuery['CategoryId'] = categoryId
+    let whereQuery = {
+      CategoryId: req.query.categoryId
+    }
 
     return Dish.findAll({ where: whereQuery }).then(dishes => {
-
       return res.json(dishes)
     })
   },
@@ -23,16 +24,16 @@ const dishController = {
   // postDish 新增一筆品項
   addDish: (req, res) => {
     if (!req.body.name && !req.body.price)
-      return res.json({ status: 'error', msg: '請輸入菜單名稱與價格' })
+      return res.json({ status: 'error', msg: 'dish name and price cannot be blank' })
 
     if (!req.body.CategoryId)
-      return res.json({ status: 'error', msg: '請選擇分類' })
+      return res.json({ status: 'error', msg: 'category cannot be blank' })
 
     if (Number(req.body.price) < 0)
-      return res.json({ status: 'error', msg: '價格不可為負' })
+      return res.json({ status: 'error', msg: 'price can not be negative' })
 
     if (req.body.option && typeof (req.body.option) !== 'array')
-      return res.json({ status: 'error', msg: '格式錯誤' })
+      return res.json({ status: 'error', msg: 'option is wrong format' })
 
     let dishObj = {
       name: req.body.name,
@@ -45,10 +46,12 @@ const dishController = {
 
     Dish.create(dishObj).then(dish => {
       //console.log(dish)
-      req.body.tags.forEach(tag => {
-        DishAttachment.create({ TagId: tag, DishId: dish.id })
-      })
-      return res.json({ status: 'success', msg: '菜單新增成功', dish: dish })
+      if (req.body.tags) {
+        req.body.tags.forEach(tag => {
+          DishAttachment.create({ TagId: tag, DishId: dish.id })
+        })
+      }
+      return res.json({ status: 'success', msg: 'successfully add a new dish', dish: dish })
     })
 
   },
@@ -65,9 +68,12 @@ const dishController = {
     }
 
     Dish.findByPk(req.params.id).then(dish => {
-      req.body.removeTags.map(id => {
-        DishAttachment.destroy({ where: { DishId: dish.id, TagId: id } })
-      })
+      //console.log(req.body.removeTags)
+      if (req.body.removeTags) {
+        req.body.removeTags.map(id => {
+          DishAttachment.destroy({ where: { DishId: dish.id, TagId: id } })
+        })
+      }
       dish.update(dishObj).then(dish => {
         return res.json({ status: 'success', msg: '菜單新增成功', dish: dish })
       }).catch(err => {
@@ -84,7 +90,7 @@ const dishController = {
           tag.destroy()
         })
         dish.destroy()
-        console.log(`成功刪除${dish.name}！`)
+        //console.log(`成功刪除${dish.name}！`)
         return res.json({ status: 'success', msg: `成功刪除${dish.name}！` })
       })
     }).catch(err => {

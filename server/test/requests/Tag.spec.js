@@ -1,132 +1,111 @@
-var chai = require('chai')
+process.env.NODE_ENV = 'test'
+
 var request = require('supertest')
 var sinon = require('sinon')
 var app = require('../../app')
 
-var helpers = require('../../_helpers');
+var helper = require('../../_helpers');
+var chai = require('chai')
 var should = chai.should();
 var expect = chai.expect;
 const db = require('../../models')
 
-describe('菜單管理/標籤', () => {
-  context('# tags', () => {
+describe('# Admin::Dish Request', () => {
+  context('go to Dish-Management feature', () => {
 
     before(async () => {
       this.ensureAuthenticated = sinon.stub(
-        helpers, 'ensureAuthenticated'
-      ).returns(true)
+        helper, 'ensureAuthenticated'
+      ).returns(true);
       this.getUser = sinon.stub(
-        helpers, 'getUser'
-      ).returns({ isAdmin: true })
-      //await db.User.create({})
-      //await db.Category.destroy({ where: {}, truncate: true })
-      //await db.Dish.destroy({ where: {}, truncate: true })
+        helper, 'getUser'
+      ).returns({ id: 1, isAdmin: true });
       await db.Tag.destroy({ where: {}, truncate: true })
-      // await db.DishAttachment.destroy({ where: {}, truncate: true })
-      //await db.Category.create({ name: 'tee' })
-      // await db.Category.create({ name: 'coffee' })
-      // await db.Dish.create({ name: 'americana', price: 50, CategoryId: 2 })
-      // await db.Dish.create({ name: 'latei', price: 60, CategoryId: 2 })
-      //await db.Dish.create({ name: '紅茶', price: 40, CategoryId: 1 })
-      await ["濃韻", "熟茶", "日月潭"].forEach(item => {
-        db.Tag.create({ name: item })
-      })
+      // await ["濃韻", "熟茶", "日月潭"].forEach(item => {
+      //   db.Tag.create({ name: item })
+      // })
     })
 
-    describe('get: api/tags', () => {
-      it('get all tags', (done) => {
-        request(app)
-          .get('/api/tags')
-          .set('Accept', 'application/json')
-          .expect(200)
-          .end(function (err, res) {
-            if (err) return done(err)
-            //res.text.should.include('濃韻')
-            res.text.should.include('熟茶')
-            return done();
-          });
-      })
+    it('should get tags', (done) => {
+      request(app)
+        .get('/api/tags')
+        .end((err, res) => {
+          res.status.should.be.eql(200);
+          res.body.should.be.a('array');
+          res.body.length.should.be.eql(0);
+          done();
+        });
     })
 
-    describe('post: api/tags', () => {
-      it('add a new tag', (done) => {
-        request(app)
-          .post('/api/tags')
-          .send('name=清心潤喉')
-          .set('Accept', 'application/json')
-          .expect(200)
-          .end(function (err, res) {
-            if (err) return done(err)
-            //res.text.should.include('濃韻')
-            res.text.should.include('清心潤喉')
-            return done();
-          });
-      })
 
-      it('add the same name of tag', (done) => {
-        request(app)
-          .post('/api/tags')
-          .send('name=熟茶')
-          .set('Accept', 'application/json')
-          .expect(200)
-          .end(function (err, res) {
-            if (err) return done(err);
-            res.text.should.include('標籤已建立')
-            return done();
-          });
-      })
+    it('should post a new tag', (done) => {
+      request(app)
+        .post('/api/tags')
+        .send('name=微酸')
+        .end((err, res) => {
+          res.status.should.be.eql(200);
+          res.text.should.include('微酸');
+          done();
+        });
     })
 
-    describe('put: api/tags/1', () => {
-      it('update a new name of tag', (done) => {
-        request(app)
-          .put('/api/tags/1')
-          .send('name=熟茶2.0')
-          .set('Accept', 'application/json')
-          .expect(200)
-          .end(function (err, res) {
-            if (err) return done(err);
-            res.text.should.include('熟茶2.0')
-            return done();
-          });
-      })
-
-      it('update the same name of tag', (done) => {
-        request(app)
-          .put('/api/tags/2')
-          .send('name=熟茶')
-          .set('Accept', 'application/json')
-          .expect(200)
-          .end(function (err, res) {
-            if (err) return done(err)
-            res.text.should.include('標籤名稱相同')
-            return done();
-          });
-      })
+    it('if post the same name of tag', (done) => {
+      request(app)
+        .post('/api/tags')
+        .send('name=微酸')
+        .end(function (err, res) {
+          if (err) return done(err);
+          //console.log(res.body)
+          res.status.should.be.eql(200);
+          res.text.should.include('標籤已建立')
+          done();
+        });
     })
 
-    describe('delete: api/tags/3', () => {
-      it('delete tag 3', (done) => {
-        request(app)
-          .delete('/api/tags/3')
-          .set('Accept', 'application/json')
-          .expect(200)
-          .end(function (err, res) {
-            if (err) return done(err)
-            //expect().to.be.null
-            res.text.should.include('成功移除日月潭')
-            return done();
-          });
-      })
+    it('should update a new name of tag', (done) => {
+      request(app)
+        .put('/api/tags/1')
+        .send('name=微酸2.0')
+        .end(function (err, res) {
+          if (err) return done(err);
+          res.status.should.be.eql(200);
+          res.text.should.include('微酸2.0')
+          done()
+        })
     })
+
+    it('if update the same name of tag', (done) => {
+      request(app)
+        .put('/api/tags/1')
+        .send('name=微酸2.0')
+        .end(function (err, res) {
+          if (err) return done(err)
+          //console.log(res.body)
+          res.status.should.be.eql(200)
+          res.text.should.include('標籤名稱相同')
+          done()
+        })
+    })
+
+    it('should delete tag 1', (done) => {
+      request(app)
+        .delete('/api/tags/1')
+        .end(function (err, res) {
+          if (err) return done(err)
+          //console.log(res.body)
+          res.status.should.be.eql(200)
+          res.body.should.be.a('object')
+          res.text.should.include('成功移除微酸2.0')
+          done();
+        });
+    })
+
     after(async () => {
       this.ensureAuthenticated.restore();
       this.getUser.restore();
       //await db.User.destroy({ where: {}, truncate: true })
-      await db.Category.destroy({ where: {}, truncate: true })
-      await db.Dish.destroy({ where: {}, truncate: true })
+      //await db.User.destroy({ where: {}, truncate: true })
       await db.Tag.destroy({ where: {}, truncate: true })
-      //await db.DishAttachment.destroy({ where: {}, truncate: true })
     })
   })
 })
