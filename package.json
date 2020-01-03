@@ -6,25 +6,24 @@
   "scripts": {
     "start": "node server/app.js",
     "dev": "nodemon server/app.js",
-    "test": "mocha server/test/* -R min"
+    "test": "mocha server/test/* --exit --recursive --timeout 3000"
   },
   "author": "Ignatius Fan",
   "license": "MIT",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
-    "connect-flash": "^0.1.1",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "express-session": "^1.17.0",
     "faker": "^4.1.0",
     "jsonwebtoken": "^8.5.1",
     "mysql2": "^2.0.2",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
     "sequelize": "^5.21.3",
-    "sequelize-cli": "^5.5.1"
+    "sequelize-cli": "^5.5.1",
+    "timekeeper": "^2.2.0"
   },
   "devDependencies": {
     "chai": "^4.2.0",
@@ -33,6 +32,8 @@
     "sequelize-test-helpers": "^1.2.0",
     "sinon": "^7.5.0",
     "sinon-chai": "^3.3.0",
-    "supertest": "^4.0.2"
+    "supertest": "^4.0.2",
+    "swagger-jsdoc": "^3.5.0",
+    "swagger-ui-express": "^4.1.2"
   }
 }
