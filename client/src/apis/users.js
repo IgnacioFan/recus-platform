@@ -14,8 +14,6 @@ export default {
   },
 
   deleteUser({ userId }) {
-    // eslint-disable-next-line
-    console.log("/members/${userId}", userId);
     return apiHelper.delete(`/members/${userId}`, {
       headers: { Authorization: `Bearer ${getToken()}` }
     })

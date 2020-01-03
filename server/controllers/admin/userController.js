@@ -106,7 +106,7 @@ const userController = {
   },
 
   getUsersPag: (req, res) => {
-    const pageLimit = 14
+    const pageLimit = 16
     let offset = 0
     if (req.query.page) {
       offset = (req.query.page - 1) * pageLimit

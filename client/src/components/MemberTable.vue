@@ -1,6 +1,6 @@
 <template>
   <table class="table table-striped table-bordered table-hover">
-    <thead class="thead-dark">
+    <thead class="thead-dark text-center">
       <tr>
         <th>Name</th>
         <th>手機</th>
@@ -9,23 +9,28 @@
         <th>Action</th>
       </tr>
     </thead>
-    <tbody>
+    <tbody class="text-center">
       <tr v-for="user in users" :key="user.id">
         <th>
           <router-link :to="{path:'/users', params:{id:user.id}}">{{ user.account }}</router-link>
         </th>
-        <td>
+        <td height="50px">
           <div class="user-name">{{ user.phone }}</div>
         </td>
         <td>
           <div class="user-name">{{ user.consumeCount }}</div>
         </td>
         <td>
-          <button type="button" class="btn btn-warning" @click.stop.prevent="deleteUser(user.id)">X</button>
+          <button
+            v-if="user.id !== currentUser"
+            type="button"
+            class="btn btn-warning"
+            @click.stop.prevent="deleteUser(user.id)"
+          >刪除</button>
         </td>
         <td>
           <button
-            v-if="!user.isSelf"
+            v-if="user.id !== currentUser"
             type="button"
             class="btn btn-danger"
             @click.stop.prevent="toggleIsAdmin(user.id)"
@@ -40,8 +45,6 @@
 </template>
 
 <script>
-import usersAPI from "./../apis/users";
-
 export default {
   props: {
     initialUsers: {
@@ -50,59 +53,16 @@ export default {
   },
   data() {
     return {
-      users: this.initialUsers
+      users: this.initialUsers,
+      currentUser: this.$store.state.currentUser.id
     };
   },
   methods: {
-    async deleteUser(userId) {
-      try {
-        const { data, statusText } = await usersAPI.deleteUser({
-          userId
-        });
-
-        if (statusText !== "OK") {
-          throw new Error(statusText);
-        }
-        // eslint-disable-next-line
-        console.log("data", data);
-        this.users = this.users.filter(user => user.id !== userId);
-      } catch (error) {
-        // eslint-disable-next-line
-        console.log("error", error);
-        this.$swal({
-          type: "error",
-          title: "無法將使用者移除，請稍後再試"
-        });
-      }
+    deleteUser(userId) {
+      this.$emit("after-delete-user", userId);
     },
-    async toggleIsAdmin(userId) {
-      try {
-        const { data, statusText } = await usersAPI.toggleAdmin({
-          userId
-        });
-
-        if (statusText !== "OK" || data.status !== "success") {
-          throw new Error(statusText);
-        }
-
-        this.users = this.users.map(user => {
-          if (user.id !== userId) {
-            return user;
-          } else {
-            return {
-              ...user,
-              isAdmin: !user.isAdmin
-            };
-          }
-        });
-      } catch (error) {
-        // eslint-disable-next-line
-        console.log("error", error);
-        this.$swal({
-          type: "error",
-          title: "無法切換使用者權限，請稍後再試"
-        });
-      }
+    toggleIsAdmin(userId) {
+      this.$emit("after-toggle-is-admin", userId);
     }
   },
   watch: {
@@ -116,3 +76,16 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.form-control {
+  display: inline-block;
+  max-width: 80%;
+  margin-right: 10px;
+}
+.table td,
+.table th {
+  padding: 0.4rem;
+  vertical-align: middle;
+}
+</style>
