@@ -15,33 +15,45 @@ const default2 = { account: 'user1', phone: '0901', password: '12345', role: 'me
 
 describe('# Admin::User request', () => {
 
-  context('go to Order feature', () => {
+  context('go to SignIn&SignUp feature', () => {
 
-    xdescribe('if someone want to sign up', () => {
+    describe('if someone want to sign up', () => {
 
-      // before((done) => {
-      //   done
-      // })
+      before(async () => {
+        await db.User.destroy({ where: {}, force: true, truncate: true })
+      })
 
-      it('should get all users', (done) => {
+      it('sign up a new member', (done) => {
         request(app)
-          .get('/api/users')
+          .post('/api/signup')
+          .send({
+            account: 'root1', phone: '0900', password: '12345', passwordCheck: '12345'
+          })
           .expect(200)
           .end((err, res) => {
-            //console.log(res.body.users)
-            expect(res.body).to.have.property('users')
-            expect(res.body.users.length).to.be.equal(2)
-            expect(res.body.users[0].account).to.be.equal('root1')
-            expect(res.body.users[1].account).to.be.equal('user1')
+            expect(res.text).to.include('successfully signned up a new account')
             return done()
           })
       })
 
-      // after(async () => {
-      //   this.ensureAuthenticated.restore()
-      //   this.getUser.restore()
-      //   await db.User.destroy({ where: {}, force: true, truncate: true })
-      // })
+      it('a new member should signin', (done) => {
+        request(app)
+          .post('/api/signin')
+          .send({
+            account: 'root1', phone: '0900', password: '12345'
+          })
+          .expect(200)
+          .end((err, res) => {
+            expect(res.text).to.include('ok')
+            expect(res.body).to.have.property('user')
+            expect(res.body.user.role).to.be.equal('member')
+            return done()
+          })
+      })
+
+      after(async () => {
+        await db.User.destroy({ where: {}, force: true, truncate: true })
+      })
     })
 
     describe('if user not sign in', () => {
@@ -120,37 +132,5 @@ describe('# Admin::User request', () => {
       })
     })
 
-    xdescribe('if admin sign out', () => {
-
-      before(async () => {
-        this.ensureAuthenticated = sinon.stub(
-          helper, 'ensureAuthenticated'
-        ).returns(true)
-        this.getUser = sinon.stub(
-          helper, 'getUser'
-        ).returns({ id: 1, role: 'admin' })
-        await db.User.destroy({ where: {}, force: true, truncate: true })
-      })
-
-      xit('should get all users', (done) => {
-        request(app)
-          .get('/api/users')
-          .expect(200)
-          .end((err, res) => {
-            //console.log(res.body.users)
-            expect(res.body).to.have.property('users')
-            expect(res.body.users.length).to.be.equal(2)
-            expect(res.body.users[0].account).to.be.equal('root1')
-            expect(res.body.users[1].account).to.be.equal('user1')
-            return done()
-          })
-      })
-
-      after(async () => {
-        this.ensureAuthenticated.restore()
-        this.getUser.restore()
-        await db.User.destroy({ where: {}, force: true, truncate: true })
-      })
-    })
   })
 })

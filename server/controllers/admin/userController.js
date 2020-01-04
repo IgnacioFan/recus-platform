@@ -46,7 +46,7 @@ const userController = {
       var token = jwt.sign(payload, process.env.JWT_SECRET)
       return res.json({
         status: 'success',
-        message: 'ok',
+        msg: 'ok',
         token: token,
         user: {
           id: user.id,
@@ -79,7 +79,7 @@ const userController = {
             email: req.body.email,
             password: bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10), null)
           }).then(user => {
-            return res.json({ status: 'success', msg: '成功註冊帳號！' })
+            return res.json({ status: 'success', msg: 'successfully signned up a new account' })
           })
         }
       })
