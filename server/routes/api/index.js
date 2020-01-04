@@ -12,6 +12,7 @@ const dishController = require('../../controllers/admin/dishController')
 const orderController = require('../../controllers/admin/orderController')
 const categoryController = require('../../controllers/admin/categoryController')
 const tagController = require('../../controllers/admin/tagController')
+const { signupValidationRules, validate } = require('../../controllers/validator')
 
 const authenticated = (req, res, next) => {
   if (helper.ensureAuthenticated()) {
@@ -53,7 +54,7 @@ router.get('/', authenticated, (req, res) => {
 })
 
 // 登入/登出
-router.post('/signup', userController.signUp)
+router.post('/signup', signupValidationRules(), validate, userController.signUp)
 router.post('/signin', userController.signIn)
 
 // 使用者相關API

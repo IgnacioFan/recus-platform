@@ -23,6 +23,11 @@ module.exports = (sequelize, DataTypes) => {
       paranoid: true
     });
   User.associate = function (models) {
+    User.findUserByPhone = (value) => {
+      return models.User.findOne(
+        { where: { 'phone': value } }
+      )
+    }
     User.hasOne(models.Profile)
     User.hasMany(models.MemberOrder)
     User.belongsToMany(models.Tag, {

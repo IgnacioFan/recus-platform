@@ -4,22 +4,23 @@ const User = db.User
 const Order = db.Order
 const Op = require('sequelize').Op
 
+// use express-validator
+const { check, validationResult } = require('express-validator')
 // Json Web Token
 const jwt = require('jsonwebtoken')
 const passportJWT = require('passport-jwt')
-// 
-const ExtractJwt = passportJWT.ExtractJwt
-const JwtStrategy = passportJWT.Strategy
+
 
 const userController = {
 
-  // 登入
   signIn: (req, res) => {
 
-    // 加入驗證==========================================
+    // 開始輸入驗證
     if (!req.body.account || !req.body.password) {
       return res.status(401).json({ status: 'error', msg: "必須輸入帳號/密碼" })
     }
+
+
     // 檢查 user 是否存在與密碼是否正確
     let username = req.body.account
     let password = req.body.password
@@ -41,7 +42,7 @@ const userController = {
         // status 401 no permission
         return res.status(401).json({ status: 'error', msg: '密碼不合' })
       }
-      // 簽發 token
+      // sign a token to accessible user
       var payload = { id: user.id }
       var token = jwt.sign(payload, process.env.JWT_SECRET)
       return res.json({
@@ -62,27 +63,27 @@ const userController = {
     if (req.body.passwordCheck !== req.body.password) {
       return res.json({ status: 'error', msg: '兩次密碼輸入不同！' })
     } else {
-      User.findOne({
-        where: {
-          [Op.or]: [
-            { account: req.body.account },
-            { phone: req.body.phone }
-          ]
-        }
+      // User.findOne({
+      //   where: {
+      //     [Op.or]: [
+      //       { account: req.body.account },
+      //       { phone: req.body.phone }
+      //     ]
+      //   }
+      // }).then(user => {
+      //   if (user) {
+      //     return res.json({ status: 'error', msg: '信箱重複！' })
+      //   } else {
+      User.create({
+        account: req.body.account,
+        phone: req.body.phone,
+        email: req.body.email,
+        password: bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10), null)
       }).then(user => {
-        if (user) {
-          return res.json({ status: 'error', msg: '信箱重複！' })
-        } else {
-          User.create({
-            account: req.body.account,
-            phone: req.body.phone,
-            email: req.body.email,
-            password: bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10), null)
-          }).then(user => {
-            return res.json({ status: 'success', msg: 'successfully signned up a new account' })
-          })
-        }
+        return res.json({ status: 'success', msg: 'successfully signned up a new account' })
       })
+      //}
+      //})
     }
   },
 

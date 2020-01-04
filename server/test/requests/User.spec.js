@@ -27,10 +27,11 @@ describe('# Admin::User request', () => {
         request(app)
           .post('/api/signup')
           .send({
-            account: 'root1', phone: '0900', password: '12345', passwordCheck: '12345'
+            account: 'root1', phone: '0900', password: '123456', passwordCheck: '123456'
           })
           .expect(200)
           .end((err, res) => {
+            expect(res.user)
             expect(res.text).to.include('successfully signned up a new account')
             return done()
           })
@@ -40,7 +41,7 @@ describe('# Admin::User request', () => {
         request(app)
           .post('/api/signin')
           .send({
-            account: 'root1', phone: '0900', password: '12345'
+            account: 'root1', phone: '0900', password: '123456'
           })
           .expect(200)
           .end((err, res) => {
