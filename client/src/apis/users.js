@@ -2,6 +2,10 @@ import { apiHelper } from './../utils/helpers'
 const getToken = () => localStorage.getItem('token')
 
 export default {
+  getCurrentUser() {
+    return apiHelper.get(`/get_current_user`)
+  },
+
   getMembers({ page }) {
     const searchParams = new URLSearchParams({ page })
     return apiHelper.get(`/members?${searchParams.toString()}`, {
@@ -10,8 +14,6 @@ export default {
   },
 
   deleteUser({ userId }) {
-    // eslint-disable-next-line
-    console.log("/members/${userId}", userId);
     return apiHelper.delete(`/members/${userId}`, {
       headers: { Authorization: `Bearer ${getToken()}` }
     })
