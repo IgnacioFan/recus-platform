@@ -58,10 +58,18 @@
 
     <div class="row">
       <div class="col">
-        <MemberTable :initial-users="leftTableUsers" />
+        <MemberTable
+          :initial-users="leftTableUsers"
+          @after-delete-user="afterDeleteUser"
+          @after-toggle-is-admin="afterToggleIsAdmin"
+        />
       </div>
       <div class="col">
-        <MemberTable :initial-users="rightTableUsers" />
+        <MemberTable
+          :initial-users="rightTableUsers"
+          @after-delete-user="afterDeleteUser"
+          @after-toggle-is-admin="afterToggleIsAdmin"
+        />
       </div>
     </div>
 
@@ -75,23 +83,6 @@ import NavbarBottm from "./../components/NavbarBottm";
 import MemberTable from "./../components/MemberTable";
 import usersAPI from "./../apis/users";
 
-const dummyUser = {
-  user: {
-    id: 1,
-    account: "user1",
-    phone: "0901",
-    password: "12345678",
-    name: "Nacho",
-    email: "user1@example.com",
-    image: "",
-    isAdmin: false,
-    isValid: true,
-    createdAt: "2019-11-20T06:25:42.685Z",
-    updatedAt: "2019-11-21T09:55:30.970Z",
-    Orders: [{ id: 1 }, { id: 2 }, { id: 3 }]
-  }
-};
-
 export default {
   components: {
     NavbarTop,
@@ -102,8 +93,8 @@ export default {
     return {
       title: "會員管理",
       users: [],
-      phone: undefined,
-      totalPage: undefined,
+      phone: "",
+      totalPage: 1,
       currentPage: 1
     };
   },
@@ -117,25 +108,25 @@ export default {
         : this.currentPage + 1;
     },
     leftTableUsers: function() {
-      return this.users.slice(0, 7);
+      return this.users.slice(0, 8);
     },
     rightTableUsers: function() {
-      return this.users.slice(7, 14);
+      return this.users.slice(8, 16);
     }
   },
   created() {
-    const { page } = this.$route.query;
+    const { page = 1 } = this.$route.query;
     this.fetchProfiles({ page });
   },
   beforeRouteUpdate(to, from, next) {
-    const { page } = to.query;
+    const { page = 1 } = to.query;
     this.fetchProfiles({ page });
     next();
   },
   methods: {
-    async fetchProfiles({ page = 1 }) {
+    async fetchProfiles(page) {
       try {
-        const { data, statusText } = await usersAPI.getMembers({ page });
+        const { data, statusText } = await usersAPI.getMembers(page);
 
         if (statusText !== "OK") {
           throw new Error(statusText);
@@ -144,18 +135,10 @@ export default {
         this.currentPage = data.currentPage;
         this.users = data.users
           .map(user => {
-            if (user.id !== dummyUser.user.id) {
-              return {
-                ...user,
-                consumeCount: user.Orders.length
-              };
-            } else {
-              return {
-                ...user,
-                consumeCount: user.Orders.length,
-                isSelf: true
-              };
-            }
+            return {
+              ...user,
+              consumeCount: user.Orders.length
+            };
           })
           .sort((a, b) => Number(a.id) - Number(b.id));
       } catch (error) {
@@ -165,6 +148,66 @@ export default {
         });
         // eslint-disable-next-line
         console.log("error", error);
+      }
+    },
+    async afterDeleteUser(userId) {
+      try {
+        // eslint-disable-next-line
+        const { data, statusText } = await usersAPI.deleteUser({
+          userId
+        });
+
+        if (statusText !== "OK") {
+          throw new Error(statusText);
+        }
+
+        this.users = this.users.filter(user => user.id !== userId);
+
+        this.$swal({
+          toast: true,
+          position: "top",
+          showConfirmButton: false,
+          timer: 3000,
+          type: "success",
+          title: "已刪除會員",
+          text: ""
+        });
+      } catch (error) {
+        // eslint-disable-next-line
+        console.log("error", error);
+        this.$swal({
+          type: "error",
+          title: "無法移除使用者，請稍後再試"
+        });
+      }
+    },
+    async afterToggleIsAdmin(userId) {
+      try {
+        const { data, statusText } = await usersAPI.toggleAdmin({
+          userId
+        });
+
+        if (statusText !== "OK" || data.status !== "success") {
+          throw new Error(statusText);
+        }
+
+        this.users = this.users.map(user => {
+          if (user.id !== userId) {
+            return user;
+          } else {
+            return {
+              ...user,
+              isAdmin: !user.isAdmin
+            };
+          }
+        });
+      } catch (error) {
+        // eslint-disable-next-line
+        console.log("error", error);
+        this.$swal({
+          type: "error",
+          title: "無法切換使用者權限，請稍後再試"
+        });
       }
     }
   }

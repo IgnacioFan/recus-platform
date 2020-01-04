@@ -3,7 +3,7 @@ const router = express.Router()
 
 // 引入JWT需要的middleware
 const passport = require('../../config/passport')
-//const authenticated = passport.authenticate('jwt', { session: false })
+  //const authenticated = passport.authenticate('jwt', { session: false })
 const helper = require('../../_helpers')
 
 const userController = require('../../controllers/admin/userController')
@@ -19,7 +19,7 @@ const authenticated = (req, res, next) => {
   }
   //return res.status(401).json({ status: 'error', message: 'permission denied' })
   return passport.authenticate('jwt', { session: false })(req, res, next)
-  //return next
+    //return next
 }
 
 // const authenticatedAdmin = (req, res, next) => {
@@ -53,6 +53,7 @@ router.post('/signup', userController.signUp)
 router.post('/signin', userController.signIn)
 
 // 使用者相關API
+router.get('/get_current_user', userController.getCurrentUser)
 router.get('/users', authenticated, getUser, authenticatedAdmin, userController.getUsers)
 router.get('/users/:id', authenticated, getUser, authenticatedAdmin, userController.getUser)
 router.get('/members', userController.getUsersPag)
@@ -68,6 +69,7 @@ router.delete('/dishes/:id', authenticated, getUser, authenticatedAdmin, dishCon
 
 // 標籤相關API
 router.get('/tags', authenticated, getUser, authenticatedAdmin, tagController.getTags)
+router.get('/tag', tagController.searchTag)
 router.get('/tags/:id', authenticated, getUser, authenticatedAdmin, tagController.getTag)
 router.post('/tags', authenticated, getUser, authenticatedAdmin, tagController.addTag)
 router.put('/tags/:id', authenticated, getUser, authenticatedAdmin, tagController.updateTag)

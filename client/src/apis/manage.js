@@ -34,6 +34,12 @@ export default {
     }
   },
   tag: {
+    search(name) {
+      const searchParams = new URLSearchParams(name)
+      return apiHelper.get(`/tag?${searchParams.toString()}`, {
+        headers: { Authorization: `Bearer ${getToken()}` }
+      })
+    },
     get() {
       return apiHelper.get(`/tags`, {
         headers: { Authorization: `Bearer ${getToken()}` }

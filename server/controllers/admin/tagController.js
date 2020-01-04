@@ -1,11 +1,24 @@
-
 const db = require('../../models')
 const { Tag } = db
+const Op = require('sequelize').Op
 
 const tagController = {
   getTags: (req, res) => {
     Tag.findAll().then(tags => {
       return res.json(tags)
+    })
+  },
+
+  searchTag: (req, res) => {
+    console.log(`%${req.query}%`)
+    Tag.findAll({
+      where: {
+        name: {
+          [Op.like]: `%${req.query.name}%`
+        }
+      }
+    }).then(tag => {
+      return res.json(tag)
     })
   },
 
@@ -23,8 +36,7 @@ const tagController = {
           //console.log(tag)
           return res.json(tag)
         })
-      }
-      else {
+      } else {
         return res.json({ status: 'error', msg: '標籤已建立' })
       }
     })

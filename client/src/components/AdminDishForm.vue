@@ -1,7 +1,7 @@
 <template>
   <div class>
     <h1 class="text-center my-2">新增菜單</h1>
-    <form class="row" v-show="!isLoading" @submit.stop.prevent="handleSubmit">
+    <form class="row" v-show="!isLoading">
       <div class="form-group col-6">
         <label for="name">餐點名稱</label>
         <input
@@ -33,24 +33,48 @@
         </select>
       </div>
 
-      <div class="form-check form-check-inline" v-for="tag in allTags" :key="tag.id">
+      <div class="form-group col-6">
+        <label class>標籤</label>
+        <div class="form-inline mb-2">
+          <input
+            class="form-control mr-sm-2"
+            type="text"
+            name="searchTag"
+            v-model="tag"
+            placeholder="Tag name"
+          />
+          <button type="button" class="btn btn-primary" @click.stop.prevent="searchTag">搜尋</button>
+        </div>
+        <button
+          v-for="tag in tagsDisplay"
+          :key="tag.id"
+          class="btn btn-primary mr-2 mt-2"
+          @click.stop.prevent="addTag(tag)"
+        >{{ tag.name }}</button>
+      </div>
+
+      <div class="form-group col-6">
+        <label class="d-block" for="image">相片</label>
+        <img v-if="dish.image" :src="dish.image" class="img-thumbnail" width="200" height="200" />
+
         <input
-          class="form-check-input"
-          type="checkbox"
-          :id="tag.id"
-          v-model="dish.tags"
-          :value="tag.id"
+          id="image"
+          type="file"
+          name="image"
+          accept="image/*"
+          @change="handleFileChange"
+          class="align-bottom"
         />
-        <label class="form-check-label" :for="tag.id">{{ tag.name }}</label>
       </div>
 
       <div class="form-group col-6">
-        <label for="price">價格</label>
-        <input id="price" v-model="dish.price" type="number" class="form-control" name="price" />
-      </div>
-
-      <div class="form-group col-6">
-        <label for="description">說明</label>
+        <label class="mr-4" for="description">內容</label>
+        <button
+          v-for="tag in this.dish.tags"
+          :key="tag.id"
+          class="btn btn-primary mr-2 mb-2"
+          @click.stop.prevent="removeTag(tag)"
+        >#{{ tag.name }}</button>
         <textarea
           id="description"
           v-model="dish.description"
@@ -61,30 +85,20 @@
       </div>
 
       <div class="form-group col-6">
-        <label for="image">相片</label>
-        <img
-          v-if="dish.image"
-          :src="dish.image"
-          class="d-block img-thumbnail mb-3"
-          width="200"
-          height="200"
-        />
-
-        <input
-          id="image"
-          type="file"
-          name="image"
-          accept="image/*"
-          class="form-control-file"
-          @change="handleFileChange"
-        />
+        <label for="price">價格</label>
+        <input id="price" v-model="dish.price" type="number" class="form-control" name="price" />
       </div>
 
-      <button
-        type="submit"
-        class="btn btn-primary col-6"
-        :disabled="isProcessing"
-      >{{ this.isProcessing ? "處理中..." : "送出" }}</button>
+      <div class="form-group col-12">
+        <a class="btn btn-primary col-6 py-3" href="#" @click.stop.prevent="$router.back()">回上一頁</a>
+
+        <button
+          type="submit"
+          class="btn btn-primary col-6 py-3"
+          :disabled="isProcessing"
+          @click.stop.prevent="handleSubmit"
+        >{{ this.isProcessing ? "處理中..." : "送出" }}</button>
+      </div>
     </form>
   </div>
 </template>
@@ -123,10 +137,23 @@ export default {
       },
       categories: [],
       allTags: [],
+      tag: "",
+      searchResult: [],
+      tagSelected: [],
       isLoading: true
     };
   },
-  computed: {},
+  computed: {
+    tagsDisplay: function() {
+      let tagBox = [...this.searchResult, ...this.allTags];
+      const filtered = tagBox.filter(function({id, name}) {
+        const key =`${id}${name}`;
+        return !this.has(key) && this.add(key);
+      }, new Set);
+      let e = filtered.slice(0, 6);
+      return e;
+    }
+  },
   created() {
     this.fetchCategories();
     this.fetchTags();
@@ -160,12 +187,32 @@ export default {
         console.log("error", error);
       }
     },
+    async searchTag() {
+      try {
+        const response = await manageAPI.tag.search({ name: this.tag });
+        const { data, statusText } = response;
+        if (statusText !== "OK") {
+          throw new Error(statusText);
+        }
+
+        this.searchResult = data;
+      } catch (error) {
+        // eslint-disable-next-line
+        console.log("error", error);
+      }
+    },
     handleFileChange(e) {
       const files = e.target.files;
       if (!files.length) return; // 如果沒有檔案則離開此函式
       // 否則產生預覽圖...
       const imageURL = window.URL.createObjectURL(files[0]);
       this.dish.image = imageURL;
+    },
+    addTag(tag) {
+      this.dish.tags = [...new Set([tag, ...this.dish.tags])];
+    },
+    removeTag(tag) {
+      this.dish.tags = this.dish.tags.filter(e => e !== tag);
     },
     handleSubmit() {
       if (!this.dish.name) {
@@ -197,3 +244,11 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.form-check-input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+</style>
