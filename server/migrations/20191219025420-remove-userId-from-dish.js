@@ -9,7 +9,7 @@ module.exports = {
     return queryInterface.addColumn('Dishes', 'UserId', {
       type: Sequelize.INTEGER,
       allowNull: false,
-      references: {
+      reference: {
         model: 'Users',
         key: 'id'
       }
