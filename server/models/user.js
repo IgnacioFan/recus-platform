@@ -1,29 +1,37 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
-    account: DataTypes.STRING,
-    phone: DataTypes.STRING,
+    account: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    phone: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
     password: DataTypes.STRING,
     role: DataTypes.STRING,
-    isValid: DataTypes.BOOLEAN
+    isValid: DataTypes.BOOLEAN,
   }, {
       scopes: {
         'excludedAdmin': {
-          where: { 'isAdmin': false }
+          where: { 'role': 'member' }
         }
       },
-      deletedAt: 'destroyTime',
+      //deletedAt: 'destroyTime',
+      timestamps: true,
       paranoid: true
     });
   User.associate = function (models) {
-    User.hasMany(models.Order),
-      User.belongsToMany(models.Tag, {
-        through: models.UserPreferred,
-        foreignKey: 'UserId',
-        as: 'preferredTags',
-        // hooks: true,
-        // onDelete: 'cascade'
-      })
+    User.hasOne(models.Profile)
+    User.hasMany(models.MemberOrder)
+    User.belongsToMany(models.Tag, {
+      through: models.UserPreferred,
+      foreignKey: 'UserId',
+      as: 'preferredTags',
+      hooks: true,
+      onDelete: 'cascade'
+    })
   };
   return User;
 };

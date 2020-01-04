@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: false
     });
   Profile.associate = function (models) {
-    // associations can be defined here
+    Profile.belongsTo(models.User)
   };
   return Profile;
 };

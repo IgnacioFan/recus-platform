@@ -7,7 +7,8 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: false
     });
   MemberOrder.associate = function (models) {
-    // associations can be defined here
+    MemberOrder.belongsTo(models.User)
+    MemberOrder.belongsTo(models.Order)
   };
   return MemberOrder;
 };

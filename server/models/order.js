@@ -29,7 +29,7 @@ module.exports = (sequelize, DataTypes) => {
       paranoid: true
     });
   Order.associate = function (models) {
-    Order.belongsTo(models.User)
+    Order.hasMany(models.MemberOrder)
     Order.belongsToMany(models.Dish, {
       through: models.DishCombination,
       foreignKey: 'OrderId',

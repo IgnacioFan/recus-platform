@@ -9,14 +9,40 @@ var helper = require('../../_helpers');
 var should = chai.should();
 var expect = chai.expect;
 const db = require('../../models')
-const default1 = { account: 'root1', phone: '0900', password: '12345', isAdmin: true }
-const default2 = { account: 'root2', phone: '0901', password: '12345', isAdmin: true }
-const default3 = { account: 'user1', phone: '0902', password: '12345', isAdmin: false }
+const default1 = { account: 'root1', phone: '0900', password: '12345', role: 'admin' }
+const default2 = { account: 'user1', phone: '0901', password: '12345', role: 'member' }
 
 
 describe('# Admin::User request', () => {
 
   context('go to Order feature', () => {
+
+    xdescribe('if someone want to sign up', () => {
+
+      // before((done) => {
+      //   done
+      // })
+
+      it('should get all users', (done) => {
+        request(app)
+          .get('/api/users')
+          .expect(200)
+          .end((err, res) => {
+            //console.log(res.body.users)
+            expect(res.body).to.have.property('users')
+            expect(res.body.users.length).to.be.equal(2)
+            expect(res.body.users[0].account).to.be.equal('root1')
+            expect(res.body.users[1].account).to.be.equal('user1')
+            return done()
+          })
+      })
+
+      // after(async () => {
+      //   this.ensureAuthenticated.restore()
+      //   this.getUser.restore()
+      //   await db.User.destroy({ where: {}, force: true, truncate: true })
+      // })
+    })
 
     describe('if user not sign in', () => {
 
@@ -36,14 +62,14 @@ describe('# Admin::User request', () => {
       })
     })
 
-    describe('if normal user sign in', () => {
+    describe('if member sign in', () => {
       before(async () => {
         this.ensureAuthenticated = sinon.stub(
           helper, 'ensureAuthenticated'
         ).returns(true)
         this.getUser = sinon.stub(
           helper, 'getUser'
-        ).returns({ id: 1, isAdmin: false })
+        ).returns({ id: 1, role: 'member' })
       })
 
       it('should get error message', (done) => {
@@ -60,17 +86,17 @@ describe('# Admin::User request', () => {
     })
 
     describe('if admin sign in', () => {
+
       before(async () => {
         this.ensureAuthenticated = sinon.stub(
           helper, 'ensureAuthenticated'
         ).returns(true)
         this.getUser = sinon.stub(
           helper, 'getUser'
-        ).returns({ id: 1, isAdmin: true })
-        await db.User.destroy({ where: {}, truncate: true })
+        ).returns({ id: 1, role: 'admin' })
+        await db.User.destroy({ where: {}, force: true, truncate: true })
         await db.User.create(default1)
         await db.User.create(default2)
-        await db.User.create(default3)
       })
 
       it('should get all users', (done) => {
@@ -78,21 +104,11 @@ describe('# Admin::User request', () => {
           .get('/api/users')
           .expect(200)
           .end((err, res) => {
-            //console.log(res.body)
+            //console.log(res.body.users)
             expect(res.body).to.have.property('users')
-            expect(res.body.users.length).to.be.equal(3)
-            return done()
-          })
-      })
-
-      it('should get a specific user who is not admin', (done) => {
-        request(app)
-          .get('/api/users/3')
-          .expect(200)
-          .end((err, res) => {
-            //console.log(res.body.user)
-            expect(res.body).to.have.property('user')
-            expect(res.body.user.account).to.be.equal('user1')
+            expect(res.body.users.length).to.be.equal(2)
+            expect(res.body.users[0].account).to.be.equal('root1')
+            expect(res.body.users[1].account).to.be.equal('user1')
             return done()
           })
       })
@@ -100,9 +116,41 @@ describe('# Admin::User request', () => {
       after(async () => {
         this.ensureAuthenticated.restore()
         this.getUser.restore()
-        await db.User.destroy({ where: {}, truncate: true })
+        await db.User.destroy({ where: {}, force: true, truncate: true })
       })
     })
 
+    xdescribe('if admin sign out', () => {
+
+      before(async () => {
+        this.ensureAuthenticated = sinon.stub(
+          helper, 'ensureAuthenticated'
+        ).returns(true)
+        this.getUser = sinon.stub(
+          helper, 'getUser'
+        ).returns({ id: 1, role: 'admin' })
+        await db.User.destroy({ where: {}, force: true, truncate: true })
+      })
+
+      xit('should get all users', (done) => {
+        request(app)
+          .get('/api/users')
+          .expect(200)
+          .end((err, res) => {
+            //console.log(res.body.users)
+            expect(res.body).to.have.property('users')
+            expect(res.body.users.length).to.be.equal(2)
+            expect(res.body.users[0].account).to.be.equal('root1')
+            expect(res.body.users[1].account).to.be.equal('user1')
+            return done()
+          })
+      })
+
+      after(async () => {
+        this.ensureAuthenticated.restore()
+        this.getUser.restore()
+        await db.User.destroy({ where: {}, force: true, truncate: true })
+      })
+    })
   })
 })

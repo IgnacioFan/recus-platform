@@ -7,6 +7,7 @@ const passport = require('../../config/passport')
 const helper = require('../../_helpers')
 
 const userController = require('../../controllers/admin/userController')
+const memberController = require('../../controllers/admin/memberController')
 const dishController = require('../../controllers/admin/dishController')
 const orderController = require('../../controllers/admin/orderController')
 const categoryController = require('../../controllers/admin/categoryController')
@@ -36,10 +37,13 @@ const getUser = (req, res, next) => {
 }
 
 const authenticatedAdmin = (req, res, next) => {
+  //console.log(req.user)
   if (!req.user) return res.status(401).json({ status: 'error', msg: 'permission denied for users' })
-  if (req.user.isAdmin !== true)
+  if (req.user.role === 'admin') {
+    return next()
+  } else {
     return res.status(401).json({ status: 'error', msg: 'admin permission denied' })
-  return next()
+  }
 }
 
 // test router
@@ -53,8 +57,8 @@ router.post('/signup', userController.signUp)
 router.post('/signin', userController.signIn)
 
 // 使用者相關API
-router.get('/users', authenticated, getUser, authenticatedAdmin, userController.getUsers)
-router.get('/users/:id', authenticated, getUser, authenticatedAdmin, userController.getUser)
+router.get('/users', authenticated, getUser, authenticatedAdmin, memberController.getUsers)
+router.get('/users/:id', authenticated, getUser, authenticatedAdmin, memberController.getUser)
 router.get('/members', userController.getUsersPag)
 router.delete('/members/:id', userController.deleteUser)
 router.put('/members/admin/:id', userController.toggleAdmin)

@@ -15,6 +15,8 @@ const userController = {
 
   // 登入
   signIn: (req, res) => {
+
+    // 加入驗證==========================================
     if (!req.body.account || !req.body.password) {
       return res.status(401).json({ status: 'error', msg: "必須輸入帳號/密碼" })
     }
@@ -50,21 +52,46 @@ const userController = {
           id: user.id,
           account: user.account,
           phone: user.phone,
-          name: user.name,
-          email: user.email,
-          isAdmin: user.isAdmin
+          role: user.role
         }
       })
     })
   },
 
-
-  getUsers: (req, res) => {
-    return User.findAll().then(users => {
-      //console.log(users)
-      return res.json({ users: users })
-    })
+  signUp: (req, res) => {
+    if (req.body.passwordCheck !== req.body.password) {
+      return res.json({ status: 'error', msg: '兩次密碼輸入不同！' })
+    } else {
+      User.findOne({
+        where: {
+          [Op.or]: [
+            { account: req.body.account },
+            { phone: req.body.phone }
+          ]
+        }
+      }).then(user => {
+        if (user) {
+          return res.json({ status: 'error', msg: '信箱重複！' })
+        } else {
+          User.create({
+            account: req.body.account,
+            phone: req.body.phone,
+            email: req.body.email,
+            password: bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10), null)
+          }).then(user => {
+            return res.json({ status: 'success', msg: '成功註冊帳號！' })
+          })
+        }
+      })
+    }
   },
+
+  // getUsers: (req, res) => {
+  //   return User.findAll().then(users => {
+  //     //console.log(users)
+  //     return res.json({ users: users })
+  //   })
+  // },
 
   getUser: (req, res) => {
     if (Number(req.params.id) <= 0) {
@@ -143,34 +170,6 @@ const userController = {
       }
       return res.json(user)
     })
-  },
-  // Signup signin routes
-  signUp: (req, res) => {
-    if (req.body.passwordCheck !== req.body.password) {
-      return res.json({ status: 'error', msg: '兩次密碼輸入不同！' })
-    } else {
-      User.findOne({
-        where: {
-          [Op.or]: [
-            { account: req.body.account },
-            { phone: req.body.phone }
-          ]
-        }
-      }).then(user => {
-        if (user) {
-          return res.json({ status: 'error', msg: '信箱重複！' })
-        } else {
-          User.create({
-            account: req.body.account,
-            phone: req.body.phone,
-            email: req.body.email,
-            password: bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10), null)
-          }).then(user => {
-            return res.json({ status: 'success', msg: '成功註冊帳號！' })
-          })
-        }
-      })
-    }
   },
 
 }
