@@ -4,10 +4,9 @@ const User = db.User
 
 const signupValidationRules = () => {
   return [
-    // account
     body('account')
       .not().isEmpty(),
-    // phone must be right rules
+
     body('phone')
       .not().isEmpty()
       .isLength({ min: 4 }).withMessage('must be at least 4 chars long')
@@ -33,6 +32,17 @@ const signupValidationRules = () => {
   ]
 }
 
+const signinValidRules = () => {
+  return [
+    body('account')
+      .not().isEmpty(),
+
+    body('password')
+      .not().isEmpty()
+      .isLength({ min: 5 }).withMessage('must be at least 5 chars long')
+  ]
+}
+
 const validate = (req, res, next) => {
   const errors = validationResult(req)
   if (errors.isEmpty()) return next()
@@ -45,5 +55,6 @@ const validate = (req, res, next) => {
 
 module.exports = {
   signupValidationRules,
+  signinValidRules,
   validate,
 }

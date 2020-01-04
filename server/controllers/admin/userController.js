@@ -15,19 +15,8 @@ const userController = {
 
   signIn: (req, res) => {
 
-    // 開始輸入驗證
-    if (!req.body.account || !req.body.password) {
-      return res.status(401).json({ status: 'error', msg: "必須輸入帳號/密碼" })
-    }
-
-
-    // 檢查 user 是否存在與密碼是否正確
     let username = req.body.account
     let password = req.body.password
-
-    // advanced: check format
-    // if input format is account, then check account, if input format is phone, then check phone
-    // =======
 
     User.findOne({
       where: {
@@ -63,17 +52,6 @@ const userController = {
     if (req.body.passwordCheck !== req.body.password) {
       return res.json({ status: 'error', msg: '兩次密碼輸入不同！' })
     } else {
-      // User.findOne({
-      //   where: {
-      //     [Op.or]: [
-      //       { account: req.body.account },
-      //       { phone: req.body.phone }
-      //     ]
-      //   }
-      // }).then(user => {
-      //   if (user) {
-      //     return res.json({ status: 'error', msg: '信箱重複！' })
-      //   } else {
       User.create({
         account: req.body.account,
         phone: req.body.phone,
@@ -82,17 +60,8 @@ const userController = {
       }).then(user => {
         return res.json({ status: 'success', msg: 'successfully signned up a new account' })
       })
-      //}
-      //})
     }
   },
-
-  // getUsers: (req, res) => {
-  //   return User.findAll().then(users => {
-  //     //console.log(users)
-  //     return res.json({ users: users })
-  //   })
-  // },
 
   getUser: (req, res) => {
     if (Number(req.params.id) <= 0) {
