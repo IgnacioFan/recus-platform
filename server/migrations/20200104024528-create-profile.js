@@ -20,6 +20,14 @@ module.exports = {
       avatar: {
         type: Sequelize.STRING,
         defaultValue: 'none'
+      },
+      UserId: {
+        allowNull: false,
+        type: Sequelize.INTEGER,
+        reference: {
+          model: 'Users',
+          key: 'id'
+        }
       }
     });
   },

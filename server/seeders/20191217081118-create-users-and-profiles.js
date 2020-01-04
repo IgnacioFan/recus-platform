@@ -33,7 +33,7 @@ module.exports = {
       updatedAt: new Date()
     }], {});
 
-    return queryInterface.bulkInsert('Users',
+    queryInterface.bulkInsert('Users',
       Array.from({ length: 50 }).map(
         (item) => ({
           account: faker.finance.account(),
@@ -46,9 +46,31 @@ module.exports = {
         })
       ), {})
 
+    return queryInterface.bulkInsert('Profiles',
+      [{
+        name: 'nacho',
+        email: faker.internet.email(),
+        avatar: faker.image.avatar(),
+        UserId: 1
+      },
+      {
+        name: 'kirwen',
+        email: faker.internet.email(),
+        avatar: faker.image.avatar(),
+        UserId: 2
+      },
+      {
+        name: '文傑',
+        email: faker.internet.email(),
+        avatar: faker.image.avatar(),
+        UserId: 3
+      }]
+      , {})
+
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.bulkDelete('Users', null, {});
+    queryInterface.bulkDelete('Users', null, {});
+    return queryInterface.bulkDelete('Profiles', null, {});
   }
 };
