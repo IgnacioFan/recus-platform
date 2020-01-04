@@ -17,7 +17,7 @@ module.exports = {
         quantity: Math.floor(Math.random() * 3 + 1),
         isTakingAway: false,
         tableNum: Math.floor(Math.random() * 7 + 1),
-        UserId: Math.floor(Math.random() * 3 + 1),
+        //UserId: Math.floor(Math.random() * 3 + 1),
         createdAt: new Date(),
         updatedAt: new Date()
       })), {});
