@@ -1,0 +1,9 @@
+node_modules
+temp/
+upload/
+
+
+server/test/sum.js
+server/test/test.js
+
+.env
