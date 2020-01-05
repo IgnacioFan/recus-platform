@@ -15,7 +15,7 @@ export default {
   user: {
     get({ phone }) {
       const searchParams = new URLSearchParams({ phone })
-      return apiHelper.get(`/searchUser?${searchParams.toString()}`)
+      return apiHelper.get(`/members/search?${searchParams.toString()}`)
     }
   },
   list: {

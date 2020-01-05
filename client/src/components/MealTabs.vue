@@ -1,9 +1,9 @@
-<template lang="zh-TW">
+<template>
   <div class="container">
     <div class="row mt-2">
       <div class="col-auto mr-auto px-0">
-        <button>推薦區</button>
-        <button>菜單區</button>
+        <button class="d-none">推薦區</button>
+        <button class="d-none">菜單區</button>
       </div>
       <div>
         <p class="d-inline-block mb-0 mr-3">{{this.user.name || "userName"}}</p>
@@ -11,7 +11,6 @@
           <input
             class="form-control mr-sm-2"
             type="text"
-            value=""
             v-model="userPhone"
             placeholder="09xxxxxxxx"
           />
@@ -27,22 +26,46 @@
 </template>
 
 <script>
+import orderAPI from "./../apis/order";
+
 export default {
-  props: {
-    user: {
-      type: Object
-    }
-  },
   data() {
     return {
-      userData: this.user,
-      userPhone: this.user.temp,
-      userName: this.user.name
+      user: {
+        name: "",
+        phone: "",
+        temp: ""
+      },
+      userPhone: ""
     };
   },
   methods: {
-    searchUser() {
-      this.$emit("after-search-user", this.userPhone);
+    async searchUser() {
+      try {
+        const response = await orderAPI.user.get({ phone: this.userPhone });
+        const { data, statusText } = response;
+        if (statusText !== "OK") {
+          throw new Error(statusText);
+        }
+        if (data.name === undefined) {
+          this.$swal({
+            toast: true,
+            position: "top",
+            showConfirmButton: false,
+            timer: 3000,
+            type: "warning",
+            title: "未找到會員",
+            text: ""
+          });
+        } else {
+          this.userPhone = "";
+          this.user.name = data.name;
+          this.$emit("after-add-user", data.id);
+        }
+      } catch (error) {
+        // eslint-disable-next-line
+        console.log("error", error);
+      }
     }
   },
   watch: {
@@ -57,6 +80,9 @@ export default {
 </script>
 
 <style scoped>
+/* .container {
+  position: relative;
+} */
 .meal {
   max-height: calc(100vh - 240px);
   overflow: auto;

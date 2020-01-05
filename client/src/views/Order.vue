@@ -3,13 +3,9 @@
     <NavbarTop :initial-title="title" />
     <div class="row" style="height:100%;">
       <div class="col-8 border border-dark p-0" style="height:calc(100vh - 107px);">
-        <div class>
-          <MealTabs :user="user" @after-search-user="afterSearchUser" />
-          <Meal
-            :initial-dishes="dishes"
-            @after-add-to-order="afterAddToOrder"
-            @after-add-user="afterAddUser"
-          />
+        <div>
+          <MealTabs :user="user" @after-add-user="afterAddUser" />
+          <Meal :initial-dishes="dishes" @after-add-to-order="afterAddToOrder" />
         </div>
       </div>
       <div class="col-4 border border-dark p-0" style="height:calc(100vh - 107px);">
@@ -52,8 +48,10 @@ export default {
       },
       user: {
         name: "",
+        temp: "",
         phone: ""
-      }
+      },
+      dishPK: 0
     };
   },
   created() {
@@ -83,14 +81,15 @@ export default {
         console.log("error", error);
       }
     },
-    afterDeleteDish(dishId) {
+    afterDeleteDish(dishPK) {
       this.addDishes.list = this.addDishes.list.filter(
-        dish => dish.id !== dishId
+        dish => dish.PK !== dishPK
       );
     },
     afterAddToOrder(payload) {
       const { id, name, price, quantity } = payload;
       this.addDishes.list.push({
+        PK: this.dishPK++,
         id: id,
         name: name,
         price: price,
@@ -99,9 +98,6 @@ export default {
       this.addDishes.quantity =
         Number(this.addDishes.quantity) + Number(quantity);
       this.addDishes.amount = this.addDishes.amount + price * quantity;
-    },
-    afterAddUser(payload) {
-      this.addDishes.user = payload.name;
     },
     aftersubmitorder() {
       this.addDishes = {
@@ -112,32 +108,10 @@ export default {
       };
       this.user.name = "";
       this.user.temp = "";
+      this.dishPK = 0;
     },
-    async afterSearchUser(userPhone) {
-      try {
-        const response = await orderAPI.user.get({ phone: userPhone });
-        const { data, statusText } = response;
-        if (statusText !== "OK") {
-          throw new Error(statusText);
-        }
-        if (data.name === undefined) {
-          this.$swal({
-            toast: true,
-            position: "top",
-            showConfirmButton: false,
-            timer: 3000,
-            type: "warning",
-            title: "未找到會員",
-            text: ""
-          });
-        } else {
-          this.addDishes.user = data.id;
-          this.user = { name: data.name, phone: "" };
-        }
-      } catch (error) {
-        // eslint-disable-next-line
-        console.log("error", error);
-      }
+    afterAddUser(userId) {
+      this.addDishes.user = userId;
     }
   }
 };
