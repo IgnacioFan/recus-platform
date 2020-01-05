@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
           }
         }
       },
-      deletedAt: 'destroyTime',
+      timestamps: true,
       paranoid: true
     });
   Order.associate = function (models) {
@@ -33,7 +33,9 @@ module.exports = (sequelize, DataTypes) => {
     Order.belongsToMany(models.Dish, {
       through: models.DishCombination,
       foreignKey: 'OrderId',
-      as: 'sumOfDishes'
+      as: 'sumOfDishes',
+      hooks: true,
+      onDelete: 'cascade'
     })
   };
   return Order;

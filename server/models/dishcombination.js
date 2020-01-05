@@ -7,8 +7,8 @@ module.exports = (sequelize, DataTypes) => {
     DishId: DataTypes.INTEGER,
     OrderId: DataTypes.INTEGER
   }, {
-      deletedAt: 'destroyTime',
-      paranoid: true
+      //deletedAt: 'destroyTime',
+      //paranoid: true
     });
   DishCombination.associate = function (models) {
     DishCombination.belongsTo(models.Dish)

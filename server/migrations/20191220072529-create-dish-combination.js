@@ -18,19 +18,11 @@ module.exports = {
       },
       DishId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: 'Dishes',
-          key: 'id'
-        }
+        allowNull: false
       },
       OrderId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: 'Orders',
-          key: 'id'
-        }
+        allowNull: false
       },
       perOption: {
         type: Sequelize.JSON,
