@@ -24,9 +24,9 @@ stateMachine.on('next', (order) => {
 
 
 const orderController = {
-  postOrders: (req, res) => {
-    console.log(req.body)
-      // console.log(typeof req.body.dishes)
+  addOrder: (req, res) => {
+    //console.log(req.body)
+    // console.log(typeof req.body.dishes)
     if (req.body.dishes.length === 0) {
       return res.json({ status: 'error', msg: '請輸入至少一樣菜單' })
     }
@@ -37,13 +37,17 @@ const orderController = {
 
     // 計算總額與數量
     req.body.dishes.forEach(dish => {
-        quantity = quantity + dish.quantity
-        amount = amount + dish.price * dish.quantity
-        comboDishes.push({ DishId: dish.id, quantity: dish.quantity })
-      })
-      // 驗證總額
+      quantity = quantity + dish.quantity
+      amount = amount + dish.price * dish.quantity
+      comboDishes.push({ DishId: dish.id, quantity: dish.quantity, amount: dish.price * dish.quantity })
+    })
+    // 驗證總額
     if (Number(req.body.amount) !== amount) {
       return res.json({ status: 'error', msg: '總額不符' })
+    }
+    // 驗證總數
+    if (Number(req.body.quantity) !== quantity) {
+      return res.json({ status: 'error', msg: '數量不符' })
     }
     // 驗證內用需要輸入桌號
     if (req.body.isTakingAway === 0) {
@@ -51,11 +55,11 @@ const orderController = {
         return res.json({ status: 'error', msg: '內用請輸入桌號' })
       }
     }
+    console.log(comboDishes)
     // 新增訂單
     return Order.create({
-      state: "pending",
-      quantiy: quantity,
-      amount: amount,
+      quantity: req.body.quantity,
+      amount: req.body.amount,
       memo: req.body.memo,
       tableNum: req.body.tableNum,
       isTakingAway: req.body.isTakingAway,
@@ -66,10 +70,12 @@ const orderController = {
         DishCombination.create({
           OrderId: order.id,
           DishId: item.DishId,
-          quantity: item.quantity
+          perQuantity: item.quantity,
+          perAmount: item.amount
         })
       })
-      return res.json(order)
+      console.log(order)
+      return res.json({ order: order })
     })
   },
 
@@ -77,7 +83,7 @@ const orderController = {
   getOrders: (req, res) => {
     if (!req.query.state) return res.json({ status: 'error', msg: '沒有取得狀態' })
     let state = ""
-      // 尚未製作
+    // 尚未製作
     if (req.query.state === 'pending') {
       state = 'pending'
     } // 製作中
@@ -100,7 +106,7 @@ const orderController = {
         where: { state: state }
       }).then(orders => {
 
-        return res.json(orders)
+        return res.json({ orders: orders })
       })
     } else {
       return res.json({ status: 'error', msg: '404' })

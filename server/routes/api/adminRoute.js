@@ -1,15 +1,11 @@
 const router = require('express').Router()
 
-// const helper = require('../../_helpers')
-
 const memberController = require('../../controllers/admin/memberController')
 const dishController = require('../../controllers/admin/dishController')
 const orderController = require('../../controllers/admin/orderController')
 const categoryController = require('../../controllers/admin/categoryController')
 const tagController = require('../../controllers/admin/tagController')
-
 // middleware setup
-
 
 // multer setup
 
@@ -43,9 +39,9 @@ router.get('/orders', orderController.getOrders)
 router.get('/orders/pendingNums', orderController.getPendingNums)
 router.get('/orders/unpaidNums', orderController.getUnpaidNums)
 router.get('/orders/:id', orderController.getOrder)
-router.post('/orders', orderController.postOrders)
-router.put('/orders/:id/prevState', orderController.prevStateOrder)
-router.put('/orders/:id/nextState', orderController.nextStateOrder)
+router.post('/orders', orderController.addOrder) //OK
+router.put('/orders/:id/prevState', orderController.prevStateOrder) //
+router.put('/orders/:id/nextState', orderController.nextStateOrder) //
 router.delete('/orders/:id', orderController.removeOrder)
 
 // 分類相關API
