@@ -17,7 +17,7 @@
           </div>
           <button
             class="btn btn-primary"
-            @click.stop.prevent="handleDeleteButtonClick(dish.id,dish.quantity,dish.price)"
+            @click.stop.prevent="handleDeleteButtonClick(dish.PK,dish.quantity,dish.price)"
           >刪除</button>
         </div>
       </div>
@@ -31,9 +31,14 @@
         v-show="this.tableNum>0 || this.isTakingAway>0"
         class="btn btn-primary col py-2"
         @click.stop.prevent="submitOrder"
-      >新增</button>
+      >結帳</button>
     </div>
-    <h5 class="text-right">金額：{{this.addDishes.amount}}元</h5>
+    <div class="d-flex justify-content-between text-right">
+      <h5 v-show="this.tableNum">桌號：{{this.tableNum}}</h5>
+      <h5 v-show="this.isTakingAway">外帶</h5>
+      <h5 v-show="!this.tableNum && !this.isTakingAway"></h5>
+      <h5>金額：{{this.addDishes.amount}}元</h5>
+    </div>
   </div>
 </template>
 
@@ -56,11 +61,11 @@ export default {
   },
   created() {},
   methods: {
-    handleDeleteButtonClick(dishId, quantity, price) {
+    handleDeleteButtonClick(dishPK, quantity, price) {
       this.addDishes.quantity =
         Number(this.addDishes.quantity) - Number(quantity);
       this.addDishes.amount = this.addDishes.amount - price * quantity;
-      this.$emit("after-delete-dish", dishId);
+      this.$emit("after-delete-dish", dishPK);
     },
     tableNumber() {
       this.$swal
@@ -79,10 +84,6 @@ export default {
           if (+result.value > 0) {
             this.isTakingAway = 0;
             this.tableNum = +result.value;
-            this.$swal({
-              type: "success",
-              title: "成功新增桌號"
-            });
           } else {
             this.$swal({
               type: "warning",
@@ -94,10 +95,6 @@ export default {
     takingAway() {
       this.isTakingAway = 1;
       this.tableNum = 0;
-      this.$swal({
-        type: "success",
-        title: "已選擇外帶"
-      });
     },
     async submitOrder() {
       try {
@@ -123,8 +120,13 @@ export default {
         this.isTakingAway = 0;
         this.memo = "";
         this.$swal({
+          toast: true,
+          position: "top",
+          showConfirmButton: false,
+          timer: 3000,
           type: "success",
-          title: "成功新增清單"
+          title: "成功新增清單",
+          text: ""
         });
       } catch (error) {
         this.$swal({

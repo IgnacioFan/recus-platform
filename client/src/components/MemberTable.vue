@@ -12,7 +12,7 @@
     <tbody class="text-center">
       <tr v-for="user in users" :key="user.id">
         <th>
-          <router-link :to="{path:'/users', params:{id:user.id}}">{{ user.account }}</router-link>
+          <router-link :to="{path:'/users', params:{id:user.id}}">{{ user.name }}</router-link>
         </th>
         <td height="50px">
           <div class="user-name">{{ user.phone }}</div>
