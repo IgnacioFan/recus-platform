@@ -1,3 +1,7 @@
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
+
 const passport = require('passport')
 const passportJWT = require('passport-jwt')
 const ExtractJwt = passportJWT.ExtractJwt
@@ -8,7 +12,7 @@ const User = db.User
 
 const jwtOptions = {}
 jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken()
-jwtOptions.secretOrKey = process.env.JWT_SECRET || 'alphacamp'
+jwtOptions.secretOrKey = process.env.JWT_SECRET || 3000
 
 passport.use(new JwtStrategy(jwtOptions, async (jwt_payload, done) => {
   try {

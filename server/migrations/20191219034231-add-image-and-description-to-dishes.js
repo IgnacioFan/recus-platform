@@ -4,11 +4,11 @@ module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.addColumn('Dishes', 'image', {
       type: Sequelize.STRING,
-      default: 'no image'
+      defaultValue: 'none'
     }).then(() => {
       return queryInterface.addColumn('Dishes', 'description', {
         type: Sequelize.TEXT,
-        default: 'no description'
+        defaultValue: 'none'
       });
     })
 

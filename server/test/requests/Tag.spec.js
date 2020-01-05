@@ -19,7 +19,7 @@ describe('# Admin::Dish Request', () => {
       ).returns(true);
       this.getUser = sinon.stub(
         helper, 'getUser'
-      ).returns({ id: 1, isAdmin: true });
+      ).returns({ id: 1, role: 'admin' })
       await db.Tag.destroy({ where: {}, truncate: true })
       // await ["濃韻", "熟茶", "日月潭"].forEach(item => {
       //   db.Tag.create({ name: item })

@@ -1,5 +1,5 @@
 const db = require('../../models')
-const { Dish, DishAttachment } = db
+const { Dish, DishAttachment, Category } = db
 //const Category = db.Category
 
 
@@ -18,6 +18,19 @@ const dishController = {
 
     return Dish.findAll({ where: whereQuery }).then(dishes => {
       return res.json(dishes)
+    })
+  },
+
+  // 取得單筆菜單的品項
+  getDish: (req, res) => {
+    // if categoryId is 1,2,3,4
+    if (Number(req.params.categoryId) <= 0) {
+      return res.json({ status: 'error', msg: 'wrong dish id' })
+    }
+
+    return Dish.findByPk(req.params.id, { include: [Category] }).then(dish => {
+      //console.log(dish)
+      return res.json({ dish: dish })
     })
   },
 
@@ -51,6 +64,7 @@ const dishController = {
           DishAttachment.create({ TagId: tag.id, DishId: dish.id })
         })
       }
+
       return res.json({ status: 'success', msg: 'successfully add a new dish', dish: dish })
     })
 

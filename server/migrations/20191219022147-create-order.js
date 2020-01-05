@@ -10,31 +10,31 @@ module.exports = {
       },
       state: {
         type: Sequelize.STRING,
-        default: "pending"
+        defaultValue: "pending"
       },
       amount: {
         type: Sequelize.INTEGER,
-        default: 0
+        defaultValue: 0
       },
       quantity: {
         type: Sequelize.INTEGER,
-        default: 0
+        defaultValue: 0
       },
       memo: {
         type: Sequelize.STRING,
-        default: 'none'
+        defaultValue: 'none'
       },
       isTakingAway: {
         type: Sequelize.BOOLEAN,
-        default: false
+        defaultValue: false
       },
       tableNum: {
         type: Sequelize.INTEGER,
-        default: 0
+        defaultValue: 0
       },
       UserId: {
         type: Sequelize.INTEGER,
-        default: 0
+        defaultValue: 0
       },
       createdAt: {
         allowNull: false,
@@ -42,6 +42,9 @@ module.exports = {
       },
       updatedAt: {
         allowNull: false,
+        type: Sequelize.DATE
+      },
+      deletedAt: {
         type: Sequelize.DATE
       }
     });
