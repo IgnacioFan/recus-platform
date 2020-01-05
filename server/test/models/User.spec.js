@@ -15,8 +15,8 @@ const {
 const db = require('../../models')
 const UserModel = require('../../models/user')
 
-describe('# User Model', function () {
-  before(done => {
+describe('# User Model', () => {
+  before((done) => {
     done()
   })
 
@@ -25,33 +25,53 @@ describe('# User Model', function () {
 
   checkModelName(User)('User')
 
-  context('properties', function () {
-    ['account', 'phone', 'password', 'name', 'image', 'isAdmin', 'isValid'].forEach(checkPropertyExists(user))
+  context('properties', () => {
+    ['account', 'phone', 'password', 'role', 'isValid'].forEach(checkPropertyExists(user))
   })
 
-  context('Check associations', function () {
-    const Order = 'Order'
+  context('Check associations', () => {
+
+    const Tag = 'Tag'
+    const Profile = 'Profile'
+    const MemberOrder = 'MemberOrder'
+    const UserPreferred = 'UserPreferred'
 
     before(function () {
-      User.associate({ Order })
+      User.associate({ Profile })
+      User.associate({ MemberOrder })
+      User.associate({ Tag, UserPreferred })
     })
 
-    it('defined a hasMany association with Order', function () {
-      expect(User.hasMany).to.have.been.calledWith(Order);
+    it('defined a hasOne association with Profile', () => {
+      expect(User.hasOne).to.have.been.calledWith(Profile);
+    })
+
+    it('defined a hasMany association with MemberOrder', () => {
+      expect(User.hasMany).to.have.been.calledWith(MemberOrder);
+    })
+
+    it("defined a belongsToMany association with Tag through UserPreferred as 'preferredTags'", () => {
+      expect(User.belongsToMany).to.have.been.calledWith(Tag, {
+        through: UserPreferred,
+        foreignKey: 'UserId',
+        as: 'preferredTags',
+        hooks: true,
+        onDelete: 'cascade'
+      })
     })
   })
 
-  context('CRUD', function () {
+  context('CRUD', () => {
     let data = null
 
-    it('create a new User', function (done) {
+    it('create a new User', (done) => {
       db.User.create({ account: 'aaa', phone: '09111', password: '1234' }).then(function (user) {
         data = user
         done()
       })
     })
 
-    it('read the user', function (done) {
+    it('read the user', (done) => {
       db.User.findByPk(data.id).then(function (user) {
         expect(data.id).to.be.equal(user.id)
         done()
@@ -67,8 +87,17 @@ describe('# User Model', function () {
       })
     })
 
-    it('delete', (done) => {
+    it('soft delete, the user exist', (done) => {
       db.User.destroy({ where: { id: data.id } }).then(() => {
+        db.User.findByPk(data.id, { paranoid: false }).then((user) => {
+          expect(user.deletedAt).to.be.not.equal(null)
+          done()
+        })
+      })
+    })
+
+    it('forced delete, the user is removed', (done) => {
+      db.User.destroy({ where: { id: data.id }, force: true }).then(() => {
         db.User.findByPk(data.id).then((user) => {
           expect(user).to.be.equal(null)
           done()

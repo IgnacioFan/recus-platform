@@ -8,7 +8,11 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      quantity: {
+      perQuantity: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
+      perAmount: {
         type: Sequelize.INTEGER,
         allowNull: false
       },
@@ -19,6 +23,18 @@ module.exports = {
       OrderId: {
         type: Sequelize.INTEGER,
         allowNull: false
+      },
+      perOption: {
+        type: Sequelize.JSON,
+        defaultValue: 'none'
+      },
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE
+      },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE
       }
     });
   },

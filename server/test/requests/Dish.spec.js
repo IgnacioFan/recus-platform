@@ -19,8 +19,7 @@ describe('# Admin::Dish Request', () => {
       ).returns(true)
       this.getUser = sinon.stub(
         helpers, 'getUser'
-      ).returns({ id: 1, isAdmin: true })
-      //await db.User.create({})
+      ).returns({ id: 1, role: 'admin' })
       await db.Category.destroy({ where: {}, truncate: true })
       await db.Dish.destroy({ where: {}, truncate: true })
       await db.Tag.destroy({ where: {}, truncate: true })
@@ -56,17 +55,30 @@ describe('# Admin::Dish Request', () => {
           price: 40,
           CategoryId: 1,
           tags: [1, 2, 3],
-          //option: { 'sugar': ["no", "30%", "half", "70%", "full"] }
+          //option: { sugar: ["no", "30%", "half", "70%", "full"] }
         })
         .expect(200)
         .end(async (err, res) => {
           if (err) return done(err)
-          const dish = await db.Dish.findByPk(4, { include: [{ model: db.Tag, as: 'hasTags' }] })
-          //console.log(dish.hasTags)
-          expect(dish.name).to.be.equal('紅茶')
-          expect(dish.price).to.be.equal(40)
-          expect(dish.hasTags.length).to.be.equal(3)
-          expect({ status: 'success', msg: 'successfully add a new dish', dish: dish })
+          //console.log(res.body)
+          expect(res.body.dish.name).to.be.equal('紅茶')
+          expect(res.body.dish.price).to.be.equal(40)
+          expect(res.body.msg).to.be.equal('successfully add a new dish')
+          //expect(dish.option.sugar).to.have.property('sugar')
+          return done()
+        })
+    })
+
+    it('should get a specific dish with its category', (done) => {
+      request(app)
+        .get('/api/dishes/1')
+        .expect(200)
+        .end(async (err, res) => {
+          if (err) return done(err)
+          //console.log(res.body)
+          expect(res.body.dish.name).to.be.equal('mocha')
+          expect(res.body.dish.price).to.be.equal(60)
+          expect(res.body.dish.Category.name).to.be.equal('new')
           //expect(dish.option.sugar).to.have.property('sugar')
           return done()
         })
@@ -87,9 +99,8 @@ describe('# Admin::Dish Request', () => {
         .expect(200)
         .end(async (err, res) => {
           if (err) return done(err)
-          const dish = await db.Dish.findByPk(4)
-          expect(dish.name).to.be.not.equal('紅茶');
-          expect(dish.name).to.be.equal('阿里山紅茶')
+          expect(res.body.dish.name).to.be.not.equal('紅茶');
+          expect(res.body.dish.name).to.be.equal('阿里山紅茶')
           return done();
 
         })
@@ -121,7 +132,7 @@ describe('# Admin::Dish Request', () => {
 
     this.ensureAuthenticated.restore();
     this.getUser.restore();
-    //await db.User.destroy({ where: {}, truncate: true })
+    await db.User.destroy({ where: {}, truncate: true })
     await db.Category.destroy({ where: {}, truncate: true })
     await db.Dish.destroy({ where: {}, truncate: true })
     await db.Tag.destroy({ where: {}, truncate: true })

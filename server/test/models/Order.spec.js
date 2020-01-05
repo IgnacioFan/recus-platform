@@ -26,7 +26,28 @@ describe('# Order Model', function () {
   })
 
   context('check associations', () => {
+    const Dish = 'Dish'
+    const MemberOrder = 'MemberOrder'
+    const DishCombination = 'DishCombination'
 
+    before(function () {
+      Order.associate({ MemberOrder })
+      Order.associate({ Dish, DishCombination })
+    })
+
+    it('defined a hasMany association with MemberOrder', () => {
+      expect(Order.hasMany).to.have.been.calledWith(MemberOrder);
+    })
+
+    it("defined a belongsToMany association with Tag through OrderPreferred as 'preferredTags'", () => {
+      expect(Order.belongsToMany).to.have.been.calledWith(Dish, {
+        through: DishCombination,
+        foreignKey: 'OrderId',
+        as: 'sumOfDishes',
+        hooks: true,
+        onDelete: 'cascade'
+      })
+    })
   })
 
   context('CRUD', () => {
@@ -60,10 +81,19 @@ describe('# Order Model', function () {
       })
     })
 
-    it('delete', (done) => {
+    it('soft delete, the order exist', (done) => {
       db.Order.destroy({ where: { id: data.id } }).then(() => {
-        db.Order.findByPk(data.id).then((order) => {
-          expect(order).to.be.equal(null)
+        db.Order.findByPk(data.id, { paranoid: false }).then((Order) => {
+          expect(Order.deletedAt).to.be.not.equal(null)
+          done()
+        })
+      })
+    })
+
+    it('forced delete, the Order is removed', (done) => {
+      db.Order.destroy({ where: { id: data.id }, force: true }).then(() => {
+        db.Order.findByPk(data.id).then((Order) => {
+          expect(Order).to.be.equal(null)
           done()
         })
       })

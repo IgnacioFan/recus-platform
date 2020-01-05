@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: false
     });
   DishAttachment.associate = function (models) {
-    // DishAttachment.belongsTo(models.Dish)
+
   };
   return DishAttachment;
 };
