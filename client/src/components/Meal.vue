@@ -116,7 +116,7 @@ export default {
               id: dishId,
               name: dishName,
               price: dishPrice,
-              quantity: result.value
+              quantity: +result.value
             });
             this.$swal({
               toast: true,

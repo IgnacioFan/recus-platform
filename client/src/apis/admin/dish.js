@@ -13,7 +13,7 @@ export default {
       return apiHelper.get(`/admin/dishes?${searchParams.toString()}`)
     },
     post(formData) {
-      return apiHelper.post(`/dishes`, formData)
+      return apiHelper.post(`/admin/dishes`, formData)
     },
     put({ dishId, formData }) {
       return apiHelper.put(`/admin/dishes/${dishId}`, formData)

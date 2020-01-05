@@ -55,8 +55,8 @@ const orderController = {
         return res.json({ status: 'error', msg: '內用請輸入桌號' })
       }
     }
-    console.log(comboDishes)
-      // 新增訂單
+    //console.log(comboDishes)
+    // 新增訂單
     return Order.create({
       quantity: req.body.quantity,
       amount: req.body.amount,
@@ -67,14 +67,14 @@ const orderController = {
     }).then(order => {
       // 新增菜單組合
       comboDishes.forEach(item => {
-        DishCombination.create({
-          OrderId: order.id,
-          DishId: item.DishId,
-          perQuantity: item.quantity,
-          perAmount: item.amount
+          DishCombination.create({
+            OrderId: order.id,
+            DishId: item.DishId,
+            perQuantity: item.quantity,
+            perAmount: item.amount
+          })
         })
-      })
-      console.log(order)
+        //console.log(order)
       return res.json({ order: order })
     })
   },
