@@ -4,6 +4,30 @@ const { User, Order } = db
 const Op = require('sequelize').Op
 
 const memberController = {
+  getCurrentUser: (req, res) => {
+
+    let TokenArray = req.headers.authorization.split(" ");
+    let authorization = TokenArray[1]
+
+    jwt.verify(authorization, process.env.JWT_SECRET, (err, authorizedData) => {
+
+      User.findOne({
+        where: {
+          id: authorizedData.id
+        }
+      }).then(user => {
+        return res.json({
+          id: user.id,
+          account: user.account,
+          phone: user.phone,
+          name: user.name,
+          email: user.email,
+          isAdmin: user.isAdmin
+        })
+      })
+    })
+  },
+
   getUsers: (req, res) => {
     return User.findAll().then(users => {
       //console.log(users)
@@ -64,31 +88,31 @@ const memberController = {
       })
   },
 
-  searchUser: (req, res) => {
+  searchMember: (req, res) => {
     // 電話不為空值
     if (!req.query.phone) {
-      return res.json({ status: 'error', msg: '請輸入電話!' })
+      return res.json({ status: 'error', msg: 'Input field should not be blank!' })
     }
     // 搜尋單一會員，且排除管理者
     User.scope('excludedAdmin').findOne({ where: { phone: req.query.phone } }).then(user => {
       if (!user) {
-        return res.json({ status: 'error', msg: '查無資料!確認電話是否輸入錯誤!' })
+        return res.json({ status: 'error', msg: 'Cannot find such user' })
       }
       return res.json(user)
     })
   },
 
-  searchPhone: (req, res) => {
-    if (req.query.phone == null) {
-      return res.json({ status: 'error', msg: 'Input field should not be blank!' })
-    }
-    User.findOne({ where: { name: req.query.phone } }).then(user => {
-      if (user == null) {
-        return res.json({ status: 'error', msg: 'Can find the the user phone!' })
-      }
-      return res.json(user)
-    })
-  },
+  // searchPhone: (req, res) => {
+  //   if (req.query.phone == null) {
+  //     return res.json({ status: 'error', msg: 'Input field should not be blank!' })
+  //   }
+  //   User.findOne({ where: { name: req.query.phone } }).then(user => {
+  //     if (user == null) {
+  //       return res.json({ status: 'error', msg: 'Can find the the user phone!' })
+  //     }
+  //     return res.json(user)
+  //   })
+  //}
 }
 
 module.exports = memberController

@@ -33,7 +33,7 @@ describe('# Admin::Member request', () => {
 
       it('should get all users', (done) => {
         request(app)
-          .get('/api/users')
+          .get('/api/admin/users')
           .expect(200)
           .end((err, res) => {
             //console.log(res.body)
@@ -45,7 +45,7 @@ describe('# Admin::Member request', () => {
 
       it('should get a specific user who is not admin', (done) => {
         request(app)
-          .get('/api/users/3')
+          .get('/api/admin/users/3')
           .expect(200)
           .end((err, res) => {
             //console.log(res.body.user)
