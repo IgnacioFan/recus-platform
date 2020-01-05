@@ -8,19 +8,24 @@
         >{{ category.name }}</router-link>
       </li>
     </ul>
-    <div class="row border border-warning meal">
-      <div
-        v-for="dish in dishes"
-        :key="dish.id"
-        @click.stop.prevent="addToList(dish.id,dish.name,dish.price)"
-        class="col-lg-4 col-xl-3 dish border border-dark"
-      >
-        <h5 class="dishName">{{ dish.name }}</h5>
-        <div class="row">
-          <div class="col-auto mr-auto px-0">
-            <span>價格：{{ dish.price }}</span>
+    <div class="border border-warning meal overflow-auto">
+      <div class="card-columns">
+        <div
+          v-for="dish in dishes"
+          :key="dish.id"
+          @click.stop.prevent="addToList(dish.id,dish.name,dish.price)"
+          class="card dish border border-dark"
+        >
+          <h5 class="dishName">{{ dish.name }}</h5>
+          <div class="row">
+            <div class="col-auto mr-auto px-0">
+              <span>價格：{{ dish.price }}</span>
+            </div>
+            <button
+              class="btn btn-primary"
+              @click.stop.prevent="showInfo(dish.name,dish.description)"
+            >說明</button>
           </div>
-          <router-link class="btn btn-primary" :to="{ }">說明</router-link>
         </div>
       </div>
     </div>
@@ -91,7 +96,7 @@ export default {
         console.log("error", error);
       }
     },
-    addToList(dishId,dishName, dishPrice) {
+    addToList(dishId, dishName, dishPrice) {
       this.$swal
         .fire({
           title: "<h1>請選擇數量</h1>",
@@ -113,16 +118,32 @@ export default {
               quantity: result.value
             });
             this.$swal({
+              toast: true,
+              position: "top",
+              showConfirmButton: false,
+              timer: 3000,
               type: "success",
-              title: "成功新增餐點"
+              title: "成功新增餐點",
+              text: ""
             });
           } else {
             this.$swal({
+              toast: true,
+              position: "top",
+              showConfirmButton: false,
+              timer: 3000,
               type: "warning",
-              title: "未新增餐點"
+              title: "未新增餐點",
+              text: ""
             });
           }
         });
+    },
+    showInfo(dishName, description) {
+      this.$swal({
+        title: dishName,
+        text: description
+      });
     }
   },
   created() {
@@ -130,7 +151,7 @@ export default {
   },
   watch: {
     initialDishes(dishes) {
-      this.dishes = {}
+      this.dishes = {};
       this.dishes = {
         ...this.dishes,
         ...dishes
@@ -141,8 +162,12 @@ export default {
 </script>
 
 <style scoped>
+/* .container {
+  position: absolute;
+  top: 0;
+} */
 .meal {
-  max-height: calc(100vh - 210px);
+  height: calc(100vh - 210px);
   overflow: auto;
 }
 .dish {

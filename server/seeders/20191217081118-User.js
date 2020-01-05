@@ -1,7 +1,7 @@
 'use strict';
 const bcrpty = require('bcryptjs')
 const faker = require('faker')
-
+faker.locale = "zh_TW";
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
@@ -47,9 +47,9 @@ module.exports = {
       Array.from({ length: 50 }).map(
         (item) => ({
           account: faker.finance.account(),
-          phone: faker.phone.phoneNumber(),
+          phone: faker.phone.phoneNumberFormat(),
           password: bcrpty.hashSync('12345678', 10),
-          name: faker.name.findName(),
+          name: faker.name.firstName() + faker.name.lastName(),
           email: faker.internet.email(),
           image: faker.image.people(),
           isAdmin: false,

@@ -10,12 +10,14 @@
       </li>
     </ul>
     <div class="border border-dark p-0 alist">
-      <DayOrderList
-        :initial-orders="orders"
-        :state-button="stateButton"
-        @after-delete-order="afterDeleteOrder"
-        @after-order-state-switch="afterOrderStateSwitch"
-      />
+      <div class="">
+        <DayOrderList
+          :initial-orders="orders"
+          :state-button="stateButton"
+          @after-delete-order="afterDeleteOrder"
+          @after-order-state-switch="afterOrderStateSwitch"
+        />
+      </div>
     </div>
     <NavbarBottm />
   </div>
@@ -158,7 +160,7 @@ export default {
 
 <style scoped>
 .alist {
-  max-height: calc(100vh - 150px);
+  height: calc(100vh - 150px);
   overflow: auto;
 }
 </style>
