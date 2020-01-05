@@ -28,7 +28,7 @@ describe('# Admin::Dish Request', () => {
 
     it('should get tags', (done) => {
       request(app)
-        .get('/api/tags')
+        .get('/api/admin/tags')
         .end((err, res) => {
           res.status.should.be.eql(200);
           res.body.should.be.a('array');
@@ -40,7 +40,7 @@ describe('# Admin::Dish Request', () => {
 
     it('should post a new tag', (done) => {
       request(app)
-        .post('/api/tags')
+        .post('/api/admin/tags')
         .send('name=微酸')
         .end((err, res) => {
           res.status.should.be.eql(200);
@@ -51,7 +51,7 @@ describe('# Admin::Dish Request', () => {
 
     it('if post the same name of tag', (done) => {
       request(app)
-        .post('/api/tags')
+        .post('/api/admin/tags')
         .send('name=微酸')
         .end(function (err, res) {
           if (err) return done(err);
@@ -64,7 +64,7 @@ describe('# Admin::Dish Request', () => {
 
     it('should update a new name of tag', (done) => {
       request(app)
-        .put('/api/tags/1')
+        .put('/api/admin/tags/1')
         .send('name=微酸2.0')
         .end(function (err, res) {
           if (err) return done(err);
@@ -76,7 +76,7 @@ describe('# Admin::Dish Request', () => {
 
     it('if update the same name of tag', (done) => {
       request(app)
-        .put('/api/tags/1')
+        .put('/api/admin/tags/1')
         .send('name=微酸2.0')
         .end(function (err, res) {
           if (err) return done(err)
@@ -89,7 +89,7 @@ describe('# Admin::Dish Request', () => {
 
     it('should delete tag 1', (done) => {
       request(app)
-        .delete('/api/tags/1')
+        .delete('/api/admin/tags/1')
         .end(function (err, res) {
           if (err) return done(err)
           //console.log(res.body)

@@ -67,7 +67,7 @@ describe('# Admin::User request', () => {
 
       it('should get Unauthorized', (done) => {
         request(app)
-          .get('/api/users')
+          .get('/api/admin/users')
           .expect(401)
           .end((err, res) => {
             if (err) return done(err)
@@ -89,7 +89,7 @@ describe('# Admin::User request', () => {
 
       it('should get error message', (done) => {
         request(app)
-          .get('/api/users')
+          .get('/api/admin/users')
           .expect(401)
           .expect({ status: 'error', msg: 'admin permission denied' }, done)
       })
@@ -116,7 +116,7 @@ describe('# Admin::User request', () => {
 
       it('should get all users', (done) => {
         request(app)
-          .get('/api/users')
+          .get('/api/admin/users')
           .expect(200)
           .end((err, res) => {
             //console.log(res.body.users)

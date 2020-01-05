@@ -35,7 +35,8 @@ app.use(bodyParser.json())
 
 
 // use router
-app.use('/api/', routes)
+//app.use('/api/', routes)
+require('./routes/api/index')(app)
 
 app.listen(port, () => console.log(`server is listening to port ${port}`))
 
