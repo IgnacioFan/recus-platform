@@ -99,8 +99,8 @@
 import NavbarTop from "./../components/NavbarTop";
 import NavbarBottm from "./../components/NavbarBottm";
 import MemberTable from "./../components/MemberTable";
-import usersAPI from "./../apis/users";
-import orderAPI from "./../apis/order";
+import roleMemberAPI from "./../apis/role/member";
+import mainUserAPI from "./../apis/main/user";
 
 export default {
   components: {
@@ -147,7 +147,7 @@ export default {
   methods: {
     async fetchProfiles(page) {
       try {
-        const { data, statusText } = await usersAPI.getMembers(page);
+        const { data, statusText } = await roleMemberAPI.getMembers(page);
 
         if (statusText !== "OK") {
           throw new Error(statusText);
@@ -174,7 +174,7 @@ export default {
     async afterDeleteUser(userId) {
       try {
         // eslint-disable-next-line
-        const { data, statusText } = await usersAPI.deleteUser({
+        const { data, statusText } = await roleMemberAPI.deleteMember({
           userId
         });
 
@@ -207,7 +207,7 @@ export default {
     },
     async afterToggleIsAdmin(userId) {
       try {
-        const { data, statusText } = await usersAPI.toggleAdmin({
+        const { data, statusText } = await roleMemberAPI.toggleAdmin({
           userId
         });
 
@@ -247,7 +247,7 @@ export default {
     },
     async searchUser() {
       try {
-        const response = await orderAPI.user.get({ phone: this.userPhone });
+        const response = await mainUserAPI.user.get({ phone: this.userPhone });
         const { data, statusText } = response;
         if (statusText !== "OK") {
           throw new Error(statusText);

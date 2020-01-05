@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import orderAPI from "./../apis/order";
+import adminCategoryAPI from "./../apis/admin/category";
 
 export default {
   props: {
@@ -66,7 +66,7 @@ export default {
   methods: {
     async fetchCategories() {
       try {
-        const response = await orderAPI.categories.get();
+        const response = await adminCategoryAPI.categories.get();
         const { data, statusText } = response;
         if (statusText !== "OK") {
           throw new Error(statusText);
@@ -79,7 +79,7 @@ export default {
     },
     handleDeleteButtonClick(dishId) {
       this.$emit("after-delete-dish", dishId);
-    },
+    }
   },
   created() {
     this.fetchCategories();

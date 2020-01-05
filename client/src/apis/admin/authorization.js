@@ -1,4 +1,4 @@
-import { apiHelper } from './../utils/helpers'
+import { apiHelper } from '../../utils/helpers'
 
 export default {
   signIn({ account, password }) {
@@ -11,5 +11,8 @@ export default {
     return apiHelper.post("/signUp", {
       ...data
     })
+  },
+  getCurrentUser() {
+    return apiHelper.get(`/admin/current_user`)
   }
 }

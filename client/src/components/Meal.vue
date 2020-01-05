@@ -33,7 +33,8 @@
 </template>
 
 <script>
-import orderAPI from "./../apis/order";
+import adminCategoryAPI from "./../apis/admin/category";
+import mainUserAPI from "./../apis/main/user";
 
 export default {
   props: {
@@ -54,7 +55,7 @@ export default {
   methods: {
     async fetchCategories() {
       try {
-        const response = await orderAPI.categories.get();
+        const response = await adminCategoryAPI.categories.get();
         const { data, statusText } = response;
         if (statusText !== "OK") {
           throw new Error(statusText);
@@ -68,7 +69,7 @@ export default {
     async searchUser() {
       try {
         this.processing = true;
-        const response = await orderAPI.user.get({ phone: this.userPhone });
+        const response = await mainUserAPI.user.get({ phone: this.userPhone });
         const { data, statusText } = response;
         if (statusText !== "OK") {
           throw new Error(statusText);
@@ -162,21 +163,25 @@ export default {
 </script>
 
 <style scoped>
-/* .container {
-  position: absolute;
-  top: 0;
-} */
+.card-columns {
+  column-count: auto;
+}
+.card-columns .card {
+  display: inline-block;
+  width: 33.333332%;
+  margin-bottom: 0;
+}
 .meal {
   height: calc(100vh - 210px);
   overflow: auto;
 }
 .dish {
-  padding: 15px 15px;
+  padding: 10px;
 }
 .dishName {
   margin-bottom: 15px;
 }
 .dish span {
-  vertical-align: middle;
+  vertical-align: -webkit-baseline-middle;
 }
 </style>

@@ -50,7 +50,7 @@ import NavbarTop from "./../components/NavbarTop";
 import NavbarBottm from "./../components/NavbarBottm";
 import ManageTabs from "./../components/ManageTabs";
 import CategoryTable from "./../components/CategoryTable";
-import manageAPI from "./../apis/manage";
+import adminCategoryAPI from "./../apis/admin/category";
 
 export default {
   components: {
@@ -95,7 +95,7 @@ export default {
   methods: {
     async fetchcategories() {
       try {
-        const response = await manageAPI.category.get();
+        const response = await adminCategoryAPI.category.get();
         const { data, statusText } = response;
         if (statusText !== "OK") {
           throw new Error(statusText);
@@ -120,7 +120,7 @@ export default {
           });
           return;
         }
-        const { data, statusText } = await manageAPI.category.post({
+        const { data, statusText } = await adminCategoryAPI.category.post({
           name: this.newCategoryName
         });
 
@@ -188,7 +188,7 @@ export default {
     async updateCategory({ categoryId, name }) {
       try {
         // eslint-disable-next-line
-        const { data, statusText } = await manageAPI.category.put({
+        const { data, statusText } = await adminCategoryAPI.category.put({
           categoryId,
           name
         });
@@ -214,7 +214,7 @@ export default {
     async deleteCategory(categoryId) {
       try {
         // eslint-disable-next-line
-        const { data, statusText } = await manageAPI.category.delete(
+        const { data, statusText } = await adminCategoryAPI.category.delete(
           categoryId
         );
 

@@ -6,7 +6,7 @@
 
 <script>
 import AdminDishForm from "./../components/AdminDishForm";
-import manageAPI from "./../apis/manage";
+import adminDishAPI from "./../apis/admin/dish";
 
 export default {
   components: {
@@ -23,7 +23,7 @@ export default {
     async handleAfterSubmit(formData) {
       try {
         this.isProcessing = true;
-        const { data, statusText } = await manageAPI.dish.post(formData);
+        const { data, statusText } = await adminDishAPI.dish.post(formData);
         if (statusText !== "OK" || data.status !== "success") {
           throw new Error(statusText);
         }

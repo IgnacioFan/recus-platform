@@ -20,9 +20,7 @@ const memberController = {
           id: user.id,
           account: user.account,
           phone: user.phone,
-          name: user.name,
-          email: user.email,
-          isAdmin: user.isAdmin
+          role: user.role
         })
       })
     })

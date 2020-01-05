@@ -37,11 +37,11 @@ const orderController = {
 
     // 計算總額與數量
     req.body.dishes.forEach(dish => {
-      quantity = quantity + dish.quantity
-      amount = amount + dish.price * dish.quantity
-      comboDishes.push({ DishId: dish.id, quantity: dish.quantity, amount: dish.price * dish.quantity })
-    })
-    // 驗證總額
+        quantity = quantity + dish.quantity
+        amount = amount + dish.price * dish.quantity
+        comboDishes.push({ DishId: dish.id, quantity: dish.quantity, amount: dish.price * dish.quantity })
+      })
+      // 驗證總額
     if (Number(req.body.amount) !== amount) {
       return res.json({ status: 'error', msg: '總額不符' })
     }
@@ -56,7 +56,7 @@ const orderController = {
       }
     }
     console.log(comboDishes)
-    // 新增訂單
+      // 新增訂單
     return Order.create({
       quantity: req.body.quantity,
       amount: req.body.amount,
@@ -83,7 +83,7 @@ const orderController = {
   getOrders: (req, res) => {
     if (!req.query.state) return res.json({ status: 'error', msg: '沒有取得狀態' })
     let state = ""
-    // 尚未製作
+      // 尚未製作
     if (req.query.state === 'pending') {
       state = 'pending'
     } // 製作中

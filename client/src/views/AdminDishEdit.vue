@@ -10,7 +10,6 @@
 
 <script>
 import AdminDishForm from "./../components/AdminDishForm";
-//import manageAPI from "./../apis/manage";
 
 export default {
   components: {

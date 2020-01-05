@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import authorizationAPI from "./../apis/authorization";
+import adminAuthorizationAPI from "./../apis/admin/authorization";
 
 export default {
   name: "SignIn",
@@ -78,7 +78,7 @@ export default {
         }
 
         // send log in form to API
-        const response = await authorizationAPI.signIn({
+        const response = await adminAuthorizationAPI.signIn({
           account: this.account,
           password: this.password
         });

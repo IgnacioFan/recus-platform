@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import usersAPI from '../apis/users'
+import adminAuthorizationAPI from '../apis/admin/authorization'
 
 Vue.use(Vuex)
 
@@ -10,10 +10,7 @@ export default new Vuex.Store({
       id: -1,
       account: "",
       phone: "",
-      image: '',
-      name: '',
-      email: '',
-      isAdmin: false
+      role: "member"
     },
     isAuthenticated: false,
     token: ''
@@ -43,7 +40,7 @@ export default new Vuex.Store({
 
     async fetchCurrentUser({ commit }) {
       try {
-        const { data, statusText } = await usersAPI.getCurrentUser()
+        const { data, statusText } = await adminAuthorizationAPI.getCurrentUser()
 
         if (statusText !== 'OK') {
           throw new Error(statusText)
@@ -53,10 +50,7 @@ export default new Vuex.Store({
           id: data.id,
           account: data.account,
           phone: data.phone,
-          image: data.image,
-          name: data.name,
-          email: data.email,
-          isAdmin: data.isAdmin
+          role: data.role
         })
         return true
       } catch (error) {

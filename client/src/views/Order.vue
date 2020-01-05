@@ -26,7 +26,7 @@ import NavbarBottm from "./../components/NavbarBottm";
 import Meal from "./../components/Meal";
 import MealTabs from "./../components/MealTabs";
 import List from "./../components/List";
-import orderAPI from "./../apis/order";
+import adminDishAPI from "./../apis/admin/dish";
 
 export default {
   components: {
@@ -66,7 +66,7 @@ export default {
   methods: {
     async fetchDishes(categoryId) {
       try {
-        const response = await orderAPI.dishes.get(categoryId);
+        const response = await adminDishAPI.dishes.get(categoryId);
         const { data, statusText } = response;
         if (statusText !== "OK") {
           throw new Error(statusText);
