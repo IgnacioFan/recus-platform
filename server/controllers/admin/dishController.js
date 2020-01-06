@@ -9,7 +9,7 @@ const dishController = {
   getDishWithCategory: (req, res) => {
     // if categoryId is 1,2,3,4
     if (Number(req.query.categoryId) <= 0) {
-      return res.json({ status: 'error', msg: 'wrong category id' })
+      return res.json({ status: 'error', msg: 'undefined category id' })
     }
 
     let whereQuery = {
@@ -17,21 +17,20 @@ const dishController = {
     }
 
     return Dish.findAll({ where: whereQuery }).then(dishes => {
-      return res.json(dishes)
+      return res.json({ dishes: dishes })
     })
   },
 
   // 取得單筆菜單的品項
   getDish: (req, res) => {
-    // if categoryId is 1,2,3,4
     if (Number(req.params.categoryId) <= 0) {
-      return res.json({ status: 'error', msg: 'wrong dish id' })
+      return res.json({ status: 'error', msg: 'undefined dish id' })
     }
 
-    return Dish.findByPk(req.params.id, { include: [Category] }).then(dish => {
-      //console.log(dish)
-      return res.json({ dish: dish })
-    })
+    return Dish.findByPk(req.params.id,
+      { include: [Category, { model: db.Tag, as: 'hasTags' }] }).then(dish => {
+        return res.json({ dish: dish })
+      })
   },
 
   // postDish 新增一筆品項
@@ -45,7 +44,7 @@ const dishController = {
     if (Number(req.body.price) < 0)
       return res.json({ status: 'error', msg: 'price can not be negative' })
 
-    if (req.body.option && typeof(req.body.option) !== 'array')
+    if (req.body.option && typeof (req.body.option) !== 'array')
       return res.json({ status: 'error', msg: 'option is wrong format' })
 
     let dishObj = {
@@ -59,13 +58,15 @@ const dishController = {
 
     Dish.create(dishObj).then(dish => {
       //console.log(dish)
+      tags = []
       if (req.body.tags) {
         req.body.tags.forEach(tag => {
           DishAttachment.create({ TagId: tag.id, DishId: dish.id })
+          tags.push({ TagId: tag.id, DishId: dish.id })
         })
       }
 
-      return res.json({ status: 'success', msg: 'successfully add a new dish', dish: dish })
+      return res.json({ status: 'success', msg: 'successfully add a new dish', dish: dish, tags: tags })
     })
 
   },
@@ -82,7 +83,6 @@ const dishController = {
     }
 
     Dish.findByPk(req.params.id).then(dish => {
-      //console.log(req.body.removeTags)
       if (req.body.removeTags) {
         req.body.removeTags.map(id => {
           DishAttachment.destroy({ where: { DishId: dish.id, TagId: id } })
@@ -104,7 +104,7 @@ const dishController = {
           tag.destroy()
         })
         dish.destroy()
-          //console.log(`成功刪除${dish.name}！`)
+        //console.log(`成功刪除${dish.name}！`)
         return res.json({ status: 'success', msg: `成功刪除${dish.name}！` })
       })
     }).catch(err => {

@@ -12,12 +12,12 @@ const tagController = require('../../controllers/admin/tagController')
 
 // 使用者相關API
 router.get('/current_user', memberController.getCurrentUser)
-router.get('/users', memberController.getUsers)
-router.get('/users/:id', memberController.getUser)
-router.get('/members', memberController.getUsersPag)
+router.get('/users', memberController.getUsers) // test route
+router.get('/users/:id', memberController.getUser) // test route
+router.get('/members', memberController.getUserPagination)
 router.get('/members/search', memberController.searchMember)
 router.delete('/members/:id', memberController.deleteUser)
-router.put('/members/admin/:id', memberController.toggleAdmin)
+router.put('/members/:id', memberController.toggleAdmin)
 
 // 菜單相關API
 router.get('/dishes', dishController.getDishWithCategory)

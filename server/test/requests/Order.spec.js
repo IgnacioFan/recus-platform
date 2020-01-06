@@ -30,7 +30,7 @@ const order2 = {
 
 
 describe('# Admin::Order Request', () => {
-  context('go to Cart-Management feature', () => {
+  xcontext('go to Cart-Management feature', () => {
 
     before(async () => {
       this.ensureAuthenticated = sinon.stub(
@@ -77,7 +77,7 @@ describe('# Admin::Order Request', () => {
     })
   })
 
-  xcontext('go to Order-Management feature', () => {
+  context('go to Order-Management feature', () => {
 
     before(async () => {
       this.ensureAuthenticated = sinon.stub(
@@ -89,17 +89,32 @@ describe('# Admin::Order Request', () => {
       await db.Order.destroy({ where: {}, force: true, truncate: true, })
       await db.DishCombination.destroy({ where: {}, truncate: true })
       await db.User.destroy({ where: {}, force: true, truncate: true })
-      //await db.Order.create()
+      await db.Order.create(order1)
+      await db.Order.create(order2)
     })
 
-    it('should get all orders', (done) => {
+    xit('should get all orders', (done) => {
       request(app)
         .get('/api/admin/orders?state=pending')
         .expect(200)
         .end((err, res) => {
           console.log(res.body.orders)
-          expect(res.body).to.have.property('users')
-          // expect(res.body.users.length).to.be.equal(2)
+          expect(res.body).to.have.property('orders')
+          expect(res.body.orders.length).to.be.equal(2)
+          // expect(res.body.users[0].account).to.be.equal('root1')
+          // expect(res.body.users[1].account).to.be.equal('user1')
+          return done()
+        })
+    })
+
+    xit('should get order 1', (done) => {
+      request(app)
+        .get('/api/admin/orders?state=pending')
+        .expect(200)
+        .end((err, res) => {
+          console.log(res.body.orders)
+          expect(res.body).to.have.property('orders')
+          expect(res.body.orders.length).to.be.equal(2)
           // expect(res.body.users[0].account).to.be.equal('root1')
           // expect(res.body.users[1].account).to.be.equal('user1')
           return done()
