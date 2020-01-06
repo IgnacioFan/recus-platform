@@ -13,9 +13,15 @@ module.exports = (sequelize, DataTypes) => {
     role: DataTypes.STRING,
     isValid: DataTypes.BOOLEAN,
   }, {
+      defaultScope: {
+        attributes: ['id', 'account', 'phone', 'role']
+      },
       scopes: {
         'excludedAdmin': {
           where: { 'role': 'member' }
+        },
+        'getMemberData': {
+          attributes: ['id', 'account', 'phone', 'role']
         }
       },
       //deletedAt: 'destroyTime',
@@ -25,11 +31,16 @@ module.exports = (sequelize, DataTypes) => {
   User.associate = function (models) {
     User.findUserByPhone = (value) => {
       return models.User.findOne(
-        { where: { 'phone': value } }
+        { where: { 'phone': value }, include: [models.Profile] }
       )
     }
     User.hasOne(models.Profile)
     User.hasMany(models.MemberOrder)
+    User.belongsToMany(models.Order, {
+      through: models.MemberOrder,
+      foreignKey: 'UserId',
+      as: 'hasManyOrders',
+    })
     User.belongsToMany(models.Tag, {
       through: models.UserPreferred,
       foreignKey: 'UserId',
