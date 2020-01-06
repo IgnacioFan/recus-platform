@@ -28,7 +28,10 @@
                 </svg>
               </div>
               <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                <a class="dropdown-item" href="#!">編輯</a>
+                <router-link
+                  class="dropdown-item"
+                  :to="{ name: 'admin-dish-edit', params: { id: dish.id }}"
+                >編輯</router-link>
                 <a class="dropdown-item" @click.stop.prevent="handleDeleteButtonClick(dish.id)">刪除</a>
               </div>
             </div>

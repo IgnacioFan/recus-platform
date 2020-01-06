@@ -241,6 +241,14 @@ export default {
 
       this.$emit("after-submit", this.dish);
     }
+  },
+  watch: {
+    addDishes(dishesData) {
+      this.dishesData = {
+        ...this.dishesData,
+        ...dishesData
+      };
+    }
   }
 };
 </script>

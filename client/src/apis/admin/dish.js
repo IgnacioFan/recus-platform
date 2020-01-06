@@ -8,9 +8,8 @@ export default {
     }
   },
   dish: {
-    get(orderId) {
-      const searchParams = new URLSearchParams(orderId)
-      return apiHelper.get(`/admin/dishes?${searchParams.toString()}`)
+    get(dishId) {
+      return apiHelper.get(`/admin/dishes/${dishId}`)
     },
     post(formData) {
       return apiHelper.post(`/admin/dishes`, formData)
