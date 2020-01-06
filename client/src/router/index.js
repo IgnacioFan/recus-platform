@@ -76,6 +76,7 @@ const routes = [{
   name: 'admin-dish-edit',
   component: () =>
     import ('../views/AdminDishEdit.vue'),
+  props: true,
   beforeEnter: authorizeIsAdmin
 }, {
   path: '*',
