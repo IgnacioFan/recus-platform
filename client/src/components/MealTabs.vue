@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import orderAPI from "./../apis/order";
+import roleMemberAPI from "./../apis/role/member";
 
 export default {
   data() {
@@ -42,11 +42,13 @@ export default {
   methods: {
     async searchUser() {
       try {
-        const response = await orderAPI.user.get({ phone: this.userPhone });
+        const response = await roleMemberAPI.searchMember({ phone: this.userPhone });
         const { data, statusText } = response;
         if (statusText !== "OK") {
           throw new Error(statusText);
         }
+        // eslint-disable-next-line
+        console.log("data", data);
         if (data.name === undefined) {
           this.$swal({
             toast: true,

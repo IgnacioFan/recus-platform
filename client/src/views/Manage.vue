@@ -58,8 +58,7 @@ import NavbarTop from "./../components/NavbarTop";
 import NavbarBottm from "./../components/NavbarBottm";
 import MealManage from "./../components/MealManage";
 import ManageTabs from "./../components/ManageTabs";
-import orderAPI from "./../apis/order";
-import manageAPI from "./../apis/manage";
+import adminDishAPI from "./../apis/admin/dish";
 
 export default {
   components: {
@@ -91,7 +90,7 @@ export default {
   methods: {
     async fetchDishes(categoryId) {
       try {
-        const response = await orderAPI.dishes.get(categoryId);
+        const response = await adminDishAPI.dishes.get(categoryId);
         const { data, statusText } = response;
         if (statusText !== "OK") {
           throw new Error(statusText);
@@ -108,9 +107,9 @@ export default {
     },
     async afterDeleteDish(dishId) {
       try {
-        const response = await manageAPI.dish.delete(dishId);
+        const response = await adminDishAPI.dish.delete(dishId);
         const { data, statusText } = response;
-        
+
         if (statusText !== "OK" || data.status !== "success") {
           throw new Error(statusText);
         }

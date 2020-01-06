@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import orderAPI from "./../apis/order";
+import adminOrderAPI from "./../apis/admin/order";
 
 export default {
   props: {
@@ -101,7 +101,7 @@ export default {
         if (this.addDishes.list.length === 0) {
           throw new Error(statusText);
         }
-        const response = await orderAPI.list.post({
+        const response = await adminOrderAPI.list.post({
           dishes: this.addDishes.list,
           UserId: this.addDishes.user,
           tableNum: this.tableNum,

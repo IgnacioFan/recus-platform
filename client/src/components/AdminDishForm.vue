@@ -104,8 +104,8 @@
 </template>
 
 <script>
-import orderAPI from "./../apis/order";
-import manageAPI from "./../apis/manage";
+import adminCategoryAPI from "./../apis/admin/category";
+import adminTagAPI from "./../apis/admin/tag";
 
 export default {
   props: {
@@ -161,7 +161,7 @@ export default {
   methods: {
     async fetchCategories() {
       try {
-        const response = await orderAPI.categories.get();
+        const response = await adminCategoryAPI.categories.get();
         const { data, statusText } = response;
         if (statusText !== "OK") {
           throw new Error(statusText);
@@ -175,7 +175,7 @@ export default {
     },
     async fetchTags() {
       try {
-        const response = await manageAPI.tag.get();
+        const response = await adminTagAPI.tag.get();
         const { data, statusText } = response;
         if (statusText !== "OK") {
           throw new Error(statusText);
@@ -189,7 +189,7 @@ export default {
     },
     async searchTag() {
       try {
-        const response = await manageAPI.tag.search({ name: this.tag });
+        const response = await adminTagAPI.tag.search({ name: this.tag });
         const { data, statusText } = response;
         if (statusText !== "OK") {
           throw new Error(statusText);

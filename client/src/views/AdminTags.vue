@@ -51,7 +51,7 @@ import NavbarTop from "./../components/NavbarTop";
 import NavbarBottm from "./../components/NavbarBottm";
 import ManageTabs from "./../components/ManageTabs";
 import CategoryTable from "./../components/CategoryTable";
-import manageAPI from "./../apis/manage";
+import adminTagAPI from "./../apis/admin/tag";
 
 export default {
   components: {
@@ -96,7 +96,7 @@ export default {
   methods: {
     async fetchTags() {
       try {
-        const response = await manageAPI.tag.get();
+        const response = await adminTagAPI.tag.get();
         const { data, statusText } = response;
         if (statusText !== "OK") {
           throw new Error(statusText);
@@ -121,7 +121,7 @@ export default {
           });
           return;
         }
-        const { data, statusText } = await manageAPI.tag.post({
+        const { data, statusText } = await adminTagAPI.tag.post({
           name: this.newTagName
         });
 
@@ -189,7 +189,7 @@ export default {
     async updateTag({ categoryId, name }) {
       try {
         // eslint-disable-next-line
-        const { data, statusText } = await manageAPI.tag.put({
+        const { data, statusText } = await adminTagAPI.tag.put({
           categoryId,
           name
         });
@@ -215,7 +215,7 @@ export default {
     async deleteTag(TagId) {
       try {
         // eslint-disable-next-line
-        const { data, statusText } = await manageAPI.tag.delete(TagId);
+        const { data, statusText } = await adminTagAPI.tag.delete(TagId);
 
         if (statusText !== "OK") {
           throw new Error(statusText);

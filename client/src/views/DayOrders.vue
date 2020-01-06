@@ -27,7 +27,7 @@
 import NavbarTop from "./../components/NavbarTop";
 import NavbarBottm from "./../components/NavbarBottm";
 import DayOrderList from "./../components/DayOrderList";
-import ordersAPI from "./../apis/orders";
+import adminOrderAPI from "./../apis/admin/order";
 
 export default {
   components: {
@@ -61,7 +61,7 @@ export default {
   methods: {
     async fetchOrders(state) {
       try {
-        const response = await ordersAPI.orders.get(state);
+        const response = await adminOrderAPI.orders.get(state);
         const { data, statusText } = response;
         if (statusText !== "OK") {
           throw new Error(statusText);
@@ -94,7 +94,7 @@ export default {
     },
     async afterDeleteOrder(orderId) {
       try {
-        const response = await ordersAPI.orders.delete(orderId);
+        const response = await adminOrderAPI.orders.delete(orderId);
         const { data, statusText } = response;
         if (statusText !== "OK" || data.status !== "success") {
           throw new Error(statusText);
@@ -115,7 +115,7 @@ export default {
     },
     async afterOrderStateSwitch(stateData) {
       try {
-        const response = await ordersAPI.state.put(stateData);
+        const response = await adminOrderAPI.state.put(stateData);
         // eslint-disable-next-line
         const { data, statusText } = response;
         if (statusText !== "OK") {

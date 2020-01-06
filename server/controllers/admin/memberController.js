@@ -3,8 +3,19 @@ const db = require('../../models')
 const { User, Order } = db
 const Op = require('sequelize').Op
 
+// Json Web Token
+const jwt = require('jsonwebtoken')
+const passportJWT = require('passport-jwt')
+  // 
+const ExtractJwt = passportJWT.ExtractJwt
+const JwtStrategy = passportJWT.Strategy
+
 const memberController = {
   getCurrentUser: (req, res) => {
+
+    if (!req.headers.authorization) {
+      return res.json({ status: 'error', msg: 'permission denied for users' })
+    }
 
     let TokenArray = req.headers.authorization.split(" ");
     let authorization = TokenArray[1]
@@ -20,9 +31,7 @@ const memberController = {
           id: user.id,
           account: user.account,
           phone: user.phone,
-          name: user.name,
-          email: user.email,
-          isAdmin: user.isAdmin
+          role: user.role
         })
       })
     })

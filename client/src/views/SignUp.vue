@@ -86,6 +86,8 @@
 </template>
 
 <script>
+import adminAuthorizationAPI from "./../apis/admin/authorization";
+
 export default {
   /* eslint-disable */
   data() {
@@ -109,7 +111,7 @@ export default {
 
       this.isProcessing = true;
 
-      authorizationAPI
+      adminAuthorizationAPI
         .signUp({
           account: this.account,
           phone: this.phone,
