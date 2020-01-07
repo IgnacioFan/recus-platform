@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const userController = require('../../controllers/admin/userController')
+const userController = require('../../controllers/main/userController')
 const memberController = require('../../controllers/admin/memberController')
 const dishController = require('../../controllers/admin/dishController')
 const orderController = require('../../controllers/admin/orderController')
@@ -10,7 +10,7 @@ const tagController = require('../../controllers/admin/tagController')
 // multer setup
 
 
-// 使用者相關API
+// 會員相關API
 router.get('/user', userController.getCurrentUser)
 router.get('/users', memberController.getUsers) // test route
 router.get('/users/:id', memberController.getUser) // test route

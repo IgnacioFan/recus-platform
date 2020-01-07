@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const userController = require('../../controllers/admin/userController')
+const userController = require('../../controllers/main/userController')
 const { signupValidationRules, signinValidRules, validate } = require('../../controllers/validator')
 
 // 登入/登出

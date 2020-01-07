@@ -1,4 +1,5 @@
 const admin = require('./adminRoute')
+const member = require('./memberRoute')
 const main = require('./mainRoute')
 
 // 引入JWT需要的middleware
@@ -23,11 +24,12 @@ const authenticatedAdmin = (req, res, next) => {
   if (req.user.role === 'admin') {
     return next()
   } else {
-    return res.status(401).json({ status: 'error', msg: 'admin permission denied' })
+    return res.status(401).json({ status: 'error', msg: '不是管理者，權限不足！' })
   }
 }
 
 module.exports = (app) => {
   app.use('/api/', main)
+  app.use('/api/member', authenticated, getUser, member)
   app.use('/api/admin', authenticated, getUser, authenticatedAdmin, admin)
 }
