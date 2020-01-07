@@ -1,5 +1,5 @@
 const router = require('express').Router()
-
+const userController = require('../../controllers/admin/userController')
 const memberController = require('../../controllers/admin/memberController')
 const dishController = require('../../controllers/admin/dishController')
 const orderController = require('../../controllers/admin/orderController')
@@ -11,10 +11,10 @@ const tagController = require('../../controllers/admin/tagController')
 
 
 // 使用者相關API
-router.get('/current_user', memberController.getCurrentUser)
+router.get('/user', userController.getCurrentUser)
 router.get('/users', memberController.getUsers) // test route
 router.get('/users/:id', memberController.getUser) // test route
-router.get('/members', memberController.getUserPagination)
+router.get('/members', memberController.getMemberPagination)
 router.get('/members/search', memberController.searchMember)
 router.delete('/members/:id', memberController.deleteUser)
 router.put('/members/:id', memberController.toggleAdmin)

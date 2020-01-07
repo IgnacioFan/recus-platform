@@ -3,40 +3,14 @@ const db = require('../../models')
 const { User, Profile, Order, MemberOrder } = db
 const Op = require('sequelize').Op
 
-// Json Web Token
-const jwt = require('jsonwebtoken')
-const passportJWT = require('passport-jwt')
-  // 
-const ExtractJwt = passportJWT.ExtractJwt
-const JwtStrategy = passportJWT.Strategy
+// // Json Web Token
+// const jwt = require('jsonwebtoken')
+// const passportJWT = require('passport-jwt')
+// // 
+// const ExtractJwt = passportJWT.ExtractJwt
+// const JwtStrategy = passportJWT.Strategy
 
 const memberController = {
-  getCurrentUser: (req, res) => {
-
-    if (!req.headers.authorization) {
-      return res.json({ status: 'error', msg: 'permission denied for users' })
-    }
-
-    let TokenArray = req.headers.authorization.split(" ");
-    let authorization = TokenArray[1]
-
-    jwt.verify(authorization, process.env.JWT_SECRET, (err, authorizedData) => {
-
-      User.findOne({
-        where: {
-          id: authorizedData.id
-        }
-      }).then(user => {
-        return res.json({
-          id: user.id,
-          account: user.account,
-          phone: user.phone,
-          role: user.role
-        })
-      })
-    })
-  },
-
   getUsers: (req, res) => {
     return User.findAll().then(users => {
       //console.log(users)
@@ -72,7 +46,7 @@ const memberController = {
     })
   },
 
-  getUserPagination: (req, res) => {
+  getMemberPagination: (req, res) => {
     if (!req.query.page || Number(req.query.page) < 1)
       return res.json({ status: 'error', msg: 'page number is undifined!' })
 

@@ -1,19 +1,16 @@
 const bcrypt = require('bcryptjs')
 const db = require('../../models')
-const User = db.User
-const Order = db.Order
+const { User, Profile } = db
 const Op = require('sequelize').Op
 
 // Json Web Token
 const jwt = require('jsonwebtoken')
 const passportJWT = require('passport-jwt')
 // 
-const ExtractJwt = passportJWT.ExtractJwt
-const JwtStrategy = passportJWT.Strategy
+// const ExtractJwt = passportJWT.ExtractJwt
+// const JwtStrategy = passportJWT.Strategy
 
 const userController = {
-
-  // 登入
   signIn: (req, res) => {
 
     let username = req.body.account
@@ -63,6 +60,34 @@ const userController = {
         return res.json({ status: 'success', msg: '帳號註冊成功！' })
       })
     }
+  },
+
+  getCurrentUser: (req, res) => {
+
+    if (!req.headers.authorization) {
+      return res.json({ status: 'error', msg: '使用者未得授權！' })
+    }
+
+    let TokenArray = req.headers.authorization.split(" ");
+    let authorization = TokenArray[1]
+    //console.log(req.headers)
+    jwt.verify(authorization, process.env.JWT_SECRET, (err, authorizedData) => {
+
+      User.findOne({
+        include: [Profile],
+        where: { id: authorizedData.id }
+      }).then(user => {
+        //console.log(user)
+        return res.json({
+          id: user.id,
+          account: user.account,
+          phone: user.phone,
+          role: user.role,
+          name: user.Profile.name,
+          avatar: user.Profile.avatar
+        })
+      })
+    })
   }
 }
 

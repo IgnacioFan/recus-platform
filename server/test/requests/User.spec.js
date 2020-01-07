@@ -33,7 +33,7 @@ describe('# Admin::User request', () => {
           .expect(200)
           .end((err, res) => {
             expect(res.user)
-            expect(res.text).to.include('successfully signned up a new account')
+            expect(res.text).to.include('帳號註冊成功！')
             return done()
           })
       })
@@ -101,18 +101,16 @@ describe('# Admin::User request', () => {
       })
     })
 
-    describe('if admin sign in', () => {
-
+    describe('admin has signned in', () => {
       before(async () => {
-        this.ensureAuthenticated = sinon.stub(
-          helper, 'ensureAuthenticated'
-        ).returns(true)
+        let testToken
         this.getUser = sinon.stub(
           helper, 'getUser'
         ).returns({ id: 1, role: 'admin' })
         await db.User.destroy({ where: {}, force: true, truncate: true })
+        await db.Profile.destroy({ where: {}, truncate: true })
         await db.User.create(default1)
-        await db.User.create(default2)
+        await db.Profile.create({ name: 'nacho', email: 'nacho@example.com', avatar: '', UserId: 1 })
       })
 
       it('admin should signin', (done) => {
@@ -123,35 +121,37 @@ describe('# Admin::User request', () => {
           })
           .expect(200)
           .end((err, res) => {
-            // console.log(res.text)
-            console.log(res.body)
+            //console.log(res.body)
             expect(res.body.msg).to.include('ok')
             expect(res.body).to.have.property('user')
             expect(res.body.user.role).to.be.equal('admin')
+            testToken = res.body.token
+            console.log(testToken)
             return done()
           })
       })
 
-      it('should get all users', (done) => {
+      it('should get current user', (done) => {
         request(app)
-          .get('/api/admin/users')
+          .get('/api/admin/user')
+          .set('Authorization', `bearer ${testToken}`)
           .expect(200)
           .end((err, res) => {
-            //console.log(res.body.users)
-            expect(res.body).to.have.property('users')
-            expect(res.body.users.length).to.be.equal(2)
-            expect(res.body.users[0].account).to.be.equal('root1')
-            expect(res.body.users[1].account).to.be.equal('user1')
+            // console.log(res.text)
+            //console.log(res.body)
+            expect(res.body.id).to.be.equal(1)
+            expect(res.body.phone).to.be.equal('0900')
+            expect(res.body.role).to.be.equal('admin')
+            expect(res.body.name).to.be.equal('nacho')
             return done()
           })
       })
 
       after(async () => {
-        this.ensureAuthenticated.restore()
         this.getUser.restore()
         await db.User.destroy({ where: {}, force: true, truncate: true })
+        await db.Profile.destroy({ where: {}, truncate: true })
       })
     })
-
   })
 })

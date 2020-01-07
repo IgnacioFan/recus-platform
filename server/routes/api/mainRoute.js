@@ -6,5 +6,6 @@ const { signupValidationRules, signinValidRules, validate } = require('../../con
 // 登入/登出
 router.post('/signup', signupValidationRules(), validate, userController.signUp)
 router.post('/signin', signinValidRules(), validate, userController.signIn)
+//router.get('/user', userController.getCurrentUser)
 
 module.exports = router
