@@ -54,7 +54,7 @@ const memberController = {
     let offset = (req.query.page - 1) * pageLimit
 
     User.scope('excludedAdmin', 'getMemberData').findAndCountAll(
-      { include: [MemberOrder], offset: offset, limit: pageLimit })
+      { include: [MemberOrder, { model: Profile, attributes: ['name', 'email'] }], offset: offset, limit: pageLimit })
       .then(user => {
         return res.json({
           users: user.rows,

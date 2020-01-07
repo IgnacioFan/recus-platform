@@ -82,8 +82,8 @@ describe('# Admin::Member request', () => {
           .get('/api/admin/members?page=1')
           .expect(200)
           .end((err, res) => {
-            // console.log(res.body.users)
-            // console.log(res.body.users[0].MemberOrders.length)
+            console.log(res.body.users)
+            console.log(res.body.users[0].MemberOrders.length)
             expect(res.body).to.have.property('users')
             expect(res.body.users[0].account).to.be.equal('user1')
             expect(res.body.users[0].MemberOrders.length).to.be.equal(2)
