@@ -9,8 +9,9 @@ var helper = require('../../_helpers');
 var should = chai.should();
 var expect = chai.expect;
 const db = require('../../models')
-const default1 = { account: 'root1', phone: '0900', password: '12345', role: 'admin' }
-const default2 = { account: 'user1', phone: '0901', password: '12345', role: 'member' }
+const bcrpty = require('bcryptjs')
+const default1 = { account: 'root1', phone: '0900', password: bcrpty.hashSync('12345', 10), role: 'admin' }
+const default2 = { account: 'user1', phone: '0901', password: bcrpty.hashSync('12345', 10), role: 'member' }
 
 
 describe('# Admin::User request', () => {
@@ -27,7 +28,7 @@ describe('# Admin::User request', () => {
         request(app)
           .post('/api/signup')
           .send({
-            account: 'root1', phone: '0900', password: '123456', passwordCheck: '123456'
+            account: 'root1', phone: '0903', password: '123456', passwordCheck: '123456'
           })
           .expect(200)
           .end((err, res) => {
@@ -41,7 +42,7 @@ describe('# Admin::User request', () => {
         request(app)
           .post('/api/signin')
           .send({
-            account: 'root1', phone: '0900', password: '123456'
+            account: '0900', password: '12345'
           })
           .expect(200)
           .end((err, res) => {
@@ -112,6 +113,23 @@ describe('# Admin::User request', () => {
         await db.User.destroy({ where: {}, force: true, truncate: true })
         await db.User.create(default1)
         await db.User.create(default2)
+      })
+
+      it('admin should signin', (done) => {
+        request(app)
+          .post('/api/signin')
+          .send({
+            account: '0900', password: '12345'
+          })
+          .expect(200)
+          .end((err, res) => {
+            // console.log(res.text)
+            console.log(res.body)
+            expect(res.body.msg).to.include('ok')
+            expect(res.body).to.have.property('user')
+            expect(res.body.user.role).to.be.equal('admin')
+            return done()
+          })
       })
 
       it('should get all users', (done) => {

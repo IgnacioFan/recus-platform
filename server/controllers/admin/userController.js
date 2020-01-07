@@ -27,11 +27,12 @@ const userController = {
         ]
       }
     }).then(user => {
-      if (!user) return res.status(401).json({ status: 'error', msg: '該使用者不存在' })
+      //console.log(user)
+      if (!user) return res.status(401).json({ status: 'error', msg: '找不到該使用者！' })
       if (!bcrypt.compareSync(password, user.password)) {
-        // status 401 no permission
-        return res.status(401).json({ status: 'error', msg: '密碼不合' })
+        return res.status(401).json({ status: 'error', msg: '密碼錯誤！' })
       }
+
       // sign a token to accessible user
       var payload = { id: user.id }
       var token = jwt.sign(payload, process.env.JWT_SECRET)
@@ -51,7 +52,7 @@ const userController = {
 
   signUp: (req, res) => {
     if (req.body.passwordCheck !== req.body.password) {
-      return res.json({ status: 'error', msg: '兩次密碼輸入不同！' })
+      return res.json({ status: 'error', msg: '輸入兩組不同密碼！' })
     } else {
       User.create({
         account: req.body.account,
@@ -59,7 +60,7 @@ const userController = {
         email: req.body.email,
         password: bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10), null)
       }).then(user => {
-        return res.json({ status: 'success', msg: 'successfully signned up a new account' })
+        return res.json({ status: 'success', msg: '帳號註冊成功！' })
       })
     }
   }

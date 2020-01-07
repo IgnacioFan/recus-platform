@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
     isValid: DataTypes.BOOLEAN,
   }, {
       defaultScope: {
-        attributes: ['id', 'account', 'phone', 'role']
+        //attributes: ['id', 'account', 'phone', 'role']
       },
       scopes: {
         'excludedAdmin': {

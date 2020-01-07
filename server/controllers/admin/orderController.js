@@ -37,11 +37,11 @@ const orderController = {
 
     // 計算總額與數量
     req.body.dishes.forEach(dish => {
-        quantity = quantity + dish.quantity
-        amount = amount + dish.price * dish.quantity
-        comboDishes.push({ DishId: dish.id, quantity: dish.quantity, amount: dish.price * dish.quantity })
-      })
-      // 驗證總額
+      quantity = quantity + dish.quantity
+      amount = amount + dish.price * dish.quantity
+      comboDishes.push({ DishId: dish.id, quantity: dish.quantity, amount: dish.price * dish.quantity })
+    })
+    // 驗證總額
     if (Number(req.body.amount) !== amount) {
       return res.json({ status: 'error', msg: '總額不符' })
     }
@@ -67,14 +67,14 @@ const orderController = {
     }).then(order => {
       // 新增菜單組合
       comboDishes.forEach(item => {
-          DishCombination.create({
-            OrderId: order.id,
-            DishId: item.DishId,
-            perQuantity: item.quantity,
-            perAmount: item.amount
-          })
+        DishCombination.create({
+          OrderId: order.id,
+          DishId: item.DishId,
+          perQuantity: item.quantity,
+          perAmount: item.amount
         })
-        //console.log(order)
+      })
+      //console.log(order)
       return res.json({ order: order })
     })
   },
@@ -83,7 +83,7 @@ const orderController = {
   getOrders: (req, res) => {
     if (!req.query.state) return res.json({ status: 'error', msg: '沒有取得狀態' })
     let state = ""
-      // 尚未製作
+    // 尚未製作
     if (req.query.state === 'pending') {
       state = 'pending'
     } // 製作中
@@ -101,7 +101,7 @@ const orderController = {
     }
 
     if (state !== '') {
-      return Order.scope('todayOrder').findAll({
+      return Order.findAll({
         include: [{ model: db.Dish, attributes: ['name'], as: 'sumOfDishes', through: { attributes: ['quantity'] } }],
         where: { state: state }
       }).then(orders => {
@@ -115,9 +115,9 @@ const orderController = {
 
   // 顯示單筆訂單
   getOrder: (req, res) => {
-    return Order.scope('todayOrder').findByPk(req.params.id).then(order => {
+    return Order.findByPk(req.params.id).then(order => {
       if (!order) return res.json({ status: 'error', msg: '查無資料' })
-      return res.json(order)
+      return res.json({ order: order })
     })
   },
 

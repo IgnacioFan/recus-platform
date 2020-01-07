@@ -17,7 +17,7 @@ jwtOptions.secretOrKey = process.env.JWT_SECRET || 3000
 passport.use(new JwtStrategy(jwtOptions, async (jwt_payload, done) => {
   try {
     const user = await User.findByPk(jwt_payload.id)
-    console.log('hi', user)
+    //console.log('hi', user)
     if (!user) return done(null, false)
     return done(null, user)
   } catch (err) {

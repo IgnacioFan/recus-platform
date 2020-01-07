@@ -107,14 +107,14 @@ describe('# Admin::Order Request', () => {
         })
     })
 
-    xit('should get order 1', (done) => {
+    it('should get order 1', (done) => {
       request(app)
-        .get('/api/admin/orders?state=pending')
+        .get('/api/admin/orders/1')
         .expect(200)
         .end((err, res) => {
-          console.log(res.body.orders)
-          expect(res.body).to.have.property('orders')
-          expect(res.body.orders.length).to.be.equal(2)
+          console.log(res.body)
+          expect(res.body).to.have.property('order')
+          //expect(res.body.orders.length).to.be.equal(2)
           // expect(res.body.users[0].account).to.be.equal('root1')
           // expect(res.body.users[1].account).to.be.equal('user1')
           return done()
