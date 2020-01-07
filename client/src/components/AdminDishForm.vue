@@ -1,7 +1,7 @@
 <template>
-  <div class>
-    <h1 class="text-center my-2">新增菜單</h1>
-    <form class="row" v-show="!isLoading">
+  <div v-show="loadedCategories && loadedTags && loadedDish">
+    <h1 class="text-center my-2">{{this.dishTitle}}</h1>
+    <form class="row">
       <div class="form-group col-6">
         <label for="name">餐點名稱</label>
         <input
@@ -105,20 +105,14 @@
 
 <script>
 import adminCategoryAPI from "./../apis/admin/category";
+import adminDishAPI from "./../apis/admin/dish";
 import adminTagAPI from "./../apis/admin/tag";
 
 export default {
+  name: "AdminDishForm",
   props: {
-    initialDish: {
-      type: Object,
-      default: () => ({
-        name: "",
-        CategoryId: "",
-        price: "",
-        tags: [],
-        description: "",
-        image: ""
-      })
+    dishTitle: {
+      type: String
     },
     isProcessing: {
       type: Boolean,
@@ -131,6 +125,7 @@ export default {
         name: "",
         CategoryId: "",
         price: "",
+        option: "",
         tags: [],
         description: "",
         image: ""
@@ -140,23 +135,30 @@ export default {
       tag: "",
       searchResult: [],
       tagSelected: [],
-      isLoading: true
+      loadedCategories: false,
+      loadedTags: false,
+      loadedDish: false
     };
   },
   computed: {
     tagsDisplay: function() {
       let tagBox = [...this.searchResult, ...this.allTags];
-      const filtered = tagBox.filter(function({id, name}) {
-        const key =`${id}${name}`;
+      const filtered = tagBox.filter(function({ id, name }) {
+        const key = `${id}${name}`;
         return !this.has(key) && this.add(key);
-      }, new Set);
+      }, new Set());
       let e = filtered.slice(0, 6);
       return e;
     }
   },
+  watch: {},
   created() {
     this.fetchCategories();
     this.fetchTags();
+    if(typeof this.$route.params.id === "number"){      
+    const { id } = this.$route.params;
+    this.fetchDish(id);
+    }else{this.loadedDish = true;}
   },
   methods: {
     async fetchCategories() {
@@ -167,8 +169,9 @@ export default {
           throw new Error(statusText);
         }
         this.categories = data;
-        this.isLoading = false;
+        this.loadedCategories = true;
       } catch (error) {
+        this.loadedCategories = true;
         // eslint-disable-next-line
         console.log("error", error);
       }
@@ -182,7 +185,38 @@ export default {
         }
 
         this.allTags = data;
+        this.loadedTags = true;
       } catch (error) {
+        this.loadedTags = true;
+        // eslint-disable-next-line
+        console.log("error", error);
+      }
+    },
+    async fetchDish(id) {
+      try {
+        const { data, statusText } = await adminDishAPI.dish.get(id);
+        if (statusText !== "OK") {
+          throw new Error(statusText);
+        }
+
+        this.dish.name = data.dish.name;
+        this.dish.CategoryId = data.dish.CategoryId;
+        this.dish.price = data.dish.price;
+        this.dish.tags = data.dish.hasTags;
+        this.dish.description = data.dish.description;
+        this.dish.image = data.dish.image;
+        this.loadedDish = true;
+      } catch (error) {
+        this.loadedDish = true;
+        this.$swal({
+          toast: true,
+          position: "top",
+          showConfirmButton: false,
+          timer: 3000,
+          type: "warning",
+          title: "找不到菜單，請稍後再試",
+          text: ""
+        });
         // eslint-disable-next-line
         console.log("error", error);
       }
@@ -193,6 +227,17 @@ export default {
         const { data, statusText } = response;
         if (statusText !== "OK") {
           throw new Error(statusText);
+        }
+        if (data.length === 0) {
+          this.$swal({
+            toast: true,
+            position: "top",
+            showConfirmButton: false,
+            timer: 3000,
+            type: "warning",
+            title: "未找到相關標籤",
+            text: ""
+          });
         }
 
         this.searchResult = data;
@@ -240,14 +285,6 @@ export default {
       }
 
       this.$emit("after-submit", this.dish);
-    }
-  },
-  watch: {
-    addDishes(dishesData) {
-      this.dishesData = {
-        ...this.dishesData,
-        ...dishesData
-      };
     }
   }
 };

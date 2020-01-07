@@ -7,7 +7,7 @@
     class="masonry-container"
   >
     <div v-masonry-tile class="item" v-for="order in orders" :key="order.id">
-      <table class="table table-striped table-bordered table-hover mb-0">
+      <table class="table table-striped table-hover mb-0">
         <thead>
           <tr>
             <th>
@@ -83,14 +83,16 @@ import { timeFromFilter } from "./../utils/mixins";
 export default {
   mixins: [timeFromFilter],
   props: {
-    initialOrders: {},
+    initialOrders: {
+      type: Array
+    },
     stateButton: {
       type: Object
     }
   },
   data() {
     return {
-      orders: this.initialOrders.orders,
+      orders: this.initialOrders,
       tableNum: 0,
       isTakingAway: 0,
       memo: "",

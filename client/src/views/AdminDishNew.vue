@@ -1,6 +1,11 @@
 <template>
   <div class="container">
-    <AdminDishForm :is-processing="isProcessing" @after-submit="handleAfterSubmit" />
+      <AdminDishForm
+        :dish-title="title"
+        :is-processing="isProcessing"
+        :loaded-dish="loadedDish"
+        @after-submit="handleAfterSubmit"
+      />
   </div>
 </template>
 
@@ -14,7 +19,9 @@ export default {
   },
   data() {
     return {
-      isProcessing: false
+      title: "新增菜單",
+      isProcessing: false,
+      loadedDish: true
     };
   },
   computed: {},

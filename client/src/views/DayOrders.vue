@@ -1,24 +1,28 @@
 <template>
   <div>
     <NavbarTop :initial-title="title" />
-    <ul class="nav nav-pills">
-      <li v-for="category in categories" :key="category.id" class="nav-item">
-        <router-link
-          class="nav-link"
-          :to="{ name: 'day-orders', query: { state: category.id } }"
-        >{{ category.name }}</router-link>
-      </li>
-    </ul>
-    <div class="border border-dark p-0 alist">
-      <div class="">
-        <DayOrderList
-          :initial-orders="orders"
-          :state-button="stateButton"
-          @after-delete-order="afterDeleteOrder"
-          @after-order-state-switch="afterOrderStateSwitch"
-        />
-      </div>
-    </div>
+      <Spinner v-if="isLoading" />
+      <template v-else>
+        <ul class="nav nav-pills">
+          <li v-for="category in categories" :key="category.id" class="nav-item">
+            <router-link
+              class="nav-link"
+              :to="{ name: 'day-orders', query: { state: category.id } }"
+            >{{ category.name }}</router-link>
+          </li>
+        </ul>
+        <div class="border border-dark p-0 alist">
+          <h1 v-if="!orders.length > 0"  class="warningText">Oops!沒有任何訂單，新增一些訂單吧!</h1>
+          <div v-else>
+            <DayOrderList
+              :initial-orders="orders"
+              :state-button="stateButton"
+              @after-delete-order="afterDeleteOrder"
+              @after-order-state-switch="afterOrderStateSwitch"
+            />
+          </div>
+        </div>
+      </template>
     <NavbarBottm />
   </div>
 </template>
@@ -28,12 +32,14 @@ import NavbarTop from "./../components/NavbarTop";
 import NavbarBottm from "./../components/NavbarBottm";
 import DayOrderList from "./../components/DayOrderList";
 import adminOrderAPI from "./../apis/admin/order";
+import Spinner from "./../components/Spinner";
 
 export default {
   components: {
     NavbarTop,
     NavbarBottm,
-    DayOrderList
+    DayOrderList,
+    Spinner
   },
   data() {
     return {
@@ -44,18 +50,9 @@ export default {
         { id: "unpaid", name: "未結帳" },
         { id: "paid", name: "已結帳" }
       ],
-      orders: {},
+      orders: [],
       stateButton: {},
-      addDishes: {
-        list: [],
-        user: "",
-        quantity: 0,
-        amount: 0
-      },
-      user: {
-        name: "",
-        phone: ""
-      }
+      isLoading: true
     };
   },
   methods: {
@@ -66,7 +63,7 @@ export default {
         if (statusText !== "OK") {
           throw new Error(statusText);
         }
-        this.orders = data;
+        this.orders = [...data.orders];
         if (state.state === "pending") {
           this.stateButton.left = "";
           this.stateButton.right = "製作中";
@@ -83,7 +80,11 @@ export default {
           this.stateButton.left = "未結帳";
           this.stateButton.right = "";
         }
+        // eslint-disable-next-line
+        console.log("data", data);
+        this.isLoading = false;
       } catch (error) {
+        this.isLoading = false;
         this.$swal({
           type: "warning",
           title: "無法取得資料，請稍後再試"
@@ -162,5 +163,10 @@ export default {
 .alist {
   height: calc(100vh - 150px);
   overflow: auto;
+}
+.warningText {
+  display: flex;
+  justify-content: center;
+  margin-top: 30vh;
 }
 </style>

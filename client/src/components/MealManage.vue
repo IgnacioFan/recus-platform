@@ -9,7 +9,7 @@
       </li>
     </ul>
     <div class="row border border-warning meal">
-      <div v-for="dish in dishes" :key="dish.id" class="col-4 px-1 mb-3">
+      <div v-for="dish in dishes" :key="dish.id" class="col-4 px-1 mb-2">
         <div class="card">
           <div class="card-header d-flex justify-content-between p-0">
             <h5 class="pt-1">{{ dish.name }}</h5>
@@ -45,6 +45,7 @@
           </div>
         </div>
       </div>
+      <div v-show="categories.length === 0">此分類沒有資料</div>
     </div>
   </div>
 </template>
@@ -101,7 +102,7 @@ export default {
 
 <style scoped>
 .meal {
-  max-height: calc(100vh - 210px);
+  height: calc(100vh - 210px);
   overflow: auto;
 }
 

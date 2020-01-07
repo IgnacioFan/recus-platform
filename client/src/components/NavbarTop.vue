@@ -20,6 +20,11 @@ export default {
       type: String
     }
   },
+  data() {
+    return {
+      user: this.$store.state.currentUser
+    };
+  },
   methods: {
     logout() {
       this.$store.commit("revokeAuthentication");

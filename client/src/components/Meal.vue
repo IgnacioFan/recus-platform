@@ -1,6 +1,7 @@
 <template>
   <div class="container">
-    <ul class="nav nav-pills my-2">
+    <h4 class="my-2" v-if="categories.length===0">新增一些分類吧!</h4>
+    <ul v-else class="nav nav-pills my-2">
       <li v-for="category in categories" :key="category.id" class="nav-item">
         <router-link
           class="nav-link"
@@ -9,6 +10,7 @@
       </li>
     </ul>
     <div class="border border-warning meal overflow-auto">
+      <div v-if="!dishes.length > 0">新增一些餐點吧!</div>
       <div class="card-columns">
         <div
           v-for="dish in dishes"
@@ -33,11 +35,13 @@
 </template>
 
 <script>
-import adminCategoryAPI from "./../apis/admin/category";
 import mainUserAPI from "./../apis/main/user";
 
 export default {
   props: {
+    initialCategories: {
+      type: Array
+    },
     initialDishes: {
       type: Array
     }
@@ -48,24 +52,11 @@ export default {
       userName: "",
       dishId: 0,
       isProcessing: false,
-      categories: [],
+      categories: this.initialCategories,
       dishes: this.initialDishes
     };
   },
   methods: {
-    async fetchCategories() {
-      try {
-        const response = await adminCategoryAPI.categories.get();
-        const { data, statusText } = response;
-        if (statusText !== "OK") {
-          throw new Error(statusText);
-        }
-        this.categories = data;
-      } catch (error) {
-        // eslint-disable-next-line
-        console.log("error", error);
-      }
-    },
     async searchUser() {
       try {
         this.processing = true;
@@ -147,15 +138,20 @@ export default {
       });
     }
   },
-  created() {
-    this.fetchCategories();
-  },
+  created() {},
   watch: {
     initialDishes(dishes) {
-      this.dishes = {};
+      this.dishes = [];
       this.dishes = {
         ...this.dishes,
         ...dishes
+      };
+    },
+    initialCategories(categories) {
+      this.categories = {};
+      this.categories = {
+        ...this.categories,
+        ...categories
       };
     }
   }

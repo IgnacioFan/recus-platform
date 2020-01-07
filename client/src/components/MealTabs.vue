@@ -42,14 +42,14 @@ export default {
   methods: {
     async searchUser() {
       try {
-        const response = await roleMemberAPI.searchMember({ phone: this.userPhone });
+        const response = await roleMemberAPI.searchMember({
+          phone: this.userPhone
+        });
         const { data, statusText } = response;
         if (statusText !== "OK") {
           throw new Error(statusText);
         }
-        // eslint-disable-next-line
-        console.log("data", data);
-        if (data.name === undefined) {
+        if (!data) {
           this.$swal({
             toast: true,
             position: "top",
@@ -61,8 +61,8 @@ export default {
           });
         } else {
           this.userPhone = "";
-          this.user.name = data.name;
-          this.$emit("after-add-user", data.id);
+          this.user.name = data.user.Profile.name;
+          this.$emit("after-add-user", data.user.id);
         }
       } catch (error) {
         // eslint-disable-next-line
