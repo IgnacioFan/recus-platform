@@ -38,11 +38,6 @@ const routes = [{
   component: () =>
     import ('../views/MemberManage.vue')
 }, {
-  path: '/members/search',
-  name: 'memberseach',
-  component: () =>
-    import ('../views/MemberManage.vue')
-}, {
   path: '/orders',
   name: 'day-orders',
   component: () =>
@@ -66,17 +61,16 @@ const routes = [{
     import ('../views/AdminTags.vue'),
   beforeEnter: authorizeIsAdmin
 }, {
-  path: '/dish/new',
-  name: 'admin-dish-new',
-  component: () =>
-    import ('../views/AdminDishNew.vue'),
-  beforeEnter: authorizeIsAdmin
-}, {
   path: '/dish/:id/edit',
   name: 'admin-dish-edit',
   component: () =>
     import ('../views/AdminDishEdit.vue'),
-  props: true,
+  beforeEnter: authorizeIsAdmin
+}, {
+  path: '/dish/new',
+  name: 'admin-dish-new',
+  component: () =>
+    import ('../views/AdminDishNew.vue'),
   beforeEnter: authorizeIsAdmin
 }, {
   path: '*',

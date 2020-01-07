@@ -18,7 +18,7 @@
           <div class="user-name">{{ user.phone }}</div>
         </td>
         <td>
-          <div class="user-name">{{ user.consumeCount }}</div>
+          <div class="user-name">{{ user.MemberOrders.length }}</div>
         </td>
         <td>
           <button
@@ -35,7 +35,7 @@
             class="btn btn-danger"
             @click.stop.prevent="toggleIsAdmin(user.id)"
           >
-            <template v-if="user.isAdmin">管理員</template>
+            <template v-if="user.role === `admin`">{{ user.role }}</template>
             <template v-else>使用者</template>
           </button>
         </td>

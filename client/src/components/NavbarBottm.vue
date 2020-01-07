@@ -6,7 +6,7 @@
     <router-link class="btn btn-primary col p-3" :to="{ name: 'day-orders'}">
       <p>當日訂單</p>
     </router-link>
-    <router-link class="btn btn-primary col p-3" :to="{ name: 'memberseach'}">
+    <router-link class="btn btn-primary col p-3" :to="{ name: 'members'}">
       <p>會員管理</p>
     </router-link>
     <router-link class="btn btn-primary col p-3" :to="{ name: 'manage-dishes'}">

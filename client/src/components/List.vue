@@ -31,7 +31,8 @@
         v-show="this.tableNum>0 || this.isTakingAway>0"
         class="btn btn-primary col py-2"
         @click.stop.prevent="submitOrder"
-      >結帳</button>
+        :disabled="isProcessing"
+      >{{ isProcessing ? "處理中..." : "結帳" }}</button>
     </div>
     <div class="d-flex justify-content-between text-right">
       <h5 v-show="this.tableNum">桌號：{{this.tableNum}}</h5>
@@ -56,7 +57,8 @@ export default {
       isTakingAway: 0,
       memo: "",
       quantity: 0,
-      amount: 0
+      amount: 0,
+      isProcessing: false
     };
   },
   created() {},
@@ -98,6 +100,7 @@ export default {
     },
     async submitOrder() {
       try {
+        this.isProcessing= true
         if (this.addDishes.list.length === 0) {
           throw new Error(statusText);
         }
@@ -128,6 +131,7 @@ export default {
           title: "成功新增清單",
           text: ""
         });
+        this.isProcessing= false
       } catch (error) {
         this.$swal({
           type: "warning",
@@ -135,6 +139,7 @@ export default {
         });
         // eslint-disable-next-line
         console.log("error", error);
+        this.isProcessing= false
       }
     }
   },

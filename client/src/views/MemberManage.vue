@@ -2,95 +2,97 @@
   <div>
     <NavbarTop :initial-title="title" />
 
-    <div class="row my-lg-4 my-xl-3">
-      <form class="form-inline my-2 my-lg-0 d-inline-block col-4" action="/search">
-        <input
-          class="form-control mr-sm-2"
-          type="text"
-          name="keyword"
-          v-model="userPhone"
-          placeholder="輸入手機電話..."
-        />
-        <button type="button" class="btn btn-primary" @click.stop.prevent="searchUser">搜尋</button>
-      </form>
+    <Spinner v-if="isLoading" />
+    <template v-else>
+      <div class="row my-lg-4 my-xl-3">
+        <form class="form-inline my-2 my-lg-0 d-inline-block col-4" action="/search">
+          <input
+            class="form-control mr-sm-2"
+            type="text"
+            name="keyword"
+            v-model="userPhone"
+            placeholder="輸入手機電話..."
+          />
+          <button type="button" class="btn btn-primary" @click.stop.prevent="searchUser">搜尋</button>
+        </form>
 
-      <div class="d-inline-block col-4 d-flex justify-content-center">
-        <nav aria-label="Page navigation example">
-          <ul class="pagination mb-0">
-            <!-- 回到上一頁 previousPage -->
-            <li v-show="previousPage" class="page-item">
-              <router-link
-                class="page-link"
-                aria-label="Previous"
-                :to="{name: 'members', query: { page: previousPage }}"
-                style="padding-top: 3px;"
+        <div class="d-inline-block col-4 d-flex justify-content-center">
+          <nav aria-label="Page navigation example">
+            <ul class="pagination mb-0">
+              <!-- 回到上一頁 previousPage -->
+              <li v-show="previousPage" class="page-item">
+                <router-link
+                  class="page-link"
+                  aria-label="Previous"
+                  :to="{name: 'members', query: { page: previousPage }}"
+                  style="padding-top: 3px;"
+                >
+                  <span aria-hidden="true">&laquo;</span>
+                </router-link>
+              </li>
+              <!-- 頁碼 -->
+              <li
+                v-for="page in totalPage"
+                :key="page"
+                :class="['page-item', { active: currentPage === page }]"
               >
-                <span aria-hidden="true">&laquo;</span>
-              </router-link>
-            </li>
-            <!-- 頁碼 -->
-            <li
-              v-for="page in totalPage"
-              :key="page"
-              :class="['page-item', { active: currentPage === page }]"
-            >
-              <router-link class="page-link" :to="{name: 'members', query: { page }}">{{ page }}</router-link>
-            </li>
-            <!-- 前往下一頁 nextPage -->
-            <li v-show="nextPage" class="page-item">
-              <router-link
-                class="page-link"
-                :to="{name: 'members', query: { page: nextPage }}"
-                aria-label="Next"
-                style="padding-top: 3px;"
-              >
-                <span aria-hidden="true">&raquo;</span>
-              </router-link>
-            </li>
-          </ul>
-        </nav>
+                <router-link class="page-link" :to="{name: 'members', query: { page }}">{{ page }}</router-link>
+              </li>
+              <!-- 前往下一頁 nextPage -->
+              <li v-show="nextPage" class="page-item">
+                <router-link
+                  class="page-link"
+                  :to="{name: 'members', query: { page: nextPage }}"
+                  aria-label="Next"
+                  style="padding-top: 3px;"
+                >
+                  <span aria-hidden="true">&raquo;</span>
+                </router-link>
+              </li>
+            </ul>
+          </nav>
+        </div>
+
+        <div class="col-4"></div>
       </div>
 
-      <div class="col-4"></div>
-    </div>
-
-    <div v-show="searchResultShow" class="searchResult">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">搜尋結果</h5>
-          </div>
-          <div class="modal-body">
-            <MemberTable
-              :initial-users="searchResult"
-              @after-delete-user="afterDeleteUser"
-              @after-toggle-is-admin="afterToggleIsAdmin"
-            />
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-primary" @click.stop.prevent="closeResult">Close</button>
+      <div v-show="searchResultShow" class="searchResult">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">搜尋結果</h5>
+            </div>
+            <div class="modal-body">
+              <MemberTable
+                :initial-users="searchResult"
+                @after-delete-user="afterDeleteUser"
+                @after-toggle-is-admin="afterToggleIsAdmin"
+              />
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" @click.stop.prevent="closeResult">Close</button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="row">
-      <div class="col">
-        <MemberTable
-          :initial-users="leftTableUsers"
-          @after-delete-user="afterDeleteUser"
-          @after-toggle-is-admin="afterToggleIsAdmin"
-        />
+      <div class="row">
+        <div class="col">
+          <MemberTable
+            :initial-users="leftTableUsers"
+            @after-delete-user="afterDeleteUser"
+            @after-toggle-is-admin="afterToggleIsAdmin"
+          />
+        </div>
+        <div class="col">
+          <MemberTable
+            :initial-users="rightTableUsers"
+            @after-delete-user="afterDeleteUser"
+            @after-toggle-is-admin="afterToggleIsAdmin"
+          />
+        </div>
       </div>
-      <div class="col">
-        <MemberTable
-          :initial-users="rightTableUsers"
-          @after-delete-user="afterDeleteUser"
-          @after-toggle-is-admin="afterToggleIsAdmin"
-        />
-      </div>
-    </div>
-
+    </template>
     <NavbarBottm />
   </div>
 </template>
@@ -101,12 +103,14 @@ import NavbarBottm from "./../components/NavbarBottm";
 import MemberTable from "./../components/MemberTable";
 import roleMemberAPI from "./../apis/role/member";
 import mainUserAPI from "./../apis/main/user";
+import Spinner from "./../components/Spinner";
 
 export default {
   components: {
     NavbarTop,
     NavbarBottm,
-    MemberTable
+    MemberTable,
+    Spinner
   },
   data() {
     return {
@@ -116,7 +120,8 @@ export default {
       userPhone: "",
       totalPage: 1,
       currentPage: 1,
-      searchResultShow: false
+      searchResultShow: false,
+      isLoading: true
     };
   },
   computed: {
@@ -152,17 +157,20 @@ export default {
         if (statusText !== "OK") {
           throw new Error(statusText);
         }
+
         this.totalPage = data.totalPage;
         this.currentPage = data.currentPage;
-        this.users = data.users
+        this.users = [...data.users]
           .map(user => {
             return {
               ...user,
-              consumeCount: user.Orders.length
+              consumeCount: user.MemberOrders.length
             };
           })
           .sort((a, b) => Number(a.id) - Number(b.id));
+        this.isLoading = false;
       } catch (error) {
+        this.isLoading = false;
         this.$swal({
           type: "error",
           title: "無法取得資料，請稍後再試"
@@ -221,7 +229,7 @@ export default {
           } else {
             return {
               ...user,
-              isAdmin: !user.isAdmin
+              role: ""
             };
           }
         });
@@ -252,7 +260,7 @@ export default {
         if (statusText !== "OK") {
           throw new Error(statusText);
         }
-        if (data.name === undefined) {
+        if (!data) {
           this.$swal({
             toast: true,
             position: "top",
@@ -263,10 +271,12 @@ export default {
             text: ""
           });
         } else {
+          // eslint-disable-next-line
+          console.log("data", data);
           this.userPhone = "";
-          this.searchResult = [data];
-          let member = this.searchResult[0].Orders;
-          this.searchResult[0].consumeCount = member.length;
+          this.searchResult = [data.user];
+          let member = this.searchResult[0].Profile;
+          this.searchResult[0].consumeCount = 0 || member.length;
           this.searchResultShow = true;
         }
       } catch (error) {
