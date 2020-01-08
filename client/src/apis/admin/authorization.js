@@ -13,6 +13,6 @@ export default {
     })
   },
   getCurrentUser() {
-    return apiHelper.get(`/admin/current_user`)
+    return apiHelper.get(`/member/user`)
   }
 }

@@ -10,7 +10,9 @@ export default new Vuex.Store({
       id: -1,
       account: "",
       phone: "",
-      role: "member"
+      role: "member",
+      name: "",
+      avatar: ""
     },
     isAuthenticated: false,
     token: ''
@@ -50,7 +52,9 @@ export default new Vuex.Store({
           id: data.id,
           account: data.account,
           phone: data.phone,
-          role: data.role
+          role: data.role,
+          name: data.name,
+          avatar: data.avatar
         })
         return true
       } catch (error) {
