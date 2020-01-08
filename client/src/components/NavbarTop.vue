@@ -1,9 +1,15 @@
 <template>
   <nav class="text-right">
     <h1 class="d-inline float-left">{{this.initialTitle}}</h1>
-    <router-link to="/" class="mr-3">儀錶板</router-link>
-    <router-link to="/" class="mr-3">未製作(N)</router-link>
-    <router-link to="/" class="mr-3">未結帳(N)</router-link>
+    <router-link :to="{name: 'admin-dash-board'}" class="mr-3">儀錶板</router-link>
+    <router-link
+      :to="{name: 'day-orders', query: { state: this.pending }}"
+      class="mr-3"
+    >未製作({{pendingLength}})</router-link>
+    <router-link
+      :to="{name: 'day-orders', query: { state: this.unpaid }}"
+      class="mr-3"
+    >未結帳({{unpaidLength}})</router-link>
     <template>
       <router-link to="#" class="mr-3">
         <img class="userImg" src="../assets/Logo.jpg" alt />
@@ -14,6 +20,8 @@
 </template>
 
 <script>
+import adminOrderAPI from "./../apis/admin/order";
+
 export default {
   props: {
     initialTitle: {
@@ -22,13 +30,47 @@ export default {
   },
   data() {
     return {
-      user: this.$store.state.currentUser
+      user: this.$store.state.currentUser,
+      pending: "pending",
+      unpaid: "unpaid",
+      pendingLength: 0,
+      unpaidLength: 0,
+      pendingLoading: true,
+      unpaidLoading: true
     };
+  },
+  created() {
+    this.fetchOrders("pending");
+    this.fetchOrders("unpaid");
   },
   methods: {
     logout() {
       this.$store.commit("revokeAuthentication");
       this.$router.push("/signin");
+    },
+    async fetchOrders(state) {
+      try {
+        const response = await adminOrderAPI.orders.get({ state: state });
+        const { data, statusText } = response;
+        if (statusText !== "OK") {
+          throw new Error(statusText);
+        }
+        if (state === "pending") {
+          this.pendingLength = data.orders.length;
+        }
+        if (state === "unpaid") {
+          this.unpaidLength = data.orders.length;
+        }
+        this.pendingLoading = false;
+      } catch (error) {
+        this.pendingLoading = false;
+        this.$swal({
+          type: "warning",
+          title: "無法取得資料，請稍後再試"
+        });
+        // eslint-disable-next-line
+        console.log("error", error);
+      }
     }
   }
 };

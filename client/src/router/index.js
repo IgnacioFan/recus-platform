@@ -73,6 +73,12 @@ const routes = [{
     import ('../views/AdminDishNew.vue'),
   beforeEnter: authorizeIsAdmin
 }, {
+  path: '/manage/dashboard',
+  name: 'admin-dash-board',
+  component: () =>
+    import ('../views/AdminDashBoard.vue'),
+  beforeEnter: authorizeIsAdmin
+}, {
   path: '*',
   name: 'not-found',
   component: () =>
