@@ -1,12 +1,13 @@
 <template>
   <nav class="text-right">
     <h1 class="d-inline float-left">{{this.initialTitle}}</h1>
+    <p class="d-inline-block mr-3">Hi,{{user.name}}</p>
     <router-link to="/" class="mr-3">儀錶板</router-link>
     <router-link to="/" class="mr-3">未製作(N)</router-link>
     <router-link to="/" class="mr-3">未結帳(N)</router-link>
     <template>
       <router-link to="#" class="mr-3">
-        <img class="userImg" src="../assets/Logo.jpg" alt />
+        <img class="userImg" :src="user.avatar" alt />
       </router-link>
       <button type="button" class="btn btn-sm btn-warning my-2 my-sm-0" @click="logout">登出</button>
     </template>
