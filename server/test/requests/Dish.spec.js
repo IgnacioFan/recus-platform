@@ -29,11 +29,14 @@ describe('# Admin::Dish Request', () => {
       await db.Dish.create({ name: 'mocha', price: 60, CategoryId: 1 })
       await db.Dish.create({ name: 'americana', price: 50, CategoryId: 2 })
       await db.Dish.create({ name: 'latei', price: 60, CategoryId: 2 })
+      await db.Tag.create({ name: "濃韻" })
+      await db.Tag.create({ name: "中焙" })
+      await db.Tag.create({ name: "義式豆" })
       await db.DishAttachment.create({ DishId: 1, TagId: 1 })
       await db.DishAttachment.create({ DishId: 1, TagId: 2 })
-      await ["濃韻", "中焙", "義式豆"].forEach(item => {
-        db.Tag.create({ name: item })
-      })
+      // await ["濃韻", "中焙", "義式豆"].forEach(item => {
+      //   db.Tag.create({ name: item })
+      // })
     })
 
     it('should get a certain category with its dishes', (done) => {
@@ -77,10 +80,12 @@ describe('# Admin::Dish Request', () => {
         .expect(200)
         .end(async (err, res) => {
           if (err) return done(err)
-          //console.log(res.body)
+          console.log(res.body.dish.hasTags)
+          //console.log(res.body.hasTags[1].name)
           expect(res.body.dish.name).to.be.equal('紅茶')
           expect(res.body.dish.price).to.be.equal(40)
           expect(res.body.dish.Category.name).to.be.equal('new')
+
           expect(res.body.dish.hasTags[0].name).to.be.equal('中焙')
           expect(res.body.dish.hasTags[1].name).to.be.equal('濃韻')
           return done()

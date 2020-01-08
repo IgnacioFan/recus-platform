@@ -5,6 +5,7 @@ const dishController = require('../../controllers/admin/dishController')
 const orderController = require('../../controllers/admin/orderController')
 const categoryController = require('../../controllers/admin/categoryController')
 const tagController = require('../../controllers/admin/tagController')
+const dashboardController = require('../../controllers/admin/dashboardController')
 // middleware setup
 
 // multer setup
@@ -50,5 +51,8 @@ router.get('/categories/:id', categoryController.getCategory)
 router.post('/categories', categoryController.addCategory)
 router.put('/categories/:id', categoryController.updateCategory)
 router.delete('/categories/:id', categoryController.removeCategory)
+
+// 
+router.get('/dashboard', dashboardController.getDashboard)
 
 module.exports = router
