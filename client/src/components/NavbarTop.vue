@@ -1,6 +1,8 @@
 <template>
   <nav class="text-right">
     <h1 class="d-inline float-left">{{this.initialTitle}}</h1>
+
+<p class="d-inline-block mr-3">Hi,{{user.name}}</p>
     <router-link :to="{name: 'admin-dash-board'}" class="mr-3">儀錶板</router-link>
     <router-link
       :to="{name: 'day-orders', query: { state: this.pending }}"
@@ -12,7 +14,7 @@
     >未結帳({{unpaidLength}})</router-link>
     <template>
       <router-link to="#" class="mr-3">
-        <img class="userImg" src="../assets/Logo.jpg" alt />
+        <img class="userImg" :src="user.avatar" alt />
       </router-link>
       <button type="button" class="btn btn-sm btn-warning my-2 my-sm-0" @click="logout">登出</button>
     </template>

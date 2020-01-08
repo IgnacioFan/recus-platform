@@ -128,8 +128,10 @@ export default {
         option: "",
         tags: [],
         description: "",
-        image: ""
+        image: "",
+        removeTags:[]
       },
+      originTags: [],
       categories: [],
       allTags: [],
       tag: "",
@@ -203,6 +205,7 @@ export default {
         this.dish.CategoryId = data.dish.CategoryId;
         this.dish.price = data.dish.price;
         this.dish.tags = data.dish.hasTags;
+        this.originTags = data.dish.hasTags;
         this.dish.description = data.dish.description;
         this.dish.image = data.dish.image;
         this.loadedDish = true;
@@ -283,7 +286,10 @@ export default {
         });
         return;
       }
-
+      
+      this.dish.removeTags = this.originTags.filter(x => !this.dish.tags.includes(x));
+      // eslint-disable-next-line
+        console.log("data", this.dish);
       this.$emit("after-submit", this.dish);
     }
   }

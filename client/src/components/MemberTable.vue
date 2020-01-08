@@ -2,17 +2,21 @@
   <table class="table table-striped table-bordered table-hover">
     <thead class="thead-dark text-center">
       <tr>
-        <th>Name</th>
+        <th>名稱</th>
         <th>手機</th>
         <th>消費次數</th>
         <th>刪除</th>
-        <th>Action</th>
+        <th>權限</th>
       </tr>
     </thead>
     <tbody class="text-center">
       <tr v-for="user in users" :key="user.id">
         <th>
-          <router-link :to="{path:'/users', params:{id:user.id}}">{{ user.name }}</router-link>
+          <router-link
+            v-if="user.Profile"
+            :to="{path:'/users', params:{id:user.id}}"
+          >{{ user.Profile.name }}</router-link>
+          <router-link v-else :to="{path:'/users', params:{id:user.id}}">{{ "User" }}</router-link>
         </th>
         <td height="50px">
           <div class="user-name">{{ user.phone }}</div>
