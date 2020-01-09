@@ -11,8 +11,8 @@ const bodyParser = require('body-parser')
 // const passport = require('./config/passport')
 // const helpers = require('./_helpers')
 // 引入swagger
-const swaggerJsDoc = require('swagger-jsdoc')
-const swaggerUi = require('swagger-ui-express')
+// const swaggerJsDoc = require('swagger-jsdoc')
+// const swaggerUi = require('swagger-ui-express')
 
 
 const app = new express()
