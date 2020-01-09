@@ -24,10 +24,10 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false
       },
-      perOption: {
-        type: Sequelize.JSON,
-        defaultValue: 'none'
-      },
+      // perOption: {
+      //   type: Sequelize.JSON,
+      //   defaultValue: 'none'
+      // },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
