@@ -2,6 +2,7 @@ node_modules
 temp/
 upload/
 
+client
 
 server/test/sum.js
 server/test/test.js

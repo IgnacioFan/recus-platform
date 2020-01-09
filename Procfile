@@ -1,3 +1,2 @@
-cd server
-web: node app.js
+web: node server/app.js
 ps:scale web=1
