@@ -54,8 +54,11 @@ const userController = {
       User.create({
         account: req.body.account,
         phone: req.body.phone,
-        email: req.body.email,
         password: bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10), null)
+      }).then(user => {
+        Profile.create({
+          email: req.body.email,
+        })
       }).then(user => {
         return res.json({ status: 'success', msg: '帳號註冊成功！' })
       })
