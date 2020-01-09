@@ -17,9 +17,6 @@
   "production": {
     "use_env_variable": "CLEARDB_DATABASE_URL",
     "dialect": "mysql",
-    "protocol": "mysql",
-    "dialectOptions": {
-      "ssl": true
-    }
+    "protocol": "mysql"
   }
 }
