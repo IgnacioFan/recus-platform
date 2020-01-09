@@ -50,7 +50,7 @@ const memberController = {
     if (!req.query.page || Number(req.query.page) < 1)
       return res.json({ status: 'error', msg: 'page number is undifined!' })
 
-    const pageLimit = 10
+    const pageLimit = 16
     let offset = (req.query.page - 1) * pageLimit
 
     User.scope('excludedAdmin', 'getMemberData').findAndCountAll(
