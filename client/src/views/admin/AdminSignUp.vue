@@ -20,6 +20,20 @@
       </div>
 
       <div class="form-label-group mb-2">
+        <label for="name">Name</label>
+        <input
+          id="name"
+          v-model="name"
+          name="name"
+          type="text"
+          class="form-control"
+          placeholder="name"
+          required
+          autofocus
+        />
+      </div>
+
+      <div class="form-label-group mb-2">
         <label for="name">Phone</label>
         <input
           id="phone"
@@ -92,6 +106,7 @@ export default {
   /* eslint-disable */
   data() {
     return {
+      account: "",
       name: "",
       email: "",
       password: "",
@@ -101,7 +116,12 @@ export default {
   },
   methods: {
     handleSubmit() {
-      if (!this.account || !this.password || !this.phone || this.email) {
+      if (
+        !this.account || 
+        !this.password || 
+        !this.phone || 
+        !this.email
+        ) {
         Toast.fire({
           type: "warning",
           title: "請填完所有必須資料"
@@ -114,6 +134,7 @@ export default {
       adminAuthorizationAPI
         .signUp({
           account: this.account,
+          name: this.name,
           phone: this.phone,
           email: this.email,
           password: this.password,
@@ -136,16 +157,6 @@ export default {
           console.log(error);
         });
 
-      const data = JSON.stringify({
-        account: this.account,
-        phone: this.phone,
-        email: this.email,
-        password: this.password,
-        passwordCheck: this.passwordCheck
-      });
-
-      // TODO: 向後端驗證使用者登入資訊是否合法
-      console.log("date", data);
     }
   }
 };

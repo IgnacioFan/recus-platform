@@ -111,6 +111,13 @@ router.beforeEach(async(to, from, next) => {
     isAuthenticated = await store.dispatch('fetchCurrentUser')
   }
 
+  // 對於不需要驗證 token 的頁面
+  const pathsWithoutAuthentication = ['sign-up']
+  if (pathsWithoutAuthentication.includes(to.name)) {
+    next()
+    return
+  }
+
   // 如果 token 無效則轉址到登入頁
   if (!isAuthenticated && to.name !== 'admin-sign-in') {
     next('/admin/signin')
