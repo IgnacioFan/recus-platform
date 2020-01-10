@@ -6,7 +6,7 @@
         <button class="d-none">菜單區</button>
       </div>
       <div>
-        <p class="d-inline-block mb-0 mr-3">{{this.user.name || "userName"}}</p>
+        <p class="d-inline-block text-capitalize mb-0 mr-3">{{this.user.name || "userName"}}</p>
         <form class="form-inline my-2 my-lg-0 d-inline-block">
           <input
             class="form-control mr-sm-2"
@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import roleMemberAPI from "./../apis/role/member";
+import roleMemberAPI from "../../apis/role/member";
 
 export default {
   data() {

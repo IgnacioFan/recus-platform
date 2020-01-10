@@ -1,15 +1,15 @@
 <template>
   <div class="row fixed-bottom">
-    <router-link class="btn btn-primary col p-3" :to="{ name: 'order'}">
+    <router-link class="btn btn-primary col p-3" :to="{ name: 'admin-order'}">
       <p>店內點餐</p>
     </router-link>
-    <router-link class="btn btn-primary col p-3" :to="{ name: 'day-orders'}">
+    <router-link class="btn btn-primary col p-3" :to="{ name: 'admin-day-orders'}">
       <p>當日訂單</p>
     </router-link>
-    <router-link class="btn btn-primary col p-3" :to="{ name: 'members'}">
+    <router-link class="btn btn-primary col p-3" :to="{ name: 'admin-manage-members'}">
       <p>會員管理</p>
     </router-link>
-    <router-link class="btn btn-primary col p-3" :to="{ name: 'manage-dishes'}">
+    <router-link class="btn btn-primary col p-3" :to="{ name: 'admin-manage-meal'}">
       <p>菜單管理</p>
     </router-link>
   </div>
@@ -20,7 +20,7 @@ export default {
   methods: {
     logout() {
       this.$store.commit("revokeAuthentication");
-      this.$router.push("/signin");
+      this.$router.push("/admin/signin");
     }
   }
 };

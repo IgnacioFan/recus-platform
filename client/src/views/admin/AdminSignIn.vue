@@ -42,7 +42,7 @@
 
       <div class="text-center mb-3">
         <p>
-          <router-link to="/signup">Sign Up</router-link>
+          <router-link to="/admin/signup">Sign Up</router-link>
         </p>
       </div>
 
@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import adminAuthorizationAPI from "./../apis/admin/authorization";
+import adminAuthorizationAPI from "../../apis/admin/authorization";
 
 export default {
   name: "SignIn",
@@ -94,7 +94,7 @@ export default {
 
         this.$store.commit("setCurrentUser", data.user);
 
-        this.$router.push("/order");
+        this.$router.push("/admin/order");
 
         this.$swal({
           toast: true,

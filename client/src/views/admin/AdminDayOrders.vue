@@ -7,7 +7,7 @@
           <li v-for="category in categories" :key="category.id" class="nav-item">
             <router-link
               class="nav-link"
-              :to="{ name: 'day-orders', query: { state: category.id } }"
+              :to="{ name: 'admin-day-orders', query: { state: category.id } }"
             >{{ category.name }}</router-link>
           </li>
         </ul>
@@ -28,11 +28,11 @@
 </template>
 
 <script>
-import NavbarTop from "./../components/NavbarTop";
-import NavbarBottm from "./../components/NavbarBottm";
-import DayOrderList from "./../components/DayOrderList";
-import adminOrderAPI from "./../apis/admin/order";
-import Spinner from "./../components/Spinner";
+import NavbarTop from "../../components/navbar/NavbarTop";
+import NavbarBottm from "../../components/navbar/NavbarBottm";
+import DayOrderList from "../../components/table/DayOrderList";
+import Spinner from "../../components/spinner/Spinner";
+import adminOrderAPI from "../../apis/admin/order";
 
 export default {
   components: {
@@ -80,8 +80,7 @@ export default {
           this.stateButton.left = "未結帳";
           this.stateButton.right = "";
         }
-        // eslint-disable-next-line
-        console.log("data", data);
+        
         this.isLoading = false;
       } catch (error) {
         this.isLoading = false;

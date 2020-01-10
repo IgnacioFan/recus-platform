@@ -28,14 +28,14 @@
 </template>
 
 <script>
-import NavbarTop from "./../components/NavbarTop";
-import NavbarBottm from "./../components/NavbarBottm";
-import Meal from "./../components/Meal";
-import MealTabs from "./../components/MealTabs";
-import List from "./../components/List";
-import Spinner from "./../components/Spinner";
-import adminDishAPI from "./../apis/admin/dish";
-import adminCategoryAPI from "./../apis/admin/category";
+import NavbarTop from "../../components/navbar/NavbarTop";
+import NavbarBottm from "../../components/navbar/NavbarBottm";
+import Meal from "../../components/table/Meal";
+import MealTabs from "../../components/tabs/MealTabs";
+import List from "../../components/table/List";
+import Spinner from "../../components/spinner/Spinner";
+import adminDishAPI from "../../apis/admin/dish";
+import adminCategoryAPI from "../../apis/admin/category";
 
 export default {
   components: {

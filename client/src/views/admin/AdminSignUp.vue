@@ -76,7 +76,7 @@
 
       <div class="text-center mb-3">
         <p>
-          <router-link to="/signin">Sign In</router-link>
+          <router-link to="/admin/signin">Sign In</router-link>
         </p>
       </div>
 
@@ -86,7 +86,7 @@
 </template>
 
 <script>
-import adminAuthorizationAPI from "./../apis/admin/authorization";
+import adminAuthorizationAPI from "../../apis/admin/authorization";
 
 export default {
   /* eslint-disable */
@@ -124,7 +124,7 @@ export default {
           const { data } = response;
           console.log(data);
           // 成功登入後轉址到登入
-          this.$router.push("/signin");
+          this.$router.push("admin-sign-in");
         })
         .catch(error => {
           // 顯示錯誤提示

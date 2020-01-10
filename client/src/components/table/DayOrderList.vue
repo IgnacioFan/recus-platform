@@ -78,7 +78,7 @@
 </template>
 
 <script>
-import { timeFromFilter } from "./../utils/mixins";
+import { timeFromFilter } from "../../utils/mixins";
 
 export default {
   mixins: [timeFromFilter],
