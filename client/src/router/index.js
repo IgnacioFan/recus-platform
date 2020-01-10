@@ -33,6 +33,11 @@ const routes = [{
   component: () =>
     import('../views/Order.vue')
 }, {
+  path: '/order/index',
+  name: 'order-index',
+  component: () =>
+    import('../views/OrderIndex.vue')
+}, {
   path: '/members',
   name: 'members',
   component: () =>
@@ -91,6 +96,7 @@ const router = new VueRouter({
   routes
 })
 
+/*
 router.beforeEach(async (to, from, next) => {
   const tokenInLocalStorage = localStorage.getItem('token')
   const tokenInStore = store.state.token
@@ -122,6 +128,6 @@ router.beforeEach(async (to, from, next) => {
 
   next()
 })
-
+*/
 
 export default router
