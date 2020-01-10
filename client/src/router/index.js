@@ -81,7 +81,7 @@ const routes = [{
   path: '/manage/dashboard',
   name: 'admin-dash-board',
   component: () =>
-    import ('../views/AdminDashBoard.vue'),
+    import('../views/AdminDashBoard.vue'),
   beforeEnter: authorizeIsAdmin
 }, {
   path: '*',
@@ -95,6 +95,7 @@ const router = new VueRouter({
   mode: 'history',
   routes
 })
+
 /*
 router.beforeEach(async (to, from, next) => {
   const tokenInLocalStorage = localStorage.getItem('token')
@@ -104,6 +105,13 @@ router.beforeEach(async (to, from, next) => {
   // 比較 localStorage 和 store 中的 token 是否一樣
   if (tokenInLocalStorage && tokenInLocalStorage !== tokenInStore) {
     isAuthenticated = await store.dispatch('fetchCurrentUser')
+  }
+
+  // 對於不需要驗證 token 的頁面
+  const pathsWithoutAuthentication = ['sign-up']
+  if (pathsWithoutAuthentication.includes(to.name)) {
+    next()
+    return
   }
 
   // 如果 token 無效則轉址到登入頁
