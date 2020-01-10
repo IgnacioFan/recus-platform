@@ -19,6 +19,7 @@ const dashboardController = {
           // 計算熱門商品
           if (!hotProducts[product.DishId]) {
             hotProducts[product.DishId] = {
+              id: product.DishId,
               name: product.Dish.name,
               count: 1
             }
@@ -31,6 +32,7 @@ const dashboardController = {
             // 計算熱門標籤
             if (!hotTags[tag.id]) {
               hotTags[tag.id] = {
+                id: tag.id,
                 name: tag.name,
                 count: 1
               }
@@ -40,7 +42,11 @@ const dashboardController = {
             }
           }
         }
-        //data 先預留
+        // 篩選前五名的熱門商品
+        hotProducts = Object.values(hotProducts).sort((a, b) => (b.count - a.count)).slice(0, 5)
+        // 篩選前五名的熱門標籤
+        hotTags = Object.values(hotTags).sort((a, b) => (b.count - a.count)).slice(0, 5)
+
         return res.json({ data: dishes, hotProducts: hotProducts, hotTags: hotTags })
       })
   }
