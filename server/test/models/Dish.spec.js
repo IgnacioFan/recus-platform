@@ -105,7 +105,7 @@ describe('# Dish Model', () => {
       })
     })
 
-    it('delete', (done) => {
+    xit('delete', (done) => {
       db.Dish.destroy({ where: { id: data.id } }).then(() => {
         db.Dish.findByPk(data.id).then((dish) => {
           expect(dish).to.be.equal(null)
