@@ -8,7 +8,7 @@ export default {
     })
   },
   signUp(data) {
-    return apiHelper.post("/signUp", {
+    return apiHelper.post('/signup', {
       ...data
     })
   },

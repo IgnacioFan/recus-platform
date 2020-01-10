@@ -21,68 +21,68 @@ const routes = [{
   path: '/signin',
   name: 'sign-in',
   component: () =>
-    import ('../views/SignIn.vue')
+    import('../views/SignIn.vue')
 }, {
   path: '/signup',
   name: 'sign-up',
   component: () =>
-    import ('../views/SignUp.vue')
+    import('../views/SignUp.vue')
 }, {
   path: '/order',
   name: 'order',
   component: () =>
-    import ('../views/Order.vue')
+    import('../views/Order.vue')
 }, {
   path: '/members',
   name: 'members',
   component: () =>
-    import ('../views/MemberManage.vue')
+    import('../views/MemberManage.vue')
 }, {
   path: '/orders',
   name: 'day-orders',
   component: () =>
-    import ('../views/DayOrders.vue')
+    import('../views/DayOrders.vue')
 }, {
   path: '/manage/dishes',
   name: 'manage-dishes',
   component: () =>
-    import ('../views/Manage.vue'),
+    import('../views/Manage.vue'),
   beforeEnter: authorizeIsAdmin
 }, {
   path: '/manage/categories',
   name: 'manage-categories',
   component: () =>
-    import ('../views/AdminCategories.vue'),
+    import('../views/AdminCategories.vue'),
   beforeEnter: authorizeIsAdmin
 }, {
   path: '/manage/tages',
   name: 'manage-tages',
   component: () =>
-    import ('../views/AdminTags.vue'),
+    import('../views/AdminTags.vue'),
   beforeEnter: authorizeIsAdmin
 }, {
   path: '/dish/:id/edit',
   name: 'admin-dish-edit',
   component: () =>
-    import ('../views/AdminDishEdit.vue'),
+    import('../views/AdminDishEdit.vue'),
   beforeEnter: authorizeIsAdmin
 }, {
   path: '/dish/new',
   name: 'admin-dish-new',
   component: () =>
-    import ('../views/AdminDishNew.vue'),
+    import('../views/AdminDishNew.vue'),
   beforeEnter: authorizeIsAdmin
 }, {
   path: '/manage/dashboard',
   name: 'admin-dash-board',
   component: () =>
-    import ('../views/AdminDashBoard.vue'),
+    import('../views/AdminDashBoard.vue'),
   beforeEnter: authorizeIsAdmin
 }, {
   path: '*',
   name: 'not-found',
   component: () =>
-    import ('../views/NotFound.vue')
+    import('../views/NotFound.vue')
 }]
 
 const router = new VueRouter({
@@ -91,7 +91,7 @@ const router = new VueRouter({
   routes
 })
 
-router.beforeEach(async(to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const tokenInLocalStorage = localStorage.getItem('token')
   const tokenInStore = store.state.token
   let isAuthenticated = store.state.isAuthenticated
@@ -99,6 +99,13 @@ router.beforeEach(async(to, from, next) => {
   // 比較 localStorage 和 store 中的 token 是否一樣
   if (tokenInLocalStorage && tokenInLocalStorage !== tokenInStore) {
     isAuthenticated = await store.dispatch('fetchCurrentUser')
+  }
+
+  // 對於不需要驗證 token 的頁面
+  const pathsWithoutAuthentication = ['sign-up']
+  if (pathsWithoutAuthentication.includes(to.name)) {
+    next()
+    return
   }
 
   // 如果 token 無效則轉址到登入頁

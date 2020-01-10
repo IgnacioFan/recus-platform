@@ -49,6 +49,7 @@ const userController = {
 
   signUp: (req, res) => {
     if (req.body.passwordCheck !== req.body.password) {
+      console.log('輸入兩組不同密碼')
       return res.json({ status: 'error', msg: '輸入兩組不同密碼！' })
     } else {
       User.create({
@@ -56,9 +57,11 @@ const userController = {
         phone: req.body.phone,
         password: bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10), null)
       }).then(user => {
+        console.log(user)
         Profile.create({
           name: req.body.name,
-          email: req.body.email
+          email: req.body.email,
+          UserId: user.id
         })
       }).then(user => {
         return res.json({ status: 'success', msg: '帳號註冊成功！' })

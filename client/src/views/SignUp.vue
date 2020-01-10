@@ -101,6 +101,7 @@
 
 <script>
 import adminAuthorizationAPI from "./../apis/admin/authorization";
+import { Toast } from "./../utils/helpers";
 
 export default {
   /* eslint-disable */
@@ -108,6 +109,7 @@ export default {
     return {
       account: "",
       name: "",
+      phone: "",
       email: "",
       password: "",
       passwordCheck: "",
