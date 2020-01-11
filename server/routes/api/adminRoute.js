@@ -7,8 +7,7 @@ const categoryController = require('../../controllers/admin/categoryController')
 const tagController = require('../../controllers/admin/tagController')
 const dashboardController = require('../../controllers/admin/dashboardController')
 // middleware setup
-
-// multer setup
+const { nameValidRules, validate } = require('../../controllers/adminValiator')
 
 
 // 會員相關API
@@ -48,8 +47,8 @@ router.delete('/orders/:id', orderController.removeOrder)
 // 分類相關API
 router.get('/categories', categoryController.getCategories)
 router.get('/categories/:id', categoryController.getCategory)
-router.post('/categories', categoryController.addCategory)
-router.put('/categories/:id', categoryController.updateCategory)
+router.post('/categories', nameValidRules(), validate, categoryController.addCategory)
+router.put('/categories/:id', nameValidRules(), validate, categoryController.updateCategory)
 router.delete('/categories/:id', categoryController.removeCategory)
 
 // 
