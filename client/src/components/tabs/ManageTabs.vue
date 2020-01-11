@@ -17,9 +17,9 @@ export default {
   data() {
     return {
       categories: [
-        { id: 1, name: "菜單", routeName: "manage-dishes" },
-        { id: 2, name: "分類", routeName: "manage-categories" },
-        { id: 3, name: "標籤", routeName: "manage-tages" }
+        { id: 1, name: "菜單", routeName: "admin-manage-meal" },
+        { id: 2, name: "分類", routeName: "admin-manage-categories" },
+        { id: 3, name: "標籤", routeName: "admin-manage-tages" }
       ]
     };
   }

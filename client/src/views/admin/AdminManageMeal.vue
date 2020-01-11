@@ -15,7 +15,7 @@
                   <router-link
                     class="page-link"
                     aria-label="Previous"
-                    :to="{name: 'members', query: { page: previousPage }}"
+                    :to="{name: 'admin-manage-members', query: { page: previousPage }}"
                     style="padding-top: 3px;"
                   >
                     <span aria-hidden="true">&laquo;</span>
@@ -27,13 +27,13 @@
                   :key="page"
                   :class="['page-item', { active: currentPage === page }]"
                 >
-                  <router-link class="page-link" :to="{name: 'members', query: { page }}">{{ page }}</router-link>
+                  <router-link class="page-link" :to="{name: 'admin-manage-members', query: { page }}">{{ page }}</router-link>
                 </li>
                 <!-- 前往下一頁 nextPage -->
                 <li v-show="nextPage" class="page-item">
                   <router-link
                     class="page-link"
-                    :to="{name: 'members', query: { page: nextPage }}"
+                    :to="{name: 'admin-manage-members', query: { page: nextPage }}"
                     aria-label="Next"
                     style="padding-top: 3px;"
                   >
@@ -56,12 +56,13 @@
 </template>
 
 <script>
-import NavbarTop from "./../components/NavbarTop";
-import NavbarBottm from "./../components/NavbarBottm";
-import MealManage from "./../components/MealManage";
-import ManageTabs from "./../components/ManageTabs";
-import adminDishAPI from "./../apis/admin/dish";
-import Spinner from "./../components/Spinner";
+import NavbarTop from "../../components/navbar/NavbarTop";
+import NavbarBottm from "../../components/navbar/NavbarBottm";
+import MealManage from "../../components/table/MealManage";
+import ManageTabs from "../../components/tabs/ManageTabs";
+import Spinner from "../../components/spinner/Spinner";
+import adminDishAPI from "../../apis/admin/dish";
+
 
 export default {
   components: {

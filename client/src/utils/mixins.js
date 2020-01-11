@@ -3,7 +3,7 @@ import moment from 'moment'
 export const timeFromFilter = {
   filters: {
     timeFrom(datetime) {
-      return datetime ? moment(datetime).format('lll') : '-'
+      return datetime ? moment(datetime).locale("zh-tw").format('llll') : '-'
     }
   }
 }
