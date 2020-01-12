@@ -22,8 +22,8 @@ const memberController = {
     if (Number(req.params.id) <= 0) {
       return res.json({ status: 'error', msg: 'user id is undefined!' })
     }
-    // 取出單一會員，且排除管理者
-    User.scope('excludedAdmin', 'getMemberData').findByPk(req.params.id).then(user => {
+    // 取出單一會員
+    User.scope('getMemberData').findByPk(req.params.id).then(user => {
       if (user == null) {
         return res.json({ status: 'error', msg: 'no such user!' })
       }
@@ -37,8 +37,8 @@ const memberController = {
     if (!req.query.phone) {
       return res.json({ status: 'error', msg: 'phone should not be blank!' })
     }
-    // 搜尋單一會員，且排除管理者
-    User.scope('excludedAdmin', 'getMemberData').findUserByPhone(req.query.phone).then(user => {
+    // 搜尋單一會員
+    User.scope('getMemberData').findUserByPhone(req.query.phone).then(user => {
       if (!user) {
         return res.json({ status: 'error', msg: 'no such user!' })
       }
@@ -53,7 +53,7 @@ const memberController = {
     const pageLimit = 16
     let offset = (req.query.page - 1) * pageLimit
 
-    User.scope('excludedAdmin', 'getMemberData').findAndCountAll(
+    User.scope('getMemberData').findAndCountAll(
       { include: [MemberOrder, { model: Profile, attributes: ['name', 'email'] }], offset: offset, limit: pageLimit })
       .then(user => {
         return res.json({

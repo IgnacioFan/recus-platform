@@ -11,8 +11,8 @@ module.exports = (sequelize, DataTypes) => {
       //paranoid: true
     });
   DishCombination.associate = function (models) {
-    DishCombination.belongsTo(models.Dish)
-    DishCombination.belongsTo(models.Order)
+    // DishCombination.belongsTo(models.Dish)
+    // DishCombination.belongsTo(models.Order)
   };
   return DishCombination;
 };
