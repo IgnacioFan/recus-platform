@@ -18,7 +18,7 @@ module.exports = {
           price: faker.commerce.price(),
           image: faker.image.imageUrl(),
           description: faker.lorem.text(),
-          option: '{ "sugar": ["no", "30%", "half", "70%", "full"], "ice": ["no", "less", "normal", "more"] }',
+          //option: '{ "sugar": ["no", "30%", "half", "70%", "full"], "ice": ["no", "less", "normal", "more"] }',
           CategoryId: Math.floor(Math.random() * 2) + 1
         })
       ), {})

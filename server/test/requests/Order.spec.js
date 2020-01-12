@@ -9,28 +9,30 @@ var helpers = require('../../_helpers');
 var should = chai.should();
 var expect = chai.expect;
 const db = require('../../models')
+
 const order1 = {
   quantity: 4,
   amount: 140,
   memo: 'this is first order',
   tableNum: 2,
   isTakingAway: false,
-  UserId: 1,
-  dishes: [{ id: 1, quantity: 2, price: 30 }, { id: 1, quantity: 2, price: 40 }]
+  UserId: 1
 }
 const order2 = {
   quantity: 3,
-  amount: 90,
+  amount: 100,
   memo: 'this is second order',
   tableNum: 0,
   isTakingAway: true,
-  UserId: 1,
-  dishes: [{ id: 1, quantity: 2, price: 30 }, { id: 1, quantity: 1, price: 30 }]
+  UserId: 1
 }
-
+const dishCombo1 = [{ id: 1, quantity: 2, price: 30 }, { id: 2, quantity: 2, price: 40 }]
+const dishCombo2 = [{ id: 1, quantity: 2, price: 30 }, { id: 2, quantity: 1, price: 40 }]
+const dish1 = { name: 'mocha', price: 30, CategoryId: 1 }
+const dish2 = { name: 'latie', price: 40, CategoryId: 1 }
 
 describe('# Admin::Order Request', () => {
-  xcontext('go to Cart-Management feature', () => {
+  context('go to Cart-Management feature', () => {
 
     before(async () => {
       this.ensureAuthenticated = sinon.stub(
@@ -59,7 +61,7 @@ describe('# Admin::Order Request', () => {
         })
         .expect(200)
         .end((err, res) => {
-          console.log(res.body)
+          //console.log(res.body.order)
           expect(res.body).to.have.property('order')
           //expect(res.body.order.state).to.be.equal('pending')
           expect(res.body.order.amount).to.be.equal(100)
@@ -89,20 +91,40 @@ describe('# Admin::Order Request', () => {
       await db.Order.destroy({ where: {}, force: true, truncate: true, })
       await db.DishCombination.destroy({ where: {}, truncate: true })
       await db.User.destroy({ where: {}, force: true, truncate: true })
+      await db.Dish.create(dish1)
+      await db.Dish.create(dish2)
       await db.Order.create(order1)
+      for (let i = 0; i < dishCombo1.length; i++) {
+        await db.DishCombination.create({
+          DishId: dishCombo1[i].id,
+          OrderId: 1,
+          perAmount: dishCombo1[i].price,
+          perQuantity: dishCombo1[i].quantity
+        })
+      }
       await db.Order.create(order2)
+      for (let i = 0; i < dishCombo2.length; i++) {
+        await db.DishCombination.create({
+          DishId: dishCombo2[i].id,
+          OrderId: 2,
+          perAmount: dishCombo2[i].price,
+          perQuantity: dishCombo2[i].quantity
+        })
+      }
     })
 
-    xit('should get all orders', (done) => {
+    it('should get all orders', (done) => {
       request(app)
         .get('/api/admin/orders?state=pending')
         .expect(200)
         .end((err, res) => {
-          console.log(res.body.orders)
+          //console.log(res.body.orders[0])
           expect(res.body).to.have.property('orders')
           expect(res.body.orders.length).to.be.equal(2)
-          // expect(res.body.users[0].account).to.be.equal('root1')
-          // expect(res.body.users[1].account).to.be.equal('user1')
+          expect(res.body.orders[0].sumOfDishes.length).to.be.equal(2)
+          expect(res.body.orders[0].sumOfDishes[0].DishCombination.perQuantity).to.be.equal(2)
+          expect(res.body.orders[0].sumOfDishes[1].DishCombination.perQuantity).to.be.equal(2)
+          expect(res.body.orders[1].sumOfDishes.length).to.be.equal(2)
           return done()
         })
     })
@@ -112,11 +134,11 @@ describe('# Admin::Order Request', () => {
         .get('/api/admin/orders/1')
         .expect(200)
         .end((err, res) => {
-          console.log(res.body)
+          //console.log(res.body.order)
           expect(res.body).to.have.property('order')
-          //expect(res.body.orders.length).to.be.equal(2)
-          // expect(res.body.users[0].account).to.be.equal('root1')
-          // expect(res.body.users[1].account).to.be.equal('user1')
+          expect(res.body.order.amount).to.be.equal(140)
+          expect(res.body.order.sumOfDishes[0].DishCombination.perQuantity).to.be.equal(2)
+          expect(res.body.order.sumOfDishes[1].DishCombination.perQuantity).to.be.equal(2)
           return done()
         })
     })
@@ -126,6 +148,7 @@ describe('# Admin::Order Request', () => {
       this.getUser.restore()
       await db.Order.destroy({ where: {}, force: true, truncate: true })
       await db.DishCombination.destroy({ where: {}, truncate: true })
+      await db.Dish.destroy({ where: {}, truncate: true })
       await db.User.destroy({ where: {}, force: true, truncate: true })
     })
   })

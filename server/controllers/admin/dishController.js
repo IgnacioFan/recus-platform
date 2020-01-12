@@ -44,14 +44,14 @@ const dishController = {
     if (Number(req.body.price) < 0)
       return res.json({ status: 'error', msg: 'price can not be negative' })
 
-    if (req.body.option && typeof (req.body.option) !== 'array')
-      return res.json({ status: 'error', msg: 'option is wrong format' })
+    // if (req.body.option && typeof (req.body.option) !== 'array')
+    //   return res.json({ status: 'error', msg: 'option is wrong format' })
 
     let dishObj = {
       name: req.body.name,
       price: req.body.price,
       image: req.body.image,
-      option: req.body.option,
+      // option: req.body.option,
       description: req.body.description,
       CategoryId: req.body.CategoryId
     }
@@ -66,7 +66,7 @@ const dishController = {
         })
       }
 
-      return res.json({ status: 'success', msg: 'successfully add a new dish', dish: dish, tags: tags })
+      return res.json({ status: 'success', msg: '成功新增菜單!', dish: dish, tags: tags })
     })
 
   },
@@ -77,7 +77,7 @@ const dishController = {
       name: req.body.name,
       price: req.body.price,
       image: req.body.image,
-      option: req.body.option,
+      // option: req.body.option,
       description: req.body.description,
       CategoryId: req.body.CategoryId
     }
@@ -89,9 +89,9 @@ const dishController = {
         })
       }
       dish.update(dishObj).then(dish => {
-        return res.json({ status: 'success', msg: '菜單新增成功', dish: dish })
+        return res.json({ status: 'success', msg: '成功更新菜單!', dish: dish })
       }).catch(err => {
-        return res.status(404).json({ status: 'error', msg: '未能成功更新' })
+        return res.status(404).json({ status: 'error', msg: '更新失敗!' })
       })
     })
   },

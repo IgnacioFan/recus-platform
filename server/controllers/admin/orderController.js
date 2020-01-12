@@ -102,7 +102,7 @@ const orderController = {
 
     if (state !== '') {
       return Order.findAll({
-        include: [{ model: db.Dish, attributes: ['name'], as: 'sumOfDishes', through: { attributes: ['quantity'] } }],
+        include: [{ model: db.Dish, attributes: ['name'], as: 'sumOfDishes', through: { attributes: ['perQuantity'] } }],
         where: { state: state }
       }).then(orders => {
 
@@ -115,7 +115,9 @@ const orderController = {
 
   // 顯示單筆訂單
   getOrder: (req, res) => {
-    return Order.findByPk(req.params.id).then(order => {
+    return Order.findByPk(req.params.id, {
+      include: [{ model: db.Dish, attributes: ['name'], as: 'sumOfDishes', through: { attributes: ['perQuantity'] } }]
+    }).then(order => {
       if (!order) return res.json({ status: 'error', msg: '查無資料' })
       return res.json({ order: order })
     })

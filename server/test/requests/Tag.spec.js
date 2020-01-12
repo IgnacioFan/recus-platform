@@ -9,6 +9,14 @@ var chai = require('chai')
 var should = chai.should();
 var expect = chai.expect;
 const db = require('../../models')
+const menu = [
+  { name: '黑框美式', price: 60, CategoryId: 1 },
+  { name: '花神', price: 100, CategoryId: 2 }
+]
+const tags = ["義式", "手沖", "果酸"]
+const userPreffered = []
+const dishAttachment = [{ DishId: 1, TagId: 1 }, { DishId: 2, TagId: 2 }, { DishId: 2, TagId: 3 }]
+
 
 describe('# Admin::Dish Request', () => {
   context('go to Dish-Management feature', () => {
@@ -21,18 +29,30 @@ describe('# Admin::Dish Request', () => {
         helper, 'getUser'
       ).returns({ id: 1, role: 'admin' })
       await db.Tag.destroy({ where: {}, truncate: true })
-      // await ["濃韻", "熟茶", "日月潭"].forEach(item => {
-      //   db.Tag.create({ name: item })
-      // })
+      await db.Dish.destroy({ where: {}, truncate: true })
+      await db.DishAttachment.destroy({ where: {}, truncate: true })
+      for (let i = 0; i < tags.length; i++) {
+        await db.Tag.create({ name: tags[i] })
+      }
+      for (let i = 0; i < menu.length; i++) {
+        await db.Dish.create({ name: menu[i].name, price: menu[i].price, CategoryId: menu[i].CategoryId })
+      }
+      for (let i = 0; i < dishAttachment.length; i++) {
+        await db.DishAttachment.create({ DishId: dishAttachment[i].DishId, TagId: dishAttachment[i].TagId })
+      }
     })
 
-    it('should get tags', (done) => {
+    it('should get tags with dish numbers', (done) => {
       request(app)
         .get('/api/admin/tags')
+        .expect(200)
         .end((err, res) => {
+          //console.log(res.body)
           res.status.should.be.eql(200);
-          res.body.should.be.a('array');
-          res.body.length.should.be.eql(0);
+          expect(res.body.tags).to.be.a('array')
+          expect(res.body.tags[0].nums).to.be.equal(1)
+          expect(res.body.tags[1].nums).to.be.equal(1)
+          expect(res.body.tags[2].nums).to.be.equal(1)
           done();
         });
     })
@@ -42,8 +62,8 @@ describe('# Admin::Dish Request', () => {
       request(app)
         .post('/api/admin/tags')
         .send('name=微酸')
+        .expect(200)
         .end((err, res) => {
-          res.status.should.be.eql(200);
           res.text.should.include('微酸');
           done();
         });
@@ -53,22 +73,33 @@ describe('# Admin::Dish Request', () => {
       request(app)
         .post('/api/admin/tags')
         .send('name=微酸')
+        .expect(200)
         .end(function (err, res) {
           if (err) return done(err);
-          //console.log(res.body)
-          res.status.should.be.eql(200);
-          res.text.should.include('標籤已建立')
+          res.text.should.include('標籤已建立!')
           done();
         });
     })
 
-    it('should update a new name of tag', (done) => {
+    it('if update a null name of tag', (done) => {
       request(app)
-        .put('/api/admin/tags/1')
-        .send('name=微酸2.0')
+        .put('/api/admin/tags/4')
+        .send('name=')
+        .expect(422)
         .end(function (err, res) {
           if (err) return done(err);
-          res.status.should.be.eql(200);
+          res.text.should.include('請輸入名稱!')
+          done()
+        })
+    })
+
+    it('should update a new name of tag', (done) => {
+      request(app)
+        .put('/api/admin/tags/4')
+        .send('name=微酸2.0')
+        .expect(200)
+        .end(function (err, res) {
+          if (err) return done(err);
           res.text.should.include('微酸2.0')
           done()
         })
@@ -76,26 +107,25 @@ describe('# Admin::Dish Request', () => {
 
     it('if update the same name of tag', (done) => {
       request(app)
-        .put('/api/admin/tags/1')
+        .put('/api/admin/tags/4')
         .send('name=微酸2.0')
+        .expect(200)
         .end(function (err, res) {
           if (err) return done(err)
-          //console.log(res.body)
-          res.status.should.be.eql(200)
-          res.text.should.include('標籤名稱相同')
+          res.text.should.include('標籤已建立!')
           done()
         })
     })
 
-    it('should delete tag 1', (done) => {
+    it('should delete tag 4', (done) => {
       request(app)
-        .delete('/api/admin/tags/1')
+        .delete('/api/admin/tags/4')
+        .expect(200)
         .end(function (err, res) {
           if (err) return done(err)
           //console.log(res.body)
-          res.status.should.be.eql(200)
           res.body.should.be.a('object')
-          res.text.should.include('成功移除微酸2.0')
+          res.text.should.include('成功移除微酸2.0!')
           done();
         });
     })
@@ -103,9 +133,9 @@ describe('# Admin::Dish Request', () => {
     after(async () => {
       this.ensureAuthenticated.restore();
       this.getUser.restore();
-      //await db.User.destroy({ where: {}, truncate: true })
-      //await db.User.destroy({ where: {}, truncate: true })
       await db.Tag.destroy({ where: {}, truncate: true })
+      await db.Dish.destroy({ where: {}, truncate: true })
+      await db.DishAttachment.destroy({ where: {}, truncate: true })
     })
   })
 })

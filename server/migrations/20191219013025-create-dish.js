@@ -24,10 +24,10 @@ module.exports = {
           model: 'Users',
           key: 'id'
         }
-      },
-      option: {
-        type: Sequelize.JSON
       }
+      // option: {
+      //   type: Sequelize.JSON
+      // }
     });
   },
   down: (queryInterface, Sequelize) => {

@@ -7,8 +7,7 @@ const categoryController = require('../../controllers/admin/categoryController')
 const tagController = require('../../controllers/admin/tagController')
 const dashboardController = require('../../controllers/admin/dashboardController')
 // middleware setup
-
-// multer setup
+const { nameValidRules, dishValidRules, validate } = require('../../controllers/adminValiator')
 
 
 // 會員相關API
@@ -23,16 +22,16 @@ router.put('/members/:id', memberController.toggleAdmin)
 // 菜單相關API
 router.get('/dishes', dishController.getDishWithCategory)
 router.get('/dishes/:id', dishController.getDish)
-router.post('/dishes', dishController.addDish)
-router.put('/dishes/:id', dishController.updateDish)
+router.post('/dishes', dishValidRules(), validate, dishController.addDish)
+router.put('/dishes/:id', dishValidRules(), validate, dishController.updateDish)
 router.delete('/dishes/:id', dishController.deleteDish)
 
 // 標籤相關API
 router.get('/tags', tagController.getTags)
 router.get('/tag', tagController.searchTag)
 router.get('/tags/:id', tagController.getTag)
-router.post('/tags', tagController.addTag)
-router.put('/tags/:id', tagController.updateTag)
+router.post('/tags', nameValidRules(), validate, tagController.addTag)
+router.put('/tags/:id', nameValidRules(), validate, tagController.updateTag)
 router.delete('/tags/:id', tagController.deleteTag)
 
 // 訂單相關API
@@ -48,8 +47,8 @@ router.delete('/orders/:id', orderController.removeOrder)
 // 分類相關API
 router.get('/categories', categoryController.getCategories)
 router.get('/categories/:id', categoryController.getCategory)
-router.post('/categories', categoryController.addCategory)
-router.put('/categories/:id', categoryController.updateCategory)
+router.post('/categories', nameValidRules(), validate, categoryController.addCategory)
+router.put('/categories/:id', nameValidRules(), validate, categoryController.updateCategory)
 router.delete('/categories/:id', categoryController.removeCategory)
 
 // 
