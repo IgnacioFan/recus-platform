@@ -95,9 +95,9 @@ describe('# Admin::Dashboard Request', () => {
           .end((err, res) => {
             if (err) return done(err)
             //console.log(res.body.data)
-            //console.log(res.body.hotProducts)
+            console.log(res.body.hotProducts)
             //console.log(res.body.data[1].Dish)
-            //console.log(res.body.hotTags)
+            console.log(res.body.hotTags)
             expect(typeof (res.body.hotProducts)).to.be.equal('object')
             expect(typeof (res.body.hotTags)).to.be.equal('object')
             return done()

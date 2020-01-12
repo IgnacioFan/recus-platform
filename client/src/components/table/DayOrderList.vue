@@ -6,7 +6,7 @@
     column-width="2"
     class="masonry-container"
   >
-    <div v-masonry-tile class="item" v-for="order in orders" :key="order.id">
+    <div v-masonry-tile class="item bg-white" v-for="order in orders" :key="order.id">
       <table class="table table-striped table-hover mb-0">
         <thead>
           <tr>
@@ -78,7 +78,7 @@
 </template>
 
 <script>
-import { timeFromFilter } from "./../utils/mixins";
+import { timeFromFilter } from "../../utils/mixins";
 
 export default {
   mixins: [timeFromFilter],

@@ -5,7 +5,7 @@
       <li v-for="category in categories" :key="category.id" class="nav-item">
         <router-link
           class="nav-link"
-          :to="{ name: 'order', query: { categoryId: category.id } }"
+          :to="{ name: 'admin-order', query: { categoryId: category.id } }"
         >{{ category.name }}</router-link>
       </li>
     </ul>
@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import mainUserAPI from "./../apis/main/user";
+import mainUserAPI from "../../apis/main/user";
 
 export default {
   props: {

@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import adminOrderAPI from "./../apis/admin/order";
+import adminOrderAPI from "../../apis/admin/order";
 
 export default {
   props: {

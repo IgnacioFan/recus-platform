@@ -6,19 +6,20 @@
         <button class="d-none">菜單區</button>
       </div>
       <div>
-        <p class="d-inline-block mb-0 mr-3">{{this.user.name || "userName"}}</p>
+        <p v-show="this.userName" class="d-inline-block text-capitalize mb-0 mr-3">{{this.userName}}</p>
         <form class="form-inline my-2 my-lg-0 d-inline-block">
           <input
             class="form-control mr-sm-2"
             type="text"
             v-model="userPhone"
             placeholder="09xxxxxxxx"
+            style="width: 110px;"
           />
           <button
             class="btn btn-outline-success my-2 my-sm-0"
             type="submit"
             @click.stop.prevent="searchUser"
-          >Search</button>
+          >搜尋會員</button>
         </form>
       </div>
     </div>
@@ -26,17 +27,19 @@
 </template>
 
 <script>
-import roleMemberAPI from "./../apis/role/member";
+import roleMemberAPI from "../../apis/role/member";
 
 export default {
+  props: {
+    userName: {
+      type: String,
+      default: ""
+    }
+  },
   data() {
     return {
-      user: {
-        name: "",
-        phone: "",
-        temp: ""
-      },
-      userPhone: ""
+      userPhone: "",
+      searchResultShow: false
     };
   },
   methods: {
@@ -49,7 +52,8 @@ export default {
         if (statusText !== "OK") {
           throw new Error(statusText);
         }
-        if (!data) {
+        
+        if (data.status === "error") {
           this.$swal({
             toast: true,
             position: "top",
@@ -61,8 +65,7 @@ export default {
           });
         } else {
           this.userPhone = "";
-          this.user.name = data.user.Profile.name;
-          this.$emit("after-add-user", data.user.id);
+          this.$emit("after-show-user", data.user);
         }
       } catch (error) {
         // eslint-disable-next-line
@@ -82,9 +85,6 @@ export default {
 </script>
 
 <style scoped>
-/* .container {
-  position: relative;
-} */
 .meal {
   max-height: calc(100vh - 240px);
   overflow: auto;
