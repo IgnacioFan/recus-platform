@@ -46,11 +46,11 @@
 </template>
 
 <script>
-import NavbarTop from "./../components/NavbarTop";
-import NavbarBottm from "./../components/NavbarBottm";
-import ManageTabs from "./../components/ManageTabs";
-import CategoryTable from "./../components/CategoryTable";
-import adminCategoryAPI from "./../apis/admin/category";
+import NavbarTop from "../../components/navbar/NavbarTop";
+import NavbarBottm from "../../components/navbar/NavbarBottm";
+import ManageTabs from "../../components/tabs/ManageTabs";
+import CategoryTable from "../../components/table/CategoryTable";
+import adminCategoryAPI from "../../apis/admin/category";
 
 export default {
   components: {

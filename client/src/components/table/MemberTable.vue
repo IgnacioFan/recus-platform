@@ -22,7 +22,7 @@
           <div class="user-name">{{ user.phone }}</div>
         </td>
         <td>
-          <div class="user-name">{{ user.MemberOrders.length }}</div>
+          <div class="user-name">{{ user.consumeCount }}</div>
         </td>
         <td>
           <button

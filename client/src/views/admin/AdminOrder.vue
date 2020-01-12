@@ -6,7 +6,7 @@
       <div class="row" style="height:100%;">
         <div class="col-8 border border-dark p-0" style="height:calc(100vh - 107px);">
           <div>
-            <MealTabs :user="user" @after-add-user="afterAddUser" />
+            <MealTabs :user-name="userName" @after-show-user="afterShowUser" />
             <Meal
               :initial-categories="categories"
               :initial-dishes="dishes"
@@ -23,19 +23,39 @@
         </div>
       </div>
     </template>
+
+    <div v-show="searchResultShow" class="searchResult">
+      <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">會員資料</h5>
+            <button type="button" class="btn btn-primary" @click.stop.prevent="editUserBtn">編輯</button>
+          </div>
+          <div class="modal-body">
+            <AdminMemberForm :initial-user="user" :initial-edit-user="editUser" @after-form-edit-cancel="afterFormEditCancel" />
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" @click.stop.prevent="afterAddUser">加入</button>
+            <button type="button" class="btn btn-primary" @click.stop.prevent="closeResult">關閉</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <NavbarBottm />
   </div>
 </template>
 
 <script>
-import NavbarTop from "./../components/NavbarTop";
-import NavbarBottm from "./../components/NavbarBottm";
-import Meal from "./../components/Meal";
-import MealTabs from "./../components/MealTabs";
-import List from "./../components/List";
-import Spinner from "./../components/Spinner";
-import adminDishAPI from "./../apis/admin/dish";
-import adminCategoryAPI from "./../apis/admin/category";
+import NavbarTop from "../../components/navbar/NavbarTop";
+import NavbarBottm from "../../components/navbar/NavbarBottm";
+import Meal from "../../components/table/Meal";
+import MealTabs from "../../components/tabs/MealTabs";
+import List from "../../components/table/List";
+import AdminMemberForm from "../../components/form/AdminMemberForm";
+import Spinner from "../../components/spinner/Spinner";
+import adminDishAPI from "../../apis/admin/dish";
+import adminCategoryAPI from "../../apis/admin/category";
 
 export default {
   components: {
@@ -43,6 +63,7 @@ export default {
     NavbarBottm,
     Meal,
     List,
+    AdminMemberForm,
     MealTabs,
     Spinner
   },
@@ -57,12 +78,11 @@ export default {
         quantity: 0,
         amount: 0
       },
-      user: {
-        name: "",
-        temp: "",
-        phone: ""
-      },
+      userName: "",
+      user: {},
       dishPK: 0,
+      searchResultShow: false,
+      editUser: false,
       isLoading: true
     };
   },
@@ -134,13 +154,41 @@ export default {
         quantity: 0,
         amount: 0
       };
-      this.user.name = "";
-      this.user.temp = "";
+      // this.user.name = "";
+      // this.user.temp = "";
       this.dishPK = 0;
     },
-    afterAddUser(userId) {
-      this.addDishes.user = userId;
+    afterShowUser(user) {
+      this.user = user;
+      this.searchResultShow = true;
+    },
+    afterAddUser() {
+      this.userName = this.user.Profile.name;
+      this.addDishes.user = this.user.id;
+      this.searchResultShow = false;
+    },
+    closeResult() {
+      this.searchResultShow = false;
+      this.editUser = false;
+    },
+    afterFormEditCancel() {
+      this.editUser = false;
+    },
+    editUserBtn() {
+      this.editUser = true;
     }
   }
 };
 </script>
+
+<style scoped>
+.searchResult {
+  top: 0;
+  position: absolute;
+  z-index: 200;
+  /* display: none; */
+  height: 100vh;
+  width: 100vw;
+  overflow: auto;
+}
+</style>

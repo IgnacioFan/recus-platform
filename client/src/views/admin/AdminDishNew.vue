@@ -3,24 +3,25 @@
     <AdminDishForm
       :dish-title="title"
       :is-processing="isProcessing"
+      :loaded-dish="loadedDish"
       @after-submit="handleAfterSubmit"
     />
   </div>
 </template>
 
 <script>
-import AdminDishForm from "./../components/AdminDishForm";
-import adminDishAPI from "./../apis/admin/dish";
+import AdminDishForm from "../../components/form/AdminDishForm";
+import adminDishAPI from "../../apis/admin/dish";
 
 export default {
-  name: "AdminDishEdit",
   components: {
     AdminDishForm
   },
   data() {
     return {
-      title: "編輯菜單",
-      isProcessing: false
+      title: "新增菜單",
+      isProcessing: false,
+      loadedDish: true
     };
   },
   computed: {},
@@ -29,13 +30,13 @@ export default {
     async handleAfterSubmit(formData) {
       try {
         this.isProcessing = true;
-        const { data, statusText } = await adminDishAPI.dish.put({dishId: this.$route.params.id,formData});
+        const { data, statusText } = await adminDishAPI.dish.post(formData);
         if (statusText !== "OK" || data.status !== "success") {
           throw new Error(statusText);
         }
 
         this.$router.push({
-          name: "manage-dishes",
+          name: "admin-manage-meal",
           query: { categoryId: formData.CategoryId }
         });
         this.$swal({

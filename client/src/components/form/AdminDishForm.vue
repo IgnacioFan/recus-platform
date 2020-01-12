@@ -104,9 +104,9 @@
 </template>
 
 <script>
-import adminCategoryAPI from "./../apis/admin/category";
-import adminDishAPI from "./../apis/admin/dish";
-import adminTagAPI from "./../apis/admin/tag";
+import adminCategoryAPI from "../../apis/admin/category";
+import adminDishAPI from "../../apis/admin/dish";
+import adminTagAPI from "../../apis/admin/tag";
 
 export default {
   name: "AdminDishForm",

@@ -90,7 +90,7 @@
 
       <div class="text-center mb-3">
         <p>
-          <router-link to="/signin">Sign In</router-link>
+          <router-link to="/admin/signin">Sign In</router-link>
         </p>
       </div>
 
@@ -100,8 +100,7 @@
 </template>
 
 <script>
-import adminAuthorizationAPI from "./../apis/admin/authorization";
-import { Toast } from "./../utils/helpers";
+import adminAuthorizationAPI from "../../apis/admin/authorization";
 
 export default {
   /* eslint-disable */
@@ -109,7 +108,6 @@ export default {
     return {
       account: "",
       name: "",
-      phone: "",
       email: "",
       password: "",
       passwordCheck: "",
@@ -119,12 +117,11 @@ export default {
   methods: {
     handleSubmit() {
       if (
-        !this.account ||
-        !this.name ||
-        !this.password ||
-        !this.phone ||
+        !this.account || 
+        !this.password || 
+        !this.phone || 
         !this.email
-      ) {
+        ) {
         Toast.fire({
           type: "warning",
           title: "請填完所有必須資料"
@@ -148,7 +145,7 @@ export default {
           const { data } = response;
           console.log(data);
           // 成功登入後轉址到登入
-          this.$router.push("/signin");
+          this.$router.push("admin-sign-in");
         })
         .catch(error => {
           // 顯示錯誤提示
@@ -159,6 +156,7 @@ export default {
           this.isProcessing = false;
           console.log(error);
         });
+
     }
   }
 };

@@ -10,7 +10,7 @@
       >
         <img
           class="icon py-3 px-2"
-          :src="require('./../assets/icon/'+`${kind.icon}`)"
+          :src="require('../../assets/icon/'+`${kind.icon}`)"
           :alt="kind.name"
         />
         <span class="font-weight-bold">{{kind.name}}</span>
@@ -22,8 +22,8 @@
 </template>
 
 <script>
-import NavbarTop from "./../components/NavbarTop";
-import NavbarBottm from "./../components/NavbarBottm";
+import NavbarTop from "../../components/navbar/NavbarTop";
+import NavbarBottm from "../../components/navbar/NavbarBottm";
 
 export default {
   components: {
@@ -37,62 +37,62 @@ export default {
         {
           name: "熱門商品",
           icon: "Fire.png",
-          urlname: "order"
+          urlname: "admin-order-index"
         },
         {
           name: "老饕最愛",
           icon: "Heart.png",
-          urlname: "order"
+          urlname: "admin-order-index"
         },
         {
           name: "老闆推薦",
           icon: "Star.png",
-          urlname: "order"
+          urlname: "admin-order-index"
         },
         {
           name: "New",
           icon: "Dish.png",
-          urlname: "order"
+          urlname: "admin-order-index"
         },
         {
           name: "義式咖啡",
           icon: "Cup.png",
-          urlname: "order"
+          urlname: "admin-order-index"
         },
         {
           name: "單品手沖",
           icon: "Teapot.png",
-          urlname: "order"
+          urlname: "admin-order-index"
         },
         {
           name: "冷萃咖啡",
           icon: "Ice-drip-cafe.png",
-          urlname: "order"
+          urlname: "admin-order-index"
         },
         {
           name: "茶品",
           icon: "Tea-cup.png",
-          urlname: "order"
+          urlname: "admin-order-index"
         },
         {
           name: "氣泡飲",
           icon: "Ice-drink.png",
-          urlname: "order"
+          urlname: "admin-order-index"
         },
         {
           name: "手做甜點",
           icon: "Cake.png",
-          urlname: "order"
+          urlname: "admin-order-index"
         },
         {
           name: "薄餅",
           icon: "Cookie.png",
-          urlname: "order"
+          urlname: "admin-order-index"
         },
         {
           name: "比薩",
           icon: "Pizza.png",
-          urlname: "order"
+          urlname: "admin-order-index"
         }
       ]
     };

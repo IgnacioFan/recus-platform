@@ -2,14 +2,14 @@
   <nav class="text-right">
     <h1 class="d-inline float-left">{{this.initialTitle}}</h1>
 
-<p class="d-inline-block mr-3">Hi,{{user.name}}</p>
+    <p class="d-inline-block text-capitalize mr-3">Hi,{{user.name}}</p>
     <router-link :to="{name: 'admin-dash-board'}" class="mr-3">儀錶板</router-link>
     <router-link
-      :to="{name: 'day-orders', query: { state: this.pending }}"
+      :to="{name: 'admin-day-orders', query: { state: this.pending }}"
       class="mr-3"
     >未製作({{pendingLength}})</router-link>
     <router-link
-      :to="{name: 'day-orders', query: { state: this.unpaid }}"
+      :to="{name: 'admin-day-orders', query: { state: this.unpaid }}"
       class="mr-3"
     >未結帳({{unpaidLength}})</router-link>
     <template>
@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import adminOrderAPI from "./../apis/admin/order";
+import adminOrderAPI from "../../apis/admin/order";
 
 export default {
   props: {
@@ -32,7 +32,7 @@ export default {
   },
   data() {
     return {
-      user: this.$store.state.currentUser,
+      user: {},
       pending: "pending",
       unpaid: "unpaid",
       pendingLength: 0,
@@ -44,11 +44,12 @@ export default {
   created() {
     this.fetchOrders("pending");
     this.fetchOrders("unpaid");
+    this.user = this.$store.state.currentUser
   },
   methods: {
     logout() {
       this.$store.commit("revokeAuthentication");
-      this.$router.push("/signin");
+      this.$router.push("/admin/signin");
     },
     async fetchOrders(state) {
       try {
