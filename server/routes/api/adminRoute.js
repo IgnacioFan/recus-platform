@@ -7,7 +7,7 @@ const categoryController = require('../../controllers/admin/categoryController')
 const tagController = require('../../controllers/admin/tagController')
 const dashboardController = require('../../controllers/admin/dashboardController')
 // middleware setup
-const { nameValidRules, validate } = require('../../controllers/adminValiator')
+const { nameValidRules, dishValidRules, validate } = require('../../controllers/adminValiator')
 
 
 // 會員相關API
@@ -22,8 +22,8 @@ router.put('/members/:id', memberController.toggleAdmin)
 // 菜單相關API
 router.get('/dishes', dishController.getDishWithCategory)
 router.get('/dishes/:id', dishController.getDish)
-router.post('/dishes', dishController.addDish)
-router.put('/dishes/:id', dishController.updateDish)
+router.post('/dishes', dishValidRules(), validate, dishController.addDish)
+router.put('/dishes/:id', dishValidRules(), validate, dishController.updateDish)
 router.delete('/dishes/:id', dishController.deleteDish)
 
 // 標籤相關API

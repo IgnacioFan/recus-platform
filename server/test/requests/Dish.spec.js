@@ -66,9 +66,10 @@ describe('# Admin::Dish Request', () => {
         .expect(200)
         .end(async (err, res) => {
           if (err) return done(err)
+          //console.log(res.body)
           expect(res.body.dish.name).to.be.equal('紅茶')
           expect(res.body.dish.price).to.be.equal(40)
-          expect(res.body.msg).to.be.equal('successfully add a new dish')
+          expect(res.body.msg).to.be.equal('成功新增菜單!')
           //expect(dish.option.sugar).to.have.property('sugar')
           return done()
         })
@@ -80,12 +81,11 @@ describe('# Admin::Dish Request', () => {
         .expect(200)
         .end(async (err, res) => {
           if (err) return done(err)
-          console.log(res.body.dish.hasTags)
+          //console.log(res.body.dish.hasTags)
           //console.log(res.body.hasTags[1].name)
           expect(res.body.dish.name).to.be.equal('紅茶')
           expect(res.body.dish.price).to.be.equal(40)
           expect(res.body.dish.Category.name).to.be.equal('new')
-
           expect(res.body.dish.hasTags[0].name).to.be.equal('中焙')
           expect(res.body.dish.hasTags[1].name).to.be.equal('濃韻')
           return done()
@@ -95,8 +95,12 @@ describe('# Admin::Dish Request', () => {
     it('should not post a new dish', (done) => {
       request(app)
         .post('/api/admin/dishes')
-        .expect(200)
-        .expect({ status: 'error', msg: 'dish name and price cannot be blank' }, done)
+        .expect(422)
+        .end(async (err, res) => {
+          if (err) return done(err)
+          expect(res.text).to.be.include('請輸入名稱!')
+          return done()
+        })
     })
 
 

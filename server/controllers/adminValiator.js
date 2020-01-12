@@ -9,6 +9,16 @@ const nameValidRules = () => {
   ]
 }
 
+const dishValidRules = () => {
+  return [
+    body('name')
+      .not().isEmpty().withMessage('請輸入名稱!'),
+
+    body('price')
+      .not().isEmpty().withMessage('請輸入金額!')
+  ]
+}
+
 const validate = (req, res, next) => {
   const errors = validationResult(req)
   if (errors.isEmpty()) return next()
@@ -21,5 +31,6 @@ const validate = (req, res, next) => {
 
 module.exports = {
   nameValidRules,
+  dishValidRules,
   validate,
 }
