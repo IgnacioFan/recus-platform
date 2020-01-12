@@ -30,8 +30,8 @@ router.delete('/dishes/:id', dishController.deleteDish)
 router.get('/tags', tagController.getTags)
 router.get('/tag', tagController.searchTag)
 router.get('/tags/:id', tagController.getTag)
-router.post('/tags', tagController.addTag)
-router.put('/tags/:id', tagController.updateTag)
+router.post('/tags', nameValidRules(), validate, tagController.addTag)
+router.put('/tags/:id', nameValidRules(), validate, tagController.updateTag)
 router.delete('/tags/:id', tagController.deleteTag)
 
 // 訂單相關API

@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
       Tag.belongsToMany(models.User, {
         through: models.UserPreferred,
         foreignKey: 'TagId',
-        as: 'hasUseres'
+        as: 'hasUsers'
       })
   };
   return Tag;

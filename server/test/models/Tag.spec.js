@@ -27,10 +27,13 @@ describe('# Tag Model', function () {
 
   context('check associations', function () {
     const Dish = 'Dish'
+    const User = 'User'
     const DishAttachment = 'DishAttachment'
+    const UserPreferred = 'UserPreferred'
 
     before(() => {
       Tag.associate({ Dish, DishAttachment })
+      Tag.associate({ User, UserPreferred })
     })
 
     it("defined a belongsToMany association with Dish through DishCombination as 'hasDishes'", () => {
@@ -38,6 +41,14 @@ describe('# Tag Model', function () {
         through: DishAttachment,
         foreignKey: 'TagId',
         as: 'hasDishes'
+      })
+    })
+
+    it("defined a belongsToMany association with Dish through UserPreferred as 'hasUsers'", () => {
+      expect(Tag.belongsToMany).to.have.been.calledWith(User, {
+        through: UserPreferred,
+        foreignKey: 'TagId',
+        as: 'hasUsers'
       })
     })
   })
