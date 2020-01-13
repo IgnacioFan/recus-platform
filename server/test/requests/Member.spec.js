@@ -14,6 +14,24 @@ const member1 = { account: 'user1', phone: '0901', password: '12345', role: 'mem
 const member2 = { account: 'user2', phone: '0902', password: '12345', role: 'member' }
 const profi1 = { name: 'ryu', email: 'ryu@example.com', UserId: 2 }
 const profi2 = { name: 'yoshi', email: 'yoshi@example.com', UserId: 3 }
+const tag1 = { name: "義式" }
+const tag2 = { name: "手沖" }
+const order1 = {
+  quantity: 4,
+  amount: 140,
+  memo: 'this is first order',
+  tableNum: 2,
+  isTakingAway: false,
+  UserId: 3
+}
+const order2 = {
+  quantity: 3,
+  amount: 100,
+  memo: 'this is second order',
+  tableNum: 0,
+  isTakingAway: true,
+  UserId: 3
+}
 
 describe('# Admin::Member request', () => {
 
@@ -29,32 +47,29 @@ describe('# Admin::Member request', () => {
         ).returns({ id: 1, role: 'admin' })
         await db.User.destroy({ where: {}, force: true, truncate: true })
         await db.Profile.destroy({ where: {}, truncate: true })
+        await db.Tag.destroy({ where: {}, truncate: true })
+        await db.Order.destroy({ where: {}, force: true, truncate: true })
         await db.User.create(admin)
         await db.User.create(member1)
         await db.User.create(member2)
         await db.Profile.create(profi1)
         await db.Profile.create(profi2)
+        await db.Tag.create(tag1)
+        await db.Tag.create(tag2)
+        await db.Order.create(order1)
+        await db.Order.create(order2)
         await db.MemberOrder.create({ UserId: 2, OrderId: 1 })
         await db.MemberOrder.create({ UserId: 2, OrderId: 2 })
         await db.MemberOrder.create({ UserId: 3, OrderId: 3 })
         await db.MemberOrder.create({ UserId: 3, OrderId: 4 })
-      })
-
-      it('should get all users', (done) => {
-        request(app)
-          .get('/api/admin/users')
-          .expect(200)
-          .end((err, res) => {
-            //console.log(res.body)
-            expect(res.body).to.have.property('users')
-            expect(res.body.users.length).to.be.equal(3)
-            return done()
-          })
+        await db.UserPreferred.create({ UserId: 1, TagId: 1 })
+        await db.UserPreferred.create({ UserId: 1, TagId: 2 })
+        await db.UserPreferred.create({ UserId: 3, TagId: 1 })
       })
 
       it('should get a specific user who is not admin', (done) => {
         request(app)
-          .get('/api/admin/users/3')
+          .get('/api/admin/members/3')
           .expect(200)
           .end((err, res) => {
             //console.log(res.body.user)
@@ -77,43 +92,92 @@ describe('# Admin::Member request', () => {
           })
       })
 
+      it('should get orders from member 3', (done) => {
+        request(app)
+          .get('/api/admin/members/3/orders')
+          .expect(200)
+          .end((err, res) => {
+            //console.log(res.body)
+            expect(res.body.orders.length).to.be.equal(2)
+            return done()
+          })
+      })
+
+      it('should get tags from member 3', (done) => {
+        request(app)
+          .get('/api/admin/members/3/tags')
+          .expect(200)
+          .end((err, res) => {
+            //console.log(res.body)
+            expect(res.body.tags[0].name).to.be.equal('義式')
+            return done()
+          })
+      })
+
       it('should get user pagination', (done) => {
         request(app)
           .get('/api/admin/members?page=1')
           .expect(200)
           .end((err, res) => {
-            console.log(res.body.users)
-            console.log(res.body.users[0].MemberOrders.length)
+            //console.log(res.body.users)
+            // console.log(res.body.users[0].MemberOrders.length)
             expect(res.body).to.have.property('users')
-            expect(res.body.users[0].account).to.be.equal('user1')
-            expect(res.body.users[0].MemberOrders.length).to.be.equal(2)
-            expect(res.body.users[0].MemberOrders[0].OrderId).to.be.equal(1)
-            expect(res.body.users[1].account).to.be.equal('user2')
+            expect(res.body.users[0].account).to.be.equal('root1')
+            expect(res.body.users[0].MemberOrders.length).to.be.equal(0)
+            expect(res.body.users[0].preferredTags.length).to.be.equal(2)
+            expect(res.body.users[1].account).to.be.equal('user1')
             expect(res.body.users[1].MemberOrders.length).to.be.equal(2)
-            expect(res.body.users[1].MemberOrders[1].OrderId).to.be.equal(4)
+            expect(res.body.users[1].preferredTags.length).to.be.equal(0)
+            expect(res.body.users[2].account).to.be.equal('user2')
+            expect(res.body.users[2].MemberOrders.length).to.be.equal(2)
+            expect(res.body.users[2].preferredTags.length).to.be.equal(1)
+            return done()
+          })
+      })
+
+      it('should not delete member 1', (done) => {
+        request(app)
+          .delete('/api/admin/members/1')
+          .expect(200)
+          .end((err, res) => {
+            //console.log(res.body)
+            expect(res.body.msg).to.be.include('cannot delete!')
             return done()
           })
       })
 
       it('should delete member 3', (done) => {
         request(app)
-          .delete('/api/admin/members/3')
+          .delete('/api/admin/members/6')
           .expect(200)
           .end((err, res) => {
-            console.log(res.text)
-            expect(res.text).to.be.include('successfully deleted!')
+            // console.log(res.text)
+            expect(res.body)
+            expect(res.text).to.be.include('user not existed!')
             return done()
           })
       })
 
       it('should change role of member 2 to admin', (done) => {
         request(app)
-          .put('/api/admin/members/2')
+          .put('/api/admin/members/2/isAdmin')
           .expect(200)
           .end((err, res) => {
             //console.log(res.body)
             expect(res.body.user.role).to.be.equal('admin')
-            expect(res.body.msg).to.be.equal('role changed!')
+            expect(res.body.msg).to.be.equal('successfully role changed!')
+            return done()
+          })
+      })
+
+      it('should change validation of member 2', (done) => {
+        request(app)
+          .put('/api/admin/members/2/isValid')
+          .expect(200)
+          .end((err, res) => {
+            //console.log(res.body)
+            expect(res.body.user.isValid).to.be.equal(false)
+            expect(res.body.msg).to.be.equal('successfully valid changed!')
             return done()
           })
       })
@@ -123,6 +187,10 @@ describe('# Admin::Member request', () => {
         this.getUser.restore()
         await db.User.destroy({ where: {}, force: true, truncate: true })
         await db.Profile.destroy({ where: {}, truncate: true })
+        await db.Tag.destroy({ where: {}, truncate: true })
+        await db.Order.destroy({ where: {}, force: true, truncate: true })
+        await db.MemberOrder.destroy({ where: {}, truncate: true })
+        await db.UserPreferred.destroy({ where: {}, truncate: true })
       })
     })
 

@@ -12,12 +12,15 @@ const { nameValidRules, dishValidRules, validate } = require('../../controllers/
 
 // 會員相關API
 router.get('/user', userController.getCurrentUser)
-router.get('/users', memberController.getUsers) // test route
-router.get('/users/:id', memberController.getUser) // test route
 router.get('/members', memberController.getMemberPagination)
+router.get('/members/:id/orders', memberController.getMemberOrders)
+router.get('/members/:id/tags', memberController.getMemberTags)
 router.get('/members/search', memberController.searchMember)
-router.delete('/members/:id', memberController.deleteUser)
-router.put('/members/:id', memberController.toggleAdmin)
+router.get('/members/:id', memberController.getMember)
+//router.post('/members', memberController.addMember)
+router.put('/members/:id/isvalid', memberController.toggleValid)
+router.put('/members/:id/isAdmin', memberController.toggleAdmin)
+router.delete('/members/:id', memberController.softDeleteUser)
 
 // 菜單相關API
 router.get('/dishes', dishController.getDishWithCategory)

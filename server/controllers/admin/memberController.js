@@ -1,83 +1,158 @@
 const bcrypt = require('bcryptjs')
 const db = require('../../models')
-const { User, Profile, Order, MemberOrder } = db
+const { User, Profile, Order, MemberOrder, Tag, UserPreferred } = db
 const Op = require('sequelize').Op
-
-// // Json Web Token
-// const jwt = require('jsonwebtoken')
-// const passportJWT = require('passport-jwt')
-// // 
-// const ExtractJwt = passportJWT.ExtractJwt
-// const JwtStrategy = passportJWT.Strategy
+const moment = require('moment')
 
 const memberController = {
-  getUsers: (req, res) => {
-    return User.findAll().then(users => {
-      //console.log(users)
-      return res.json({ users: users })
-    })
+  getMemberPagination: (req, res) => {
+    try {
+      if (!req.query.page || Number(req.query.page) < 1)
+        return res.json({ status: 'error', msg: 'page number is undifined!' })
+
+      const pageLimit = 16
+      let offset = (req.query.page - 1) * pageLimit
+
+      User.scope('getMemberData').findAndCountAll(
+        {
+          include: [MemberOrder,
+            { model: Profile, attributes: ['name', 'email'] },
+            { model: Tag, as: 'preferredTags', attributes: ['id', 'name'] }],
+          offset: offset,
+          limit: pageLimit,
+          order: [['role', 'ASC']]
+        }).then(users => {
+
+          return res.json({
+            users: users.rows,
+            currentPage: Number(req.query.page) || 1,
+            totalPage: Math.ceil(users.count / pageLimit)
+          })
+        })
+    } catch (error) {
+      return res.status(500).json({ status: 'error', msg: error })
+    }
   },
 
-  getUser: (req, res) => {
-    if (Number(req.params.id) <= 0) {
-      return res.json({ status: 'error', msg: 'user id is undefined!' })
-    }
-    // 取出單一會員
-    User.scope('getMemberData').findByPk(req.params.id).then(user => {
-      if (user == null) {
-        return res.json({ status: 'error', msg: 'no such user!' })
+  getMember: (req, res) => {
+    try {
+      if (Number(req.params.id) <= 0) {
+        return res.json({ status: 'error', msg: 'user id is undefined!' })
       }
-      //console.log('user', user)
-      return res.json({ user: user })
-    })
+      // 取出單一會員
+      User.scope('getMemberData').findByPk(req.params.id,
+        {
+          include: [{ model: Tag, as: 'preferredTags' }]
+        }).then(user => {
+          if (!user) return res.json({ status: 'error', msg: 'no such user!' })
+          return res.json({ user: user })
+        })
+    } catch (error) {
+      return res.status(500).json({ status: 'error', msg: error })
+    }
   },
 
   searchMember: (req, res) => {
-    // 電話不為空值
-    if (!req.query.phone) {
-      return res.json({ status: 'error', msg: 'phone should not be blank!' })
-    }
-    // 搜尋單一會員
-    User.scope('getMemberData').findUserByPhone(req.query.phone).then(user => {
-      if (!user) {
-        return res.json({ status: 'error', msg: 'no such user!' })
+    try {
+      // 電話不為空值
+      if (!req.query.phone) {
+        return res.json({ status: 'error', msg: 'phone should not be blank!' })
       }
-      return res.json({ user: user })
-    })
-  },
-
-  getMemberPagination: (req, res) => {
-    if (!req.query.page || Number(req.query.page) < 1)
-      return res.json({ status: 'error', msg: 'page number is undifined!' })
-
-    const pageLimit = 16
-    let offset = (req.query.page - 1) * pageLimit
-
-    User.scope('getMemberData').findAndCountAll(
-      { include: [MemberOrder, { model: Profile, attributes: ['name', 'email'] }], offset: offset, limit: pageLimit })
-      .then(user => {
-        return res.json({
-          users: user.rows,
-          currentPage: Number(req.query.page) || 1,
-          totalPage: Math.ceil(user.count / pageLimit)
-        })
+      // 搜尋單一會員
+      User.scope('getMemberData').findUserByPhone(req.query.phone).then(user => {
+        if (!user) {
+          return res.json({ status: 'error', msg: 'no such user!' })
+        }
+        return res.json({ user: user })
       })
+    } catch (error) {
+      return res.status(500).json({ status: 'error', msg: error })
+    }
   },
 
-  deleteUser: (req, res) => {
-    return User.findByPk(req.params.id).then((user) => {
-      if (!user) return res.json({ status: 'success', msg: 'user not existed!' })
-      user.destroy()
-      return res.json({ status: 'success', msg: 'successfully deleted!' })
+  getMemberOrders: (req, res) => {
+    try {
+      if (Number(req.params.id) <= 0) {
+        return res.json({ status: 'error', msg: 'user id is undefined!' })
+      }
+      // 取出單一會員
+      Order.findAll(
+        {
+          attributes: ['amount', 'quantity', 'createdAt'],
+          where: { UserId: req.params.id },
+          order: [['createdAt', 'DESC']]
+        }).then(orders => {
+          if (!orders) return res.json({ status: 'error', msg: 'no such user!' })
+          // 訂單資料整理
+          orders = orders.map(order => ({
+            ...order.dataValues,
+            createdAt: moment(order.createdAt).format('YYYY-MM-DD HH:mm')
+          }))
+          return res.json({ orders: orders })
+        })
+    } catch (error) {
+      return res.status(500).json({ status: 'error', msg: error })
+    }
+  },
 
-    })
+  getMemberTags: (req, res) => {
+    try {
+      if (Number(req.params.id) <= 0) {
+        return res.json({ status: 'error', msg: 'user id is undefined!' })
+      }
+      // 取出單一會員
+      User.findByPk(req.params.id,
+        {
+          attributes: [],
+          include: [{ model: Tag, as: 'preferredTags' }]
+        }).then(user => {
+          if (!user) return res.json({ status: 'error', msg: 'no such user!' })
+          return res.json({ tags: user.preferredTags })
+        })
+    } catch (error) {
+      return res.status(500).json({ status: 'error', msg: error })
+    }
+  },
+
+  softDeleteUser: (req, res) => {
+    try {
+      return User.findByPk(req.params.id).then((user) => {
+        if (!user) return res.json({ status: 'error', msg: 'user not existed!' })
+        if (user.role === 'admin') return res.json({ status: 'error', msg: 'cannot delete!' })
+        user.destroy()
+        return res.json({ status: 'success', msg: 'successfully deleted!' })
+      })
+    } catch (error) {
+      return res.status(500).json({ status: 'error', msg: error })
+    }
+  },
+
+  toggleValid: (req, res) => {
+    try {
+      return User.findByPk(req.params.id, { attributes: ['isValid', 'id'] }).then((user) => {
+        if (!user) return res.json({ status: 'error', msg: 'user not existed!' })
+        user.update({ isValid: !user.isValid })
+        return res.json({ status: 'success', msg: 'successfully valid changed!', user: user })
+      })
+    } catch (error) {
+      return res.status(500).json({ status: 'error', msg: error })
+    }
   },
 
   toggleAdmin: (req, res) => {
-    return User.findByPk(req.params.id).then((user) => {
-      user.update({ role: 'admin' })
-      return res.json({ status: 'success', msg: 'role changed!', user: user })
-    })
+    try {
+      //console.log(req.params)
+      return User.findByPk(req.params.id, { attributes: ['role', 'id'] }).then((user) => {
+        if (!user) return res.json({ status: 'error', msg: 'user not existed!' })
+        let role
+        if (user.role === 'member') role = 'admin'
+        if (user.role === 'admin') role = 'member'
+        user.update({ role: role })
+        return res.json({ status: 'success', msg: 'successfully role changed!', user: user })
+      })
+    } catch (error) {
+      return res.status(500).json({ status: 'error', msg: error })
+    }
   }
 }
 

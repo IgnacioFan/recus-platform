@@ -3,25 +3,33 @@ module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
     account: {
       type: DataTypes.STRING,
+      unique: true,
       allowNull: false
     },
     phone: {
       type: DataTypes.STRING,
+      unique: true,
       allowNull: false
     },
     password: DataTypes.STRING,
-    role: DataTypes.STRING,
-    isValid: DataTypes.BOOLEAN,
+    role: {
+      type: DataTypes.STRING,
+      defaultValue: 'member'
+    },
+    isValid: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true
+    }
   }, {
       defaultScope: {
-        //attributes: ['id', 'account', 'phone', 'role']
+        //where: { 'isValid': true }
       },
       scopes: {
         'excludedAdmin': {
           where: { 'role': 'member' }
         },
         'getMemberData': {
-          attributes: ['id', 'account', 'phone', 'role']
+          attributes: ['id', 'account', 'phone', 'role', 'isValid']
         }
       },
       //deletedAt: 'destroyTime',
