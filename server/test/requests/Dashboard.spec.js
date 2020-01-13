@@ -30,22 +30,25 @@ const orders = [
     dishes: [{ id: 7, quantity: 2, price: 100 }]
   },
   {
-    quantity: 3, amount: 300, memo: 'this is third order', isTakingAway: true, UserId: 3,
+    quantity: 3, amount: 300, memo: 'this is third order', isTakingAway: true, UserId: 1,
     dishes: [{ id: 6, quantity: 2, price: 100 }, { id: 8, quantity: 1, price: 100 }]
   },
   {
-    quantity: 3, amount: 220, memo: 'this is fourth order', isTakingAway: true, UserId: 4,
+    quantity: 3, amount: 220, memo: 'this is fourth order', isTakingAway: true, UserId: 1,
     dishes: [{ id: 1, quantity: 2, price: 60 }, { id: 5, quantity: 1, price: 100 }]
   },
   {
-    quantity: 4, amount: 380, memo: 'this is fifth order', isTakingAway: true, UserId: 5,
+    quantity: 4, amount: 380, memo: 'this is fifth order', isTakingAway: true, UserId: 3,
     dishes: [{ id: 6, quantity: 3, price: 100 }, { id: 2, quantity: 1, price: 80 }]
   },
   {
-    quantity: 2, amount: 200, memo: 'this is sixth order', isTakingAway: true, UserId: 6,
+    quantity: 2, amount: 200, memo: 'this is sixth order', isTakingAway: true, UserId: 2,
     dishes: [{ id: 7, quantity: 1, price: 100 }, { id: 5, quantity: 1, price: 100 }]
   }
 ]
+const member1 = { account: 'user1', phone: '0901', password: '12345', role: 'admin' }
+const member2 = { account: 'user2', phone: '0902', password: '12345', role: 'member' }
+const member3 = { account: 'user3', phone: '0903', password: '12345', role: 'member' }
 
 
 describe('# Admin::Dashboard Request', () => {
@@ -61,6 +64,7 @@ describe('# Admin::Dashboard Request', () => {
       await db.Tag.destroy({ where: {}, truncate: true })
       await db.Dish.destroy({ where: {}, truncate: true })
       await db.Order.destroy({ where: {}, force: true, truncate: true })
+      await db.User.destroy({ where: {}, force: true, truncate: true })
       await db.DishCombination.destroy({ where: {}, truncate: true })
       await db.DishAttachment.destroy({ where: {}, truncate: true })
       await tags.forEach(tag => {
@@ -84,6 +88,9 @@ describe('# Admin::Dashboard Request', () => {
             })
           })
       }
+      await db.User.create(member1)
+      await db.User.create(member2)
+      await db.User.create(member3)
     })
 
     context('customer preferances', () => {
@@ -95,29 +102,27 @@ describe('# Admin::Dashboard Request', () => {
           .end((err, res) => {
             if (err) return done(err)
             //console.log(res.body.data)
-            console.log(res.body.hotProducts)
-            //console.log(res.body.data[1].Dish)
-            console.log(res.body.hotTags)
+            //console.log(res.body.hotProducts)
+            //console.log(res.body.hotMembers)
+            //console.log(res.body.hotTags)
             expect(typeof (res.body.hotProducts)).to.be.equal('object')
+            expect(res.body.hotProducts.length).to.be.equal(5)
             expect(typeof (res.body.hotTags)).to.be.equal('object')
+            expect(res.body.hotTags.length).to.be.equal(5)
+            expect(typeof (res.body.hotMembers)).to.be.equal('object')
+            expect(res.body.hotMembers.length).to.be.equal(2)
             return done()
           })
       })
     })
 
-    xdescribe('hot products', () => {
-
-    })
-
-    xdescribe('hot combo products', () => {
-
-    })
 
     after(async () => {
       this.ensureAuthenticated.restore()
       this.getUser.restore()
       await db.Tag.destroy({ where: {}, truncate: true })
       await db.Dish.destroy({ where: {}, truncate: true })
+      await db.User.destroy({ where: {}, force: true, truncate: true })
       await db.Order.destroy({ where: {}, force: true, truncate: true })
       await db.DishCombination.destroy({ where: {}, truncate: true })
       await db.DishAttachment.destroy({ where: {}, truncate: true })
