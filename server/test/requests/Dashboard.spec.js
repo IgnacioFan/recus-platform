@@ -49,7 +49,7 @@ const orders = [
 
 
 describe('# Admin::Dashboard Request', () => {
-  context('go to Cart-Management feature', () => {
+  context('go to Dashboard feature', () => {
 
     before(async () => {
       this.ensureAuthenticated = sinon.stub(

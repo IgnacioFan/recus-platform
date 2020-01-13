@@ -23,7 +23,7 @@ describe('# Dish Model', () => {
   checkModelName(Dish)('Dish')
 
   context('properties', () => {
-    ['name', 'price', 'image', 'description', 'option', 'CategoryId'].forEach(checkPropertyExists(dish))
+    ['name', 'price', 'image', 'description', 'CategoryId'].forEach(checkPropertyExists(dish))
   })
 
   context('indexes', () => {

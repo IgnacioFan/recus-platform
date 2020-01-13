@@ -9,6 +9,9 @@ var helpers = require('../../_helpers');
 var should = chai.should();
 var expect = chai.expect;
 const db = require('../../models')
+var tk = require('timekeeper')
+//var time = new Date(1893448800000)
+var time = new Date()
 
 const order1 = {
   quantity: 4,
@@ -16,7 +19,8 @@ const order1 = {
   memo: 'this is first order',
   tableNum: 2,
   isTakingAway: false,
-  UserId: 1
+  UserId: 1,
+  //createdAt: new Date().setHours(10, 0, 0, 0)
 }
 const order2 = {
   quantity: 3,
@@ -24,7 +28,8 @@ const order2 = {
   memo: 'this is second order',
   tableNum: 0,
   isTakingAway: true,
-  UserId: 1
+  UserId: 1,
+  //createdAt: new Date().setHours(12, 0, 0, 0)
 }
 const dishCombo1 = [{ id: 1, quantity: 2, price: 30 }, { id: 2, quantity: 2, price: 40 }]
 const dishCombo2 = [{ id: 1, quantity: 2, price: 30 }, { id: 2, quantity: 1, price: 40 }]
@@ -32,7 +37,7 @@ const dish1 = { name: 'mocha', price: 30, CategoryId: 1 }
 const dish2 = { name: 'latie', price: 40, CategoryId: 1 }
 
 describe('# Admin::Order Request', () => {
-  context('go to Cart-Management feature', () => {
+  context('go to Order-Management feature', () => {
 
     before(async () => {
       this.ensureAuthenticated = sinon.stub(
@@ -111,20 +116,40 @@ describe('# Admin::Order Request', () => {
           perQuantity: dishCombo2[i].quantity
         })
       }
+      //tk.travel(time)
+      //tk.freeze(time)
     })
 
-    it('should get all orders', (done) => {
+    it('should get all orders today', (done) => {
       request(app)
         .get('/api/admin/orders?state=pending')
         .expect(200)
         .end((err, res) => {
-          //console.log(res.body.orders[0])
+          console.log(res.body.orders)
           expect(res.body).to.have.property('orders')
           expect(res.body.orders.length).to.be.equal(2)
-          expect(res.body.orders[0].sumOfDishes.length).to.be.equal(2)
-          expect(res.body.orders[0].sumOfDishes[0].DishCombination.perQuantity).to.be.equal(2)
-          expect(res.body.orders[0].sumOfDishes[1].DishCombination.perQuantity).to.be.equal(2)
           expect(res.body.orders[1].sumOfDishes.length).to.be.equal(2)
+          expect(res.body.orders[1].sumOfDishes[0].DishCombination.perQuantity).to.be.equal(2)
+          expect(res.body.orders[1].sumOfDishes[1].DishCombination.perQuantity).to.be.equal(2)
+          expect(res.body.orders[0].sumOfDishes.length).to.be.equal(2)
+          return done()
+        })
+    })
+
+
+    xit('should get no any order today', (done) => {
+      //time = new Date(1893448800000)
+
+      request(app)
+        .get('/api/admin/orders?state=pending')
+        .expect(200)
+        .end((err, res) => {
+          console.log(res.body.orders)
+          let date1 = new Date
+          let ms = Date.now()
+          console.log(date1, ms)
+          expect(res.body).to.have.property('orders')
+          expect(res.body.orders.length).to.be.equal(2)
           return done()
         })
     })
@@ -150,6 +175,7 @@ describe('# Admin::Order Request', () => {
       await db.DishCombination.destroy({ where: {}, truncate: true })
       await db.Dish.destroy({ where: {}, truncate: true })
       await db.User.destroy({ where: {}, force: true, truncate: true })
+      tk.reset()
     })
   })
 })

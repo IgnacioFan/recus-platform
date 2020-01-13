@@ -1,5 +1,6 @@
 'use strict';
 const Op = require('sequelize').Op
+const moment = require('moment')
 
 module.exports = (sequelize, DataTypes) => {
   const Order = sequelize.define('Order', {
@@ -19,8 +20,8 @@ module.exports = (sequelize, DataTypes) => {
         todayOrder: {
           where: {
             createdAt: {
-              [Op.gte]: new Date().setHours(0, 0, 0)
-              , [Op.lte]: new Date()
+              [Op.gte]: moment().hour(0)//new Date().setHours(0, 0, 0)
+              , [Op.lte]: moment().hour(23)
             }
           }
         }

@@ -19,6 +19,13 @@ const dishValidRules = () => {
   ]
 }
 
+const orderValidRules = () => {
+  return [
+    body('dishes')
+      .not().isEmpty().withMessage('請輸入至少一項!')
+  ]
+}
+
 const validate = (req, res, next) => {
   const errors = validationResult(req)
   if (errors.isEmpty()) return next()
