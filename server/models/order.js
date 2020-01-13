@@ -16,6 +16,11 @@ module.exports = (sequelize, DataTypes) => {
         //paranoid: false
       },
       scopes: {
+        orderWithMember: {
+          where: {
+            UserId: { [Op.gt]: 0 }
+          }
+        },
         todayOrder: {
           where: {
             createdAt: {
@@ -29,6 +34,7 @@ module.exports = (sequelize, DataTypes) => {
       paranoid: true
     });
   Order.associate = function (models) {
+    Order.belongsTo(models.User)
     Order.hasMany(models.MemberOrder)
     Order.belongsToMany(models.Dish, {
       through: models.DishCombination,
