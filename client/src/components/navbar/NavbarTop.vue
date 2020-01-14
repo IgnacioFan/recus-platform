@@ -2,6 +2,7 @@
   <nav class="text-right">
     <h1 class="d-inline float-left">{{this.initialTitle}}</h1>
 
+    <p class="d-inline-block text-capitalize mr-3">{{this.connection}}</p>
     <p class="d-inline-block text-capitalize mr-3">Hi,{{user.name}}</p>
     <router-link :to="{name: 'admin-dash-board'}" class="mr-3">儀錶板</router-link>
     <router-link
@@ -23,7 +24,7 @@
 
 <script>
 import adminOrderAPI from "../../apis/admin/order";
-
+import io from 'socket.io-client'
 export default {
   props: {
     initialTitle: {
@@ -38,13 +39,38 @@ export default {
       pendingLength: 0,
       unpaidLength: 0,
       pendingLoading: true,
-      unpaidLoading: true
+      unpaidLoading: true,
+      // socket setting
+      socket: {},
+      isConnected: false,
+      connection: 'no connection'
     };
   },
   created() {
     this.fetchOrders("pending");
     this.fetchOrders("unpaid");
     this.user = this.$store.state.currentUser
+    this.socket = io('http://localhost:3000')
+  },
+  mounted() {
+    // this.socket.on('news', data => {
+    //   this.connected = data
+    // })
+    // socket
+    this.socket.on('status', (data) => {
+      //this.isConnected = true;
+      this.connection = data
+    })
+    // realtime pending
+    this.socket.on('pending', (data) => {
+        this.pendingLength = data
+    })
+    // realtime unpaid
+    this.socket.on('unpaid', (data) => {
+        this.unpaidLength = data
+    })
+    // this.socket.emit('pending', this.pendingLength)
+    // this.socket.emit('unpaid', this.unpaidLength)
   },
   methods: {
     logout() {
@@ -53,17 +79,20 @@ export default {
     },
     async fetchOrders(state) {
       try {
+        // socket should restart the response
         const response = await adminOrderAPI.orders.get({ state: state });
-        const { data, statusText } = response;
+        
+        const { statusText } = response;
         if (statusText !== "OK") {
           throw new Error(statusText);
         }
         if (state === "pending") {
-          this.pendingLength = data.orders.length;
+          //this.pendingLength = data.orders.length;
         }
         if (state === "unpaid") {
-          this.unpaidLength = data.orders.length;
+          //this.unpaidLength = data.orders.length;
         }
+        
         this.pendingLoading = false;
       } catch (error) {
         this.pendingLoading = false;
