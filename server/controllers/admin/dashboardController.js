@@ -2,7 +2,7 @@ const db = require('../../models')
 const { Order, DishCombination, Tag, Dish, User } = db
 
 const dashboardController = {
-  
+
   getDashboard: async (req, res) => {
     try {
       let hotTags = {}

@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs')
 const db = require('../../models')
-const { User, Profile } = db
+const { User, Profile, Order } = db
 const Op = require('sequelize').Op
 
 // Json Web Token
@@ -79,12 +79,13 @@ const userController = {
     let authorization = TokenArray[1]
     //console.log(req.headers)
     jwt.verify(authorization, process.env.JWT_SECRET, (err, authorizedData) => {
-
+      
       User.findOne({
         include: [Profile],
         where: { id: authorizedData.id }
       }).then(user => {
         //console.log(user)
+
         return res.json({
           id: user.id,
           account: user.account,

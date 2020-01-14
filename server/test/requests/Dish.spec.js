@@ -133,7 +133,7 @@ describe('# Admin::Dish Request', () => {
         })
     })
 
-    it('there is no tags with DishId 4', (done) => {
+    xit('there is no tags with DishId 4', (done) => {
       db.DishAttachment.findAll({ where: { DishId: 4 } }).then(tags => {
         expect(tags.length).to.be.equal(0)
         done()
