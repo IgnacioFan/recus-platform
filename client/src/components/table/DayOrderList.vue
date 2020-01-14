@@ -12,7 +12,7 @@
           <tr>
             <th>
               <div class="d-flex justify-content-between">
-                <small>{{order.createdAt | timeFrom}}</small>
+                <small>{{order.duration}}</small>
                 <h4 class="mr-5">{{order.id}}</h4>
                 <button class="btn btn-primary" @click.stop.prevent="deleteOrder(order.id)">刪除</button>
               </div>
@@ -22,12 +22,12 @@
         <tbody>
           <tr v-for="dish in order.sumOfDishes" :key="dish.id">
             <td>
-              <div>
-                <h4>{{dish.name}}</h4>
-                <div class="d-flex justify-content-between">
-                  <p class="mb-0 d-inline-block">LS、NE</p>
-                  <p class="d-inline-block">數量：{{dish.DishCombination.quantity}}</p>
-                </div>
+              <div class="d-flex justify-content-between">
+                <h4 class="mb-0 d-inline-block">{{dish.name}}</h4>
+                <p
+                  class="d-inline-block"
+                  style="line-height: 2;"
+                >數量：{{dish.DishCombination.perQuantity}}</p>
               </div>
             </td>
           </tr>
@@ -67,8 +67,8 @@
                 </button>
               </div>
               <h5 v-if="order.isTakingAway" class="float-left">外帶</h5>
-              <h5 v-else class="float-left">桌號: {{order.tableNum}}</h5>
-              <h5 class="float-right">總額: {{order.amount}}</h5>
+              <h5 v-else class="float-left">桌號：{{order.tableNum}}</h5>
+              <h5 class="float-right">總額：{{order.amount}}</h5>
             </td>
           </tr>
         </tfoot>

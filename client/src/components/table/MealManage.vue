@@ -75,7 +75,7 @@ export default {
         if (statusText !== "OK") {
           throw new Error(statusText);
         }
-        this.categories = data;
+        this.categories = data.categories;
       } catch (error) {
         // eslint-disable-next-line
         console.log("error", error);

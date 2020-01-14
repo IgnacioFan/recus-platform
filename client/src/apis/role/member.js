@@ -10,9 +10,9 @@ export default {
     return apiHelper.get(`/admin/members/search?${searchParams.toString()}`)
   },
   toggleAdmin({ userId }) {
-    return apiHelper.put(`/admin/members/admin/${userId}`)
+    return apiHelper.put(`/admin/members/${userId}/isAdmin`)
   },
   deleteMember({ userId }) {
-    return apiHelper.delete(`/admin/members/${userId}`)
+    return apiHelper.delete(`/admin/members/${userId}99`)
   }
 }

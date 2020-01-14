@@ -129,7 +129,7 @@ export default {
         tags: [],
         description: "",
         image: "",
-        removeTags:[]
+        removeTags: []
       },
       originTags: [],
       categories: [],
@@ -157,10 +157,12 @@ export default {
   created() {
     this.fetchCategories();
     this.fetchTags();
-    if(typeof this.$route.params.id === "number"){      
-    const { id } = this.$route.params;
-    this.fetchDish(id);
-    }else{this.loadedDish = true;}
+    if (typeof this.$route.params.id === "number") {
+      const { id } = this.$route.params;
+      this.fetchDish(id);
+    } else {
+      this.loadedDish = true;
+    }
   },
   methods: {
     async fetchCategories() {
@@ -170,7 +172,8 @@ export default {
         if (statusText !== "OK") {
           throw new Error(statusText);
         }
-        this.categories = data;
+
+        this.categories = data.categories;
         this.loadedCategories = true;
       } catch (error) {
         this.loadedCategories = true;
@@ -186,7 +189,7 @@ export default {
           throw new Error(statusText);
         }
 
-        this.allTags = data;
+        this.allTags = data.tags;
         this.loadedTags = true;
       } catch (error) {
         this.loadedTags = true;
@@ -286,10 +289,17 @@ export default {
         });
         return;
       }
-      
-      this.dish.removeTags = this.originTags.filter(x => !this.dish.tags.includes(x));
-      // eslint-disable-next-line
-        console.log("data", this.dish);
+
+      let filtration = this.originTags.filter(
+        x => !this.dish.tags.includes(x)
+      );
+
+      let saveTags = this.originTags.filter(
+        x => this.dish.tags.includes(x)
+      );
+
+      this.dish.removeTags = filtration.map(e => e.id)
+      this.dish.tags = saveTags
       this.$emit("after-submit", this.dish);
     }
   }

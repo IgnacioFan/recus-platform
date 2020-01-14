@@ -101,7 +101,7 @@ export default {
           throw new Error(statusText);
         }
 
-        this.categories = data.map(category => ({
+        this.categories = data.categories.map(category => ({
           ...category,
           isEditing: false
         }));

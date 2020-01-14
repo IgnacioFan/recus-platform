@@ -184,36 +184,35 @@ export default {
     },
     async afterDeleteUser(userId) {
       try {
-        // eslint-disable-next-line
         const { data, statusText } = await roleMemberAPI.deleteMember({
           userId
         });
 
-        if (statusText !== "OK") {
+        if (statusText !== "OK" || data.status !== "success") {
+          this.$swal({
+            type: "error",
+            title: data.msg
+          });
           throw new Error(statusText);
         }
-
+        
         this.users = this.users.filter(user => user.id !== userId);
         this.searchResult = this.searchResult.filter(
           user => user.id !== userId
         );
-
+        
         this.$swal({
           toast: true,
           position: "top",
           showConfirmButton: false,
           timer: 3000,
           type: "success",
-          title: "已刪除會員",
+          title: data.msg,
           text: ""
         });
       } catch (error) {
         // eslint-disable-next-line
         console.log("error", error);
-        this.$swal({
-          type: "error",
-          title: "無法移除使用者，請稍後再試"
-        });
       }
     },
     async afterToggleIsAdmin(userId) {
@@ -223,6 +222,10 @@ export default {
         });
 
         if (statusText !== "OK" || data.status !== "success") {
+          this.$swal({
+            type: "error",
+            title: data.msg
+          });
           throw new Error(statusText);
         }
 
@@ -232,7 +235,7 @@ export default {
           } else {
             return {
               ...user,
-              role: ""
+              role: data.user.role
             };
           }
         });
@@ -243,17 +246,13 @@ export default {
           } else {
             return {
               ...user,
-              isAdmin: !user.isAdmin
+              role: data.user.role
             };
           }
         });
       } catch (error) {
         // eslint-disable-next-line
         console.log("error", error);
-        this.$swal({
-          type: "error",
-          title: "無法切換使用者權限，請稍後再試"
-        });
       }
     },
     async searchUser() {
