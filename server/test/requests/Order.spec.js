@@ -125,7 +125,7 @@ describe('# Admin::Order Request', () => {
         .get('/api/admin/orders?state=pending')
         .expect(200)
         .end((err, res) => {
-          console.log(res.body.orders)
+          //console.log(res.body.orders)
           expect(res.body).to.have.property('orders')
           expect(res.body.orders.length).to.be.equal(2)
           expect(res.body.orders[1].sumOfDishes.length).to.be.equal(2)

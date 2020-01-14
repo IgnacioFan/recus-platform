@@ -1,8 +1,11 @@
 const db = require('../../models')
 const events = require('events')
 const stateMachine = new events.EventEmitter()
+//const number = new events.EventEmitter()
 const { Order, DishCombination } = db
 const moment = require('moment')
+
+const app = require('../../app')
 
 stateMachine.on('prev', (order) => {
   let prevState
@@ -22,9 +25,16 @@ stateMachine.on('next', (order) => {
   order.update({ state: nextState })
 })
 
+// number.on('pendingEvent', (number) => {
+//   Order.scope('todayOrder').count({ where: { state: 'pending' } }).then(ordernums => {
+//     number = ordernums
+//   })
+// })
+
 
 const orderController = {
-  addOrder: (req, res) => {
+
+  addOrder: async (req, res) => {
     try {
       if (req.body.dishes.length === 0) {
         return res.json({ status: 'error', msg: '請輸入至少一樣菜單' })
@@ -56,24 +66,32 @@ const orderController = {
       }
 
       // 新增訂單
-      return Order.create({
+      order = await Order.create({
         quantity: req.body.quantity,
         amount: req.body.amount,
         memo: req.body.memo,
         tableNum: req.body.tableNum,
         isTakingAway: req.body.isTakingAway,
         UserId: req.body.UserId !== "" ? req.body.UserId : null
-      }).then(order => {
-        // 新增菜單組合
-        comboDishes.forEach(item => {
-          DishCombination.create({
-            OrderId: order.id,
-            DishId: item.DishId,
-            perQuantity: item.quantity,
-            perAmount: item.amount
-          })
-        })
-        return res.json({ order: order })
+      })
+      
+      
+
+      // 新增菜單組合
+      combodishes = comboDishes.forEach(item => {
+        DishCombination.create({
+          OrderId: order.id,
+          DishId: item.DishId,
+          perQuantity: item.quantity,
+          perAmount: item.amount
+      })
+          
+      // if(app.emitter && order) {
+      //   app.emitter.emit('pendingEvent', pendingNums)
+      //   //app.emitter.emit('unpaidEvent', unpaidNums)
+      // }
+
+      return res.json({ order: order })
       })
     } catch (error) {
       return res.status(500).json({ status: 'error', msg: error })
@@ -109,12 +127,22 @@ const orderController = {
           where: { state: state },
           order: [['id', 'DESC']]
         })
+
+        // pendingNums = await Order.scope('todayOrder').count({ where: { state: 'pending' } })
+        // unpaidNums = await Order.scope('todayOrder').count({ where: { state: 'unpaid' } })
+
         if (!orders.length) res.status(400).json({ status: 'error', msg: '今日未有任何訂單!' })
         // 訂單資料整理
         orders = orders.map(order => ({
           ...order.dataValues,
           duration: moment(order.createdAt).fromNow()
         }))
+
+        // if(app.emitter && orders) {
+        //   app.emitter.emit('pendingEvent', pendingNums)
+        //   app.emitter.emit('unpaidEvent', unpaidNums)
+        // }
+
         return res.json({ orders: orders })
       } else {
         return res.json({ status: 'error', msg: '404' })
@@ -161,6 +189,9 @@ const orderController = {
 
   getPendingNums: (req, res) => {
     Order.scope('todayOrder').count({ where: { state: 'pending' } }).then((nums => {
+      if(app.emitter) {
+        app.emitter.emit('pendingEvent', nums)
+      }
       return res.json(nums)
     }))
   },
