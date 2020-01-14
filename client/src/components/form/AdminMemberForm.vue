@@ -95,13 +95,13 @@ import { emptyImageFilter } from "../../utils/mixins";
 
 export default {
   mixins: [emptyImageFilter],
-  name: "AdminDishForm",
+  name: "AdminMemberForm",
   props: {
     initialUser: {
       type: Object,
       default: () => ({
         Profile: {
-          avatar: this.emptyImage,
+          avatar: "",
           email: "",
           name: ""
         },
@@ -116,7 +116,16 @@ export default {
   },
   data() {
     return {
-      user: this.initialUser,
+      user: {
+        Profile: {
+          avatar: "",
+          email: "",
+          name: ""
+        },
+        account: "",
+        phone: "",
+        role: ""
+      },
       editUser: this.initialEditUser,
       isProcessing: false
     };

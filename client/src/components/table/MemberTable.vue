@@ -13,6 +13,7 @@
       <tr v-for="user in users" :key="user.id">
         <th>
           <router-link
+            class="text-capitalize"
             v-if="user.Profile"
             :to="{path:'/users', params:{id:user.id}}"
           >{{ user.Profile.name }}</router-link>
@@ -30,18 +31,15 @@
             type="button"
             class="btn btn-warning"
             @click.stop.prevent="deleteUser(user.id)"
-          >刪除</button>
+          >Delete</button>
         </td>
         <td>
           <button
             v-if="user.id !== currentUser"
             type="button"
-            class="btn btn-danger"
+            class="btn btn-danger text-capitalize"
             @click.stop.prevent="toggleIsAdmin(user.id)"
-          >
-            <template v-if="user.role === `admin`">{{ user.role }}</template>
-            <template v-else>使用者</template>
-          </button>
+          >{{ user.role }}</button>
         </td>
       </tr>
     </tbody>

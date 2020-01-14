@@ -101,8 +101,8 @@ export default {
         if (statusText !== "OK") {
           throw new Error(statusText);
         }
-
-        this.tags = data.map(tag => ({
+        
+        this.tags = data.tags.map(tag => ({
           ...tag,
           isEditing: false
         }));

@@ -10,7 +10,7 @@
       </li>
     </ul>
     <div class="border border-warning meal overflow-auto">
-      <div v-if="!dishes.length > 0">新增一些餐點吧!</div>
+      <h1 v-if="!dishes.length > 0" class="box-center">新增一些餐點吧!</h1>
       <div class="card-columns">
         <div
           v-for="dish in dishes"
@@ -142,10 +142,7 @@ export default {
   watch: {
     initialDishes(dishes) {
       this.dishes = [];
-      this.dishes = {
-        ...this.dishes,
-        ...dishes
-      };
+      this.dishes = [...this.dishes, ...dishes];
     },
     initialCategories(categories) {
       this.categories = {};
@@ -159,6 +156,12 @@ export default {
 </script>
 
 <style scoped>
+.box-center {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .card-columns {
   column-count: auto;
 }

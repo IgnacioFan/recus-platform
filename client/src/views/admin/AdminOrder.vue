@@ -104,7 +104,7 @@ export default {
         if (statusText !== "OK") {
           throw new Error(statusText);
         }
-        this.categories = data;
+        this.categories = data.categories;
       } catch (error) {
         // eslint-disable-next-line
         console.log("error", error);
@@ -154,8 +154,7 @@ export default {
         quantity: 0,
         amount: 0
       };
-      // this.user.name = "";
-      // this.user.temp = "";
+      this.userName = "";
       this.dishPK = 0;
     },
     afterShowUser(user) {

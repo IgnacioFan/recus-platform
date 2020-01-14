@@ -14,6 +14,7 @@ import AdminDishForm from "../../components/form/AdminDishForm";
 import adminDishAPI from "../../apis/admin/dish";
 
 export default {
+  name: "AdminDishNew",
   components: {
     AdminDishForm
   },
@@ -21,7 +22,7 @@ export default {
     return {
       title: "新增菜單",
       isProcessing: false,
-      loadedDish: true
+      loadedDish: false
     };
   },
   computed: {},
