@@ -1,25 +1,30 @@
 const db = require('../../models')
-const { Order, DishCombination, Tag, Dish, User } = db
+const { Order, DishCombination, Tag, Dish, User, Profile } = db
 
 const dashboardController = {
   
   getDashboard: async (req, res) => {
     try {
+      if (!req.query.range) return res.json({ status: 'error', msg: 'undefined!' })
+
       let hotTags = {}
       let hotProducts = {}
       let hotMembers = {}
       //let hotCombo = {}
-      dishes = await DishCombination.findAll(
+      dishes = await DishCombination.scope(req.query.range).findAll(
         {
           attributes: ['DishId', 'OrderId'], include: [{
             model: Dish, attributes: ['name'],
             include: [{ model: Tag, as: 'hasTags', attributes: ['id', 'name'] }]
           }]
         })
-      users = await Order.scope('orderWithMember').findAll(
+      users = await Order.scope('orderWithMember', req.query.range).findAll(
         {
           attributes: ['UserId'],
-          include: [{ model: User, attributes: ['phone'], where: { role: 'member' } }]
+          include: [{
+            model: User, attributes: ['phone'], where: { role: 'member' },
+            include: [{ model: Profile, attributes: ['name'] }]
+          }]
         })
 
       //console.log(users)
@@ -57,6 +62,7 @@ const dashboardController = {
           hotMembers[user.UserId] = {
             id: user.UserId,
             phone: user.User.phone,
+            name: user.User.Profile.name,
             count: 1
           }
         }
