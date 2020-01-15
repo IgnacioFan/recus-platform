@@ -92,7 +92,7 @@ const dashboardController = {
       let pChart = {} // 取得產品成長的成長分析, p 是product的簡寫
       let tChart = {}
 
-      products = await DishCombination.scope(req.query.range).findAll(
+      products = await DishCombination.scope('weekly').findAll(
         {
           where: { DishId: req.query.id },
           attributes: ['DishId', 'OrderId', 'createdAt'],

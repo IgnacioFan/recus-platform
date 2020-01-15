@@ -129,7 +129,6 @@ describe('# Admin::Dashboard Request', () => {
           .expect(200)
           .end((err, res) => {
             if (err) return done(err)
-            // console.log(res.body.data)
             // console.log(nowTime) // 將時間鎖住
             // console.log(time1)
             // console.log(time2)
@@ -137,19 +136,19 @@ describe('# Admin::Dashboard Request', () => {
             // console.log(res.body.hotProducts)
             // console.log(res.body.hotMembers)
             // console.log(res.body.hotTags)
-            expect(typeof (res.body.hotProducts)).to.be.equal('object')
+            expect(res.body.hotProducts[0]).to.eql({ id: 1, name: '黑框美式', count: 4 })
             expect(res.body.hotProducts.length).to.be.equal(5)
-            expect(typeof (res.body.hotTags)).to.be.equal('object')
-            expect(res.body.hotTags.length).to.be.equal(5)
-            expect(typeof (res.body.hotMembers)).to.be.equal('object')
+            expect(res.body.hotMembers[0]).to.eql({ id: 2, name: 'nacho', count: 4 })
             expect(res.body.hotMembers.length).to.be.equal(2)
+            expect(res.body.hotTags[0]).to.eql({ id: 9, name: '手沖', count: 10 })
+            expect(res.body.hotTags.length).to.be.equal(5)
             return done()
           })
       })
 
       it('hot products growing', (done) => {
         request(app)
-          .get('/api/admin/dashboard/lineChart?range=weekly&id=1&id=7')
+          .get('/api/admin/dashboard/lineChart?id=1&id=7')
           .expect(200)
           .end((err, res) => {
             if (err) return done(err)
@@ -171,8 +170,8 @@ describe('# Admin::Dashboard Request', () => {
           .expect(200)
           .end((err, res) => {
             if (err) return done(err)
-            console.log(res.body.data)
-            console.log(res.body.data2)
+            // console.log(res.body.data)
+            // console.log(res.body.data2)
             // console.log(res.body.hotProducts[0])
             // console.log(res.body.hotMembers[0])
             // console.log(res.body.hotTags[0])
@@ -182,6 +181,21 @@ describe('# Admin::Dashboard Request', () => {
             expect(res.body.hotMembers.length).to.be.equal(2)
             expect(res.body.hotTags[0]).to.eql({ id: 9, name: '手沖', count: 10 })
             expect(res.body.hotTags.length).to.be.equal(5)
+            return done()
+          })
+      })
+
+      xit('hot products growing', (done) => {
+        request(app)
+          .get('/api/admin/dashboard/lineChart?range=monthly&id=1&id=7')
+          .expect(200)
+          .end((err, res) => {
+            if (err) return done(err)
+            // console.log(res.body.days)
+            // console.log(res.body.pChart)
+            //console.log(res.body.products)
+            expect(res.body.days.length).to.be.equal(3)
+            expect(Object.keys(res.body.pChart)).to.eql(['黑框美式', '皇后花園'])
             return done()
           })
       })
