@@ -56,5 +56,6 @@ router.delete('/categories/:id', categoryController.removeCategory)
 
 // 
 router.get('/dashboard', dashboardController.getDashboard)
+router.get('/dashboard/lineChart', dashboardController.getLineChart)
 
 module.exports = router

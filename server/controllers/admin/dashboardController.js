@@ -1,8 +1,9 @@
 const db = require('../../models')
+const moment = require('moment')
 const { Order, DishCombination, Tag, Dish, User, Profile } = db
 
 const dashboardController = {
-  
+
   getDashboard: async (req, res) => {
     try {
       if (!req.query.range) return res.json({ status: 'error', msg: 'undefined!' })
@@ -57,7 +58,7 @@ const dashboardController = {
       }
 
       for (let user of users) {
-        // 計算熱門標籤
+        // 計算購買數前五名的會員
         if (!hotMembers[user.UserId]) {
           hotMembers[user.UserId] = {
             id: user.UserId,
@@ -71,11 +72,11 @@ const dashboardController = {
         }
       }
 
-      // 篩選前五名的熱門商品
+      // 篩選與排序前五名的熱門商品
       hotProducts = Object.values(hotProducts).sort((a, b) => (b.count - a.count)).slice(0, 5)
-      // 篩選前五名的熱門標籤
+      // 篩選與排序前五名的熱門標籤
       hotTags = Object.values(hotTags).sort((a, b) => (b.count - a.count)).slice(0, 5)
-      // 篩選購買數前五名的會員
+      // 篩選與排序購買數前五名的會員
       hotMembers = Object.values(hotMembers).sort((a, b) => (b.count - a.count)).slice(0, 5)
 
       return res.json({ hotProducts: hotProducts, hotTags: hotTags, hotMembers: hotMembers, data: users })
@@ -83,6 +84,46 @@ const dashboardController = {
     } catch (error) {
       return res.status(500).json({ status: 'error', msg: error })
     }
+  },
+
+  getLineChart: async (req, res) => {
+    let Chart = {}
+    products = await DishCombination.scope('weekly').findAll(
+      {
+        where: { DishId: req.query.id },
+        attributes: ['DishId', 'OrderId', 'createdAt'],
+        include: [{
+          model: Dish, attributes: ['name'],
+          //include: [{ model: Tag, as: 'hasTags', attributes: ['id', 'name'] }]
+        }]
+      })
+    // 計算前七天內產品成長的折線圖
+    for (let product of products) {
+      let createdAt = moment(product.createdAt).format("MM-DD")
+
+      if (!Chart[product.DishId]) {
+        Chart[product.DishId] = {
+          [createdAt]: {
+            id: product.DishId,
+            name: product.Dish.name,
+            count: 1
+          }
+        }
+      } else {
+        if (!(createdAt in Chart[product.DishId])) {
+          Chart[product.DishId][createdAt] = {
+            id: product.DishId,
+            name: product.Dish.name,
+            count: 1
+          }
+        }
+        else {
+          Chart[product.DishId][createdAt].count++
+        }
+      }
+    }
+    // 計算前七天內標籤成長的的折線圖
+    return res.json({ products: products, data: Chart })
   }
 }
 

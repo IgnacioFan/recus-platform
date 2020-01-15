@@ -12,8 +12,9 @@ const db = require('../../models')
 const moment = require('moment')
 var tk = require('timekeeper')
 const nowTime = new Date()
-const time = moment(nowTime, "YYYY-M-D H:m").subtract(1, 'days').toDate() //moment().subtract(1, 'days')
-
+const time1 = moment(nowTime, "YYYY-M-D H:m").subtract(1, 'days').toDate() //moment().subtract(1, 'days')
+const time2 = moment(nowTime, "YYYY-M-D H:m").subtract(2, 'days').toDate()
+const time3 = moment(nowTime, "YYYY-M-D H:m").subtract(3, 'days').toDate()
 const tags = ["淺焙", "中焙", "深焙", "衣索比亞", "肯亞", "印尼", "微果酸", "果香味", "手沖", "義式機", "新品"] // 11
 const menu = [
   { name: '黑框美式', price: 60, CategoryId: 1, tags: [{ id: 3 }, { id: 10 }, { id: 11 }] },
@@ -27,29 +28,38 @@ const menu = [
 ]
 const orders = [
   {
-    quantity: 3, amount: 240, memo: 'this is second order', isTakingAway: true, UserId: 1, createdAt: time,
+    quantity: 3, amount: 240, memo: 'this is second order', isTakingAway: true, UserId: 1,
     dishes: [{ id: 1, quantity: 1, price: 60 }, { id: 2, quantity: 1, price: 80 }, { id: 4, quantity: 1, price: 100 }]
   },
   {
-    quantity: 2, amount: 200, memo: 'this is second order', isTakingAway: true, UserId: 2, createdAt: time,
-    dishes: [{ id: 7, quantity: 2, price: 100 }]
+    quantity: 3, amount: 300, memo: 'this is second order', isTakingAway: true, UserId: 2,
+    dishes: [{ id: 7, quantity: 2, price: 100 }, { id: 7, quantity: 1, price: 100 }]
   },
   {
-    quantity: 3, amount: 300, memo: 'this is third order', isTakingAway: true, UserId: 1, createdAt: time,
+    quantity: 3, amount: 300, memo: 'this is third order', isTakingAway: true, UserId: 1,
     dishes: [{ id: 6, quantity: 2, price: 100 }, { id: 8, quantity: 1, price: 100 }]
   },
   {
-    quantity: 3, amount: 220, memo: 'this is fourth order', isTakingAway: true, UserId: 1, createdAt: time,
+    quantity: 3, amount: 220, memo: 'this is fourth order', isTakingAway: true, UserId: 1,
     dishes: [{ id: 1, quantity: 2, price: 60 }, { id: 5, quantity: 1, price: 100 }]
   },
   {
-    quantity: 4, amount: 380, memo: 'this is fifth order', isTakingAway: true, UserId: 3, createdAt: time,
+    quantity: 4, amount: 380, memo: 'this is fifth order', isTakingAway: true, UserId: 3,
     dishes: [{ id: 6, quantity: 3, price: 100 }, { id: 2, quantity: 1, price: 80 }]
   },
   {
-    quantity: 2, amount: 200, memo: 'this is sixth order', isTakingAway: true, UserId: 2, createdAt: time,
+    quantity: 2, amount: 200, memo: 'this is sixth order', isTakingAway: true, UserId: 2,
     dishes: [{ id: 7, quantity: 1, price: 100 }, { id: 5, quantity: 1, price: 100 }]
+  },
+  {
+    quantity: 2, amount: 160, memo: 'this is seventh order', isTakingAway: true, UserId: 2,
+    dishes: [{ id: 1, quantity: 1, price: 60 }, { id: 7, quantity: 1, price: 100 }]
+  },
+  {
+    quantity: 2, amount: 160, memo: 'this is eighth order', isTakingAway: true, UserId: 2,
+    dishes: [{ id: 1, quantity: 1, price: 60 }, { id: 7, quantity: 1, price: 100 }]
   }
+
 ]
 const member1 = { account: 'user1', phone: '0901', password: '12345', role: 'admin' }
 const member2 = { account: 'user2', phone: '0902', password: '12345', role: 'member' }
@@ -67,7 +77,6 @@ describe('# Admin::Dashboard Request', () => {
       this.getUser = sinon.stub(
         helpers, 'getUser'
       ).returns({ id: 1, role: 'admin' })
-
       await db.Tag.destroy({ where: {}, truncate: true })
       await db.Dish.destroy({ where: {}, truncate: true })
       await db.Order.destroy({ where: {}, force: true, truncate: true })
@@ -75,17 +84,25 @@ describe('# Admin::Dashboard Request', () => {
       await db.DishCombination.destroy({ where: {}, truncate: true })
       await db.DishAttachment.destroy({ where: {}, truncate: true })
       await db.Profile.destroy({ where: {}, truncate: true })
-      tk.freeze(time)
+      tk.freeze(nowTime)
       await tags.forEach(tag => {
         db.Tag.create({ name: tag })
       })
       for (let i = 0; i < orders.length; i++) {
+        let curretnTime
+        if (i < 2) {
+          curretnTime = time1
+        } else if (i >= 2 && i < 4) {
+          curretnTime = time2
+        } else {
+          curretnTime = time3
+        }
         await db.Order.create({
-          quantity: orders[i].quantity, amount: orders[i].amount,
+          quantity: orders[i].quantity, amount: orders[i].amount, createdAt: curretnTime,
           memo: orders[i].memo, isTakingAway: orders[i].isTakingAway, UserId: orders[i].UserId
         }).then(item => {
           orders[i].dishes.forEach(dish => {
-            return db.DishCombination.create({ OrderId: item.id, DishId: dish.id, perQuantity: dish.quantity, perAmount: dish.price })
+            return db.DishCombination.create({ OrderId: item.id, DishId: dish.id, perQuantity: dish.quantity, perAmount: dish.price, createdAt: curretnTime })
           })
         })
       }
@@ -113,8 +130,10 @@ describe('# Admin::Dashboard Request', () => {
           .end((err, res) => {
             if (err) return done(err)
             // console.log(res.body.data)
-            // console.log(time) // 將時間鎖住
-            // console.log(nowTime)
+            // console.log(nowTime) // 將時間鎖住
+            // console.log(time1)
+            // console.log(time2)
+            // console.log(time3)
             // console.log(res.body.hotProducts)
             // console.log(res.body.hotMembers)
             // console.log(res.body.hotTags)
@@ -128,20 +147,20 @@ describe('# Admin::Dashboard Request', () => {
           })
       })
 
-      xit('hot products growing/ hot tags growing/ hot members growing', (done) => {
+      it('hot products growing/ hot tags growing/ hot members growing', (done) => {
         request(app)
-          .get('/api/admin/dashboard/lineChart?range=weekly')
+          .get('/api/admin/dashboard/lineChart?id=1&id=7')
           .expect(200)
           .end((err, res) => {
             if (err) return done(err)
-            // console.log(res.body)
-
+            console.log(res.body.products)
+            console.log(res.body.data)
             return done()
           })
       })
     })
 
-    context('monthly anaylsis report', () => {
+    xcontext('monthly anaylsis report', () => {
 
       it('hot products/ hot tags/ hot members', (done) => {
         request(app)
@@ -170,7 +189,7 @@ describe('# Admin::Dashboard Request', () => {
     after(async () => {
       this.ensureAuthenticated.restore()
       this.getUser.restore()
-      tk.reset()
+      //tk.reset()
       await db.Tag.destroy({ where: {}, truncate: true })
       await db.Dish.destroy({ where: {}, truncate: true })
       await db.User.destroy({ where: {}, force: true, truncate: true })
