@@ -20,6 +20,11 @@
             type="submit"
             @click.stop.prevent="searchUser"
           >搜尋會員</button>
+          <button
+            class="btn btn-outline-success my-2 my-sm-0"
+            type="submit"
+            @click.stop.prevent="createUser"
+          >快速註冊會員</button>
         </form>
       </div>
     </div>
@@ -71,7 +76,10 @@ export default {
         // eslint-disable-next-line
         console.log("error", error);
       }
-    }
+    },
+    createUser() {
+      this.$emit("after-create-user");
+    },
   },
   watch: {
     user(userData) {
