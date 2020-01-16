@@ -53,13 +53,10 @@ module.exports = (sequelize, DataTypes) => {
     });
   Order.associate = function (models) {
     Order.belongsTo(models.User)
-    Order.hasMany(models.MemberOrder)
     Order.belongsToMany(models.Dish, {
       through: models.DishCombination,
       foreignKey: 'OrderId',
-      as: 'sumOfDishes',
-      hooks: true,
-      onDelete: 'cascade'
+      as: 'sumOfDishes'
     })
   };
   return Order;

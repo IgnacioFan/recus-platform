@@ -42,19 +42,12 @@ module.exports = (sequelize, DataTypes) => {
         { where: { 'phone': value }, include: [models.Profile] }
       )
     }
-    User.hasOne(models.Profile)
-    User.hasMany(models.Order)
-    // User.belongsToMany(models.Order, {
-    //   through: models.MemberOrder,
-    //   foreignKey: 'UserId',
-    //   as: 'hasManyOrders',
-    // })
+    User.hasOne(models.Profile, { hooks: true, onDelete: 'cascade' })
+    User.hasMany(models.Order, { hooks: true, onDelete: 'cascade' })
     User.belongsToMany(models.Tag, {
       through: models.UserPreferred,
       foreignKey: 'UserId',
-      as: 'preferredTags',
-      hooks: true,
-      onDelete: 'cascade'
+      as: 'preferredTags'
     })
   };
   return User;

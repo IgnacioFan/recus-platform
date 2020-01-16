@@ -26,17 +26,17 @@ describe('# Order Model', function () {
   })
 
   context('check associations', () => {
+    const User = 'User'
     const Dish = 'Dish'
-    const MemberOrder = 'MemberOrder'
     const DishCombination = 'DishCombination'
 
     before(function () {
-      Order.associate({ MemberOrder })
+      Order.associate({ User })
       Order.associate({ Dish, DishCombination })
     })
 
-    it('defined a hasMany association with MemberOrder', () => {
-      expect(Order.hasMany).to.have.been.calledWith(MemberOrder);
+    it('defined a belongsTo association with Category', () => {
+      expect(Order.belongsTo).to.have.been.calledWith(User)
     })
 
     it("defined a belongsToMany association with Tag through OrderPreferred as 'preferredTags'", () => {

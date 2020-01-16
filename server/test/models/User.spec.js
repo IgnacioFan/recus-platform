@@ -33,12 +33,12 @@ describe('# User Model', () => {
 
     const Tag = 'Tag'
     const Profile = 'Profile'
-    const MemberOrder = 'MemberOrder'
+    const Order = 'Order'
     const UserPreferred = 'UserPreferred'
 
     before(function () {
       User.associate({ Profile })
-      User.associate({ MemberOrder })
+      User.associate({ Order })
       User.associate({ Tag, UserPreferred })
     })
 
@@ -47,7 +47,7 @@ describe('# User Model', () => {
     })
 
     it('defined a hasMany association with MemberOrder', () => {
-      expect(User.hasMany).to.have.been.calledWith(MemberOrder);
+      expect(User.hasMany).to.have.been.calledWith(Order);
     })
 
     it("defined a belongsToMany association with Tag through UserPreferred as 'preferredTags'", () => {
