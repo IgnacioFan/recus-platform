@@ -25,21 +25,24 @@
 
       <div class="col-4"></div>
 
-      <CategoryTable
-        :initial-category="leftTableCategory"
-        @after-editing-category="toggleIsEditing"
-        @after-cancel-edit-category="handleCancel"
-        @after-update-category="updateTag"
-        @after-delete-category="deleteTag"
-      />
+      <Spinner class="col-12" v-if="isLoading" />
+      <template v-else>
+        <CategoryTable
+          :initial-category="leftTableCategory"
+          @after-editing-category="toggleIsEditing"
+          @after-cancel-edit-category="handleCancel"
+          @after-update-category="updateTag"
+          @after-delete-category="deleteTag"
+        />
 
-      <CategoryTable
-        :initial-category="rightTableCategory"
-        @after-editing-category="toggleIsEditing"
-        @after-cancel-edit-category="handleCancel"
-        @after-update-category="updateTag"
-        @after-delete-category="deleteTag"
-      />
+        <CategoryTable
+          :initial-category="rightTableCategory"
+          @after-editing-category="toggleIsEditing"
+          @after-cancel-edit-category="handleCancel"
+          @after-update-category="updateTag"
+          @after-delete-category="deleteTag"
+        />
+      </template>
     </div>
 
     <NavbarBottm />
@@ -52,12 +55,15 @@ import NavbarBottm from "../../components/navbar/NavbarBottm";
 import ManageTabs from "../../components/tabs/ManageTabs";
 import CategoryTable from "../../components/table/CategoryTable";
 import adminTagAPI from "../../apis/admin/tag";
+import Spinner from "../../components/spinner/Spinner";
 
 export default {
+  name: "AdminManageTags",
   components: {
     NavbarTop,
     NavbarBottm,
     ManageTabs,
+    Spinner,
     CategoryTable
   },
   data() {
@@ -65,6 +71,7 @@ export default {
       title: "菜單管理",
       newTagName: "",
       tags: [],
+      isLoading: true,
       isProcessing: false
     };
   },
@@ -101,12 +108,15 @@ export default {
         if (statusText !== "OK") {
           throw new Error(statusText);
         }
-        
+
         this.tags = data.tags.map(tag => ({
           ...tag,
+          used: tag.hasDishes.length || 0,
           isEditing: false
         }));
+        this.isLoading = false;
       } catch (error) {
+        this.isLoading = false;
         // eslint-disable-next-line
         console.log("error", error);
       }

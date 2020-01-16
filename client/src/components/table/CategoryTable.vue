@@ -3,7 +3,8 @@
     <table class="table table-striped m-0 table-bordered">
       <thead class="thead-dark">
         <tr>
-          <th width="50%" scope="col">Name</th>
+          <th width="70%" scope="col">Name</th>
+          <th width="10%" scope="col" class="text-center">Used</th>
           <th scope="col">Action</th>
         </tr>
       </thead>
@@ -12,7 +13,7 @@
       <table class="table table-striped table-bordered">
         <tbody>
           <tr v-for="category in this.initialCategory" :key="category.id">
-            <td width="50%" class="position-relative">
+            <td width="70%" class="position-relative">
               <div v-show="!category.isEditing" class="category-name">{{ category.name }}</div>
               <input
                 v-show="category.isEditing"
@@ -21,6 +22,9 @@
                 class="form-control"
               />
               <span v-show="category.isEditing" class="cancel" @click="handleCancel(category.id)">✕</span>
+            </td>
+            <td width="10%" class="text-center">
+              <div>{{ category.used }}</div>
             </td>
             <td class="d-flex justify-content-between">
               <button

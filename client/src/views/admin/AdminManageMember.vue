@@ -60,7 +60,7 @@
       </div>
 
       <div v-show="searchResultShow" class="searchResult">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-xl" role="document">
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title" id="exampleModalLabel">搜尋結果</h5>
@@ -158,6 +158,7 @@ export default {
         if (statusText !== "OK") {
           throw new Error(statusText);
         }
+
 
         this.totalPage = data.totalPage;
         this.currPage = data.currPage;

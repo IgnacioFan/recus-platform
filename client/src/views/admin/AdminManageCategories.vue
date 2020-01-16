@@ -25,20 +25,23 @@
 
       <div class="col-4"></div>
 
-      <CategoryTable
-        :initial-category="leftTableCategory"
-        @after-editing-category="toggleIsEditing"
-        @after-cancel-edit-category="handleCancel"
-        @after-update-category="updateCategory"
-        @after-delete-category="deleteCategory"
-      />
-      <CategoryTable
-        :initial-category="rightTableCategory"
-        @after-editing-category="toggleIsEditing"
-        @after-cancel-edit-category="handleCancel"
-        @after-update-category="updateCategory"
-        @after-delete-category="deleteCategory"
-      />
+      <Spinner class="col-12" v-if="isLoading" />
+      <template v-else>
+        <CategoryTable
+          :initial-category="leftTableCategory"
+          @after-editing-category="toggleIsEditing"
+          @after-cancel-edit-category="handleCancel"
+          @after-update-category="updateCategory"
+          @after-delete-category="deleteCategory"
+        />
+        <CategoryTable
+          :initial-category="rightTableCategory"
+          @after-editing-category="toggleIsEditing"
+          @after-cancel-edit-category="handleCancel"
+          @after-update-category="updateCategory"
+          @after-delete-category="deleteCategory"
+        />
+      </template>
     </div>
 
     <NavbarBottm />
@@ -51,12 +54,14 @@ import NavbarBottm from "../../components/navbar/NavbarBottm";
 import ManageTabs from "../../components/tabs/ManageTabs";
 import CategoryTable from "../../components/table/CategoryTable";
 import adminCategoryAPI from "../../apis/admin/category";
+import Spinner from "../../components/spinner/Spinner";
 
 export default {
   components: {
     NavbarTop,
     NavbarBottm,
     ManageTabs,
+    Spinner,
     CategoryTable
   },
   data() {
@@ -64,6 +69,7 @@ export default {
       title: "菜單管理",
       newCategoryName: "",
       categories: [],
+      isLoading: true,
       isProcessing: false
     };
   },
@@ -103,9 +109,12 @@ export default {
 
         this.categories = data.categories.map(category => ({
           ...category,
+          used: category.Dishes.length || 0,
           isEditing: false
         }));
+        this.isLoading = false;
       } catch (error) {
+        this.isLoading = false;
         // eslint-disable-next-line
         console.log("error", error);
       }

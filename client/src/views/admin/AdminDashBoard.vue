@@ -4,23 +4,17 @@
 
     <Spinner v-if="isLoading" />
     <div v-else class="dash-board">
-      <div class="d-flex justify-content-around border-bottom">
-        <router-link class="btn btn-outline-success" :to="{ name: 'admin-dash-board'}">前七週</router-link>
-        <router-link class="btn btn-outline-success" :to="{ name: 'admin-dash-board'}">前一個月</router-link>
-        <datepicker
-          class="d-inline-block"
-          style="margin-top:3px;"
-          :language="zh"
-          placeholder="開始日"
-          v-model="startDay"
-        ></datepicker>
-        <datepicker
-          class="d-inline-block"
-          style="margin-top:3px;"
-          :language="zh"
-          placeholder="結束日"
-          v-model="endDay"
-        ></datepicker>
+      <div class="border-bottom">
+        <router-link
+          class="btn btn-outline-primary m-2"
+          :to="{ name: 'admin-dash-board', 
+        query: {range: `weekly`}}"
+        >前七週</router-link>
+        <router-link
+          class="btn btn-outline-primary"
+          :to="{ name: 'admin-dash-board', 
+        query: {range: `monthly`}}"
+        >前一個月</router-link>
       </div>
       <div class="row justify-content-around">
         <div class="col-4">
@@ -45,8 +39,8 @@
 </template>
 
 <script>
-import Datepicker from "vuejs-datepicker";
-import { en, zh } from "vuejs-datepicker/dist/locale";
+//import Datepicker from "vuejs-datepicker";
+//import { en, zh } from "vuejs-datepicker/dist/locale";
 import NavbarTop from "../../components/navbar/NavbarTop";
 import NavbarBottm from "../../components/navbar/NavbarBottm";
 import PieChart from "../../components/chart/PieChart";
@@ -60,14 +54,11 @@ export default {
     NavbarTop,
     NavbarBottm,
     PieChart,
-    Datepicker,
     DashBoardTable,
     Spinner
   },
   data() {
     return {
-      en: en,
-      zh: zh,
       state: {
         date: ""
       },
@@ -80,25 +71,29 @@ export default {
       isLoading: true
     };
   },
-  computed: {},
   created() {
-    this.fetchDashboard();
+    const { range = "weekly" } = this.$route.query;
+    this.fetchDashboard({ range });
+  },
+  beforeRouteUpdate(to, from, next) {
+    const { range = "weekly" } = to.query;
+    this.fetchDashboard({ range });
+    next();
   },
   methods: {
-    show() {
-      // eslint-disable-next-line
-      console.log("startDay", this.startDay);
-      // eslint-disable-next-line
-      console.log("startDay", this.endDay);
-    },
-    async fetchDashboard() {
+    async fetchDashboard(range) {
       try {
-        const response = await adminDashboardAPI.get();
+        this.isLoading = true;
+        this.hotProducts= [];
+        this.hotTags= [];
+        this.hotMembers= [];
+        const response = await adminDashboardAPI.get(range);
         const { data, statusText } = response;
         if (statusText !== "OK") {
           throw new Error(statusText);
         }
-
+        // eslint-disable-next-line
+        console.log("data", data);
         for (var productprop in data.hotProducts) {
           this.hotProducts.push(data.hotProducts[productprop]);
         }
