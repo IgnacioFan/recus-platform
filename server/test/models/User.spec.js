@@ -54,9 +54,7 @@ describe('# User Model', () => {
       expect(User.belongsToMany).to.have.been.calledWith(Tag, {
         through: UserPreferred,
         foreignKey: 'UserId',
-        as: 'preferredTags',
-        hooks: true,
-        onDelete: 'cascade'
+        as: 'preferredTags'
       })
     })
   })

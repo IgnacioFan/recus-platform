@@ -43,9 +43,7 @@ describe('# Order Model', function () {
       expect(Order.belongsToMany).to.have.been.calledWith(Dish, {
         through: DishCombination,
         foreignKey: 'OrderId',
-        as: 'sumOfDishes',
-        hooks: true,
-        onDelete: 'cascade'
+        as: 'sumOfDishes'
       })
     })
   })
