@@ -11,8 +11,9 @@
           name="avatar"
           accept="avatar/*"
           @change="handleFileChange"
-          class="align-bottom d-block"
-          :readonly="!this.initialEditUser"
+          class="align-bottom"
+          style="display: block;"
+          v-show="this.initialEditUser"
         />
       </div>
 
@@ -20,6 +21,7 @@
         <div class="row">
           <div class="form-group col-6">
             <label for="name">稱呼</label>
+            <div v-show="!this.initialEditUser">{{ user.Profile.name }}</div>
             <input
               id="name"
               v-model="user.Profile.name"
@@ -28,12 +30,13 @@
               name="name"
               placeholder="Enter name"
               required
-              :readonly="!this.initialEditUser"
+              v-show="this.initialEditUser"
             />
           </div>
 
           <div class="form-group col-6">
             <label for="phone">手機號碼</label>
+            <div v-show="!this.initialEditUser">{{ user.phone }}</div>
             <input
               id="phone"
               v-model="user.phone"
@@ -42,12 +45,13 @@
               name="phone"
               placeholder="Enter phone"
               required
-              :readonly="!this.initialEditUser"
+              v-show="this.initialEditUser"
             />
           </div>
 
           <div class="form-group col-6">
             <label for="account">帳號</label>
+            <div v-show="!this.initialEditUser">{{ user.account }}</div>
             <input
               id="account"
               v-model="user.account"
@@ -56,12 +60,13 @@
               name="account"
               placeholder="Enter account"
               required
-              :readonly="!this.initialEditUser"
+              v-show="this.initialEditUser"
             />
           </div>
 
           <div class="form-group col-6">
             <label for="email">Email</label>
+            <div v-show="!this.initialEditUser">{{ user.Profile.email }}</div>
             <input
               id="email"
               v-model="user.Profile.email"
@@ -70,7 +75,33 @@
               name="email"
               placeholder="Enter email"
               required
-              :readonly="!this.initialEditUser"
+              v-show="this.initialEditUser"
+            />
+          </div>
+
+          <div class="form-group col-6" v-show="this.initialEditUser">
+            <label for="password">Password</label>
+            <input
+              id="password"
+              v-model="password"
+              name="password"
+              type="password"
+              class="form-control"
+              placeholder="Password"
+              required
+            />
+          </div>
+
+          <div class="form-group col-6" v-show="this.initialEditUser">
+            <label for="password-check">Password Check</label>
+            <input
+              id="password-check"
+              v-model="passwordCheck"
+              name="passwordCheck"
+              type="password"
+              class="form-control"
+              placeholder="Password"
+              required
             />
           </div>
 
@@ -112,6 +143,9 @@ export default {
     },
     initialEditUser: {
       type: Boolean
+    },
+    initialCreateMember: {
+      type: Boolean
     }
   },
   data() {
@@ -124,9 +158,14 @@ export default {
         },
         account: "",
         phone: "",
+        password: "",
+        passwordCheck: "",
         role: ""
       },
+      password: "",
+      passwordCheck: "",
       editUser: this.initialEditUser,
+      createMember: this.initialCreateMember,
       isProcessing: false
     };
   },
@@ -137,17 +176,9 @@ export default {
         ...this.user,
         ...user
       };
-    },
-    editUser(editUser) {
-      this.editUser = editUser;
     }
   },
-  created() {
-    this.user = {
-      ...this.user,
-      ...this.initialUser
-    };
-  },
+  created() {},
   methods: {
     handleFileChange(e) {
       const files = e.target.files;
@@ -157,10 +188,6 @@ export default {
       this.dish.image = imageURL;
     },
     formEditCancel() {
-      this.user = {
-        ...this.user,
-        ...this.initialUser
-      };
       this.$emit("after-form-edit-cancel");
     },
     handleSubmit() {}

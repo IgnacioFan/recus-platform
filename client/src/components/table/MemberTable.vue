@@ -5,8 +5,8 @@
         <th>名稱</th>
         <th>手機</th>
         <th>消費次數</th>
-        <th>刪除</th>
         <th>權限</th>
+        <th>刪除</th>
       </tr>
     </thead>
     <tbody class="text-center">
@@ -23,23 +23,23 @@
           <div class="user-name">{{ user.phone }}</div>
         </td>
         <td>
-          <div class="user-name">{{ user.consumeCount }}</div>
+          <div class="user-name">{{ user.consumeCount || 0 }}</div>
         </td>
         <td>
           <button
             v-if="user.id !== currentUser"
             type="button"
-            class="btn btn-warning"
-            @click.stop.prevent="deleteUser(user.id)"
-          >Delete</button>
-        </td>
-        <td>
-          <button
-            v-if="user.id !== currentUser"
-            type="button"
-            class="btn btn-danger text-capitalize"
+            class="btn btn-warning text-capitalize"
             @click.stop.prevent="toggleIsAdmin(user.id)"
           >{{ user.role }}</button>
+        </td>
+        <td>
+          <button
+            v-if="user.id !== currentUser"
+            type="button"
+            class="btn btn-danger"
+            @click.stop.prevent="deleteUser(user.id)"
+          >Delete</button>
         </td>
       </tr>
     </tbody>
