@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import roleMemberAPI from "../../apis/role/member";
+//import roleMemberAPI from "../../apis/role/member";
 
 export default {
   props: {
@@ -48,34 +48,37 @@ export default {
     };
   },
   methods: {
-    async searchUser() {
-      try {
-        const response = await roleMemberAPI.searchMember({
-          phone: this.userPhone
-        });
-        const { data, statusText } = response;
-        if (statusText !== "OK") {
-          throw new Error(statusText);
-        }
+    // async searchUser() {
+    //   try {
+    //     const response = await roleMemberAPI.searchMember({
+    //       phone: this.userPhone
+    //     });
+    //     const { data, statusText } = response;
+    //     if (statusText !== "OK") {
+    //       throw new Error(statusText);
+    //     }
         
-        if (data.status === "error") {
-          this.$swal({
-            toast: true,
-            position: "top",
-            showConfirmButton: false,
-            timer: 3000,
-            type: "warning",
-            title: "未找到會員",
-            text: ""
-          });
-        } else {
-          this.userPhone = "";
-          this.$emit("after-show-user", data.user);
-        }
-      } catch (error) {
-        // eslint-disable-next-line
-        console.log("error", error);
-      }
+    //     if (data.status === "error") {
+    //       this.$swal({
+    //         toast: true,
+    //         position: "top",
+    //         showConfirmButton: false,
+    //         timer: 3000,
+    //         type: "warning",
+    //         title: "未找到會員",
+    //         text: ""
+    //       });
+    //     } else {
+    //       this.userPhone = "";
+    //       this.$emit("after-show-user", data.user);
+    //     }
+    //   } catch (error) {
+    //     // eslint-disable-next-line
+    //     console.log("error", error);
+    //   }
+    // },
+    searchUser() {
+      this.$emit("after-search-user", this.userPhone);
     },
     createUser() {
       this.$emit("after-create-user");

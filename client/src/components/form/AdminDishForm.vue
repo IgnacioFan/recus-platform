@@ -1,106 +1,104 @@
 <template>
-  <div v-show="loadedCategories && loadedTags && loadedDish">
-    <h1 class="text-center my-2">{{this.dishTitle}}</h1>
-    <form class="row">
-      <div class="form-group col-6">
-        <label for="name">餐點名稱</label>
+  <form class="row h-100" v-show="loadedCategories && loadedTags && loadedDish">
+    <h1 class="text-center mb-2 col-12">{{this.dishTitle}}</h1>
+    <div class="form-group col-6">
+      <label for="name">餐點名稱</label>
+      <input
+        id="name"
+        v-model="dish.name"
+        type="text"
+        class="form-control"
+        name="name"
+        placeholder="Enter name"
+        required
+      />
+    </div>
+
+    <div class="form-group col-6">
+      <label for="categoryId">類型</label>
+      <select
+        id="categoryId"
+        v-model="dish.CategoryId"
+        class="form-control"
+        name="categoryId"
+        required
+      >
+        <option value selected disabled>--請選擇--</option>
+        <option
+          v-for="category in categories"
+          :key="category.id"
+          :value="category.id"
+        >{{ category.name }}</option>
+      </select>
+    </div>
+
+    <div class="form-group col-6">
+      <label class>標籤</label>
+      <div class="form-inline mb-2">
         <input
-          id="name"
-          v-model="dish.name"
+          class="form-control mr-sm-2"
           type="text"
-          class="form-control"
-          name="name"
-          placeholder="Enter name"
-          required
+          name="searchTag"
+          v-model="tag"
+          placeholder="Tag name"
         />
+        <button type="button" class="btn btn-primary" @click.stop.prevent="searchTag">搜尋</button>
       </div>
+      <button
+        v-for="tag in tagsDisplay"
+        :key="tag.id"
+        class="btn btn-primary mr-2 mt-2"
+        @click.stop.prevent="addTag(tag)"
+      >{{ tag.name }}</button>
+    </div>
 
-      <div class="form-group col-6">
-        <label for="categoryId">類型</label>
-        <select
-          id="categoryId"
-          v-model="dish.CategoryId"
-          class="form-control"
-          name="categoryId"
-          required
-        >
-          <option value selected disabled>--請選擇--</option>
-          <option
-            v-for="category in categories"
-            :key="category.id"
-            :value="category.id"
-          >{{ category.name }}</option>
-        </select>
-      </div>
+    <div class="form-group col-6">
+      <label class="d-block" for="image">相片</label>
+      <img v-if="dish.image" :src="dish.image" class="img-thumbnail" width="200" height="200" />
 
-      <div class="form-group col-6">
-        <label class>標籤</label>
-        <div class="form-inline mb-2">
-          <input
-            class="form-control mr-sm-2"
-            type="text"
-            name="searchTag"
-            v-model="tag"
-            placeholder="Tag name"
-          />
-          <button type="button" class="btn btn-primary" @click.stop.prevent="searchTag">搜尋</button>
-        </div>
-        <button
-          v-for="tag in tagsDisplay"
-          :key="tag.id"
-          class="btn btn-primary mr-2 mt-2"
-          @click.stop.prevent="addTag(tag)"
-        >{{ tag.name }}</button>
-      </div>
+      <input
+        id="image"
+        type="file"
+        name="image"
+        accept="image/*"
+        @change="handleFileChange"
+        class="align-bottom"
+      />
+    </div>
 
-      <div class="form-group col-6">
-        <label class="d-block" for="image">相片</label>
-        <img v-if="dish.image" :src="dish.image" class="img-thumbnail" width="200" height="200" />
+    <div class="form-group col-6">
+      <label class="mr-4" for="description">內容</label>
+      <button
+        v-for="tag in this.dish.tags"
+        :key="tag.id"
+        class="btn btn-primary mr-2 mb-2"
+        @click.stop.prevent="removeTag(tag)"
+      >#{{ tag.name }}</button>
+      <textarea
+        id="description"
+        v-model="dish.description"
+        class="form-control"
+        rows="3"
+        name="description"
+      />
+    </div>
 
-        <input
-          id="image"
-          type="file"
-          name="image"
-          accept="image/*"
-          @change="handleFileChange"
-          class="align-bottom"
-        />
-      </div>
+    <div class="form-group col-6">
+      <label for="price">價格</label>
+      <input id="price" v-model="dish.price" type="number" class="form-control" name="price" />
+    </div>
 
-      <div class="form-group col-6">
-        <label class="mr-4" for="description">內容</label>
-        <button
-          v-for="tag in this.dish.tags"
-          :key="tag.id"
-          class="btn btn-primary mr-2 mb-2"
-          @click.stop.prevent="removeTag(tag)"
-        >#{{ tag.name }}</button>
-        <textarea
-          id="description"
-          v-model="dish.description"
-          class="form-control"
-          rows="3"
-          name="description"
-        />
-      </div>
+    <div class="form-group col-12 mb-0">
+      <a class="btn btn-primary col-6 py-3" href="#" @click.stop.prevent="$router.back()">回上一頁</a>
 
-      <div class="form-group col-6">
-        <label for="price">價格</label>
-        <input id="price" v-model="dish.price" type="number" class="form-control" name="price" />
-      </div>
-
-      <div class="form-group col-12">
-        <a class="btn btn-primary col-6 py-3" href="#" @click.stop.prevent="$router.back()">回上一頁</a>
-
-        <button
-          type="submit"
-          class="btn btn-primary col-6 py-3"
-          :disabled="isProcessing"
-          @click.stop.prevent="handleSubmit"
-        >{{ this.isProcessing ? "處理中..." : "送出" }}</button>
-      </div>
-    </form>
-  </div>
+      <button
+        type="submit"
+        class="btn btn-primary col-6 py-3"
+        :disabled="isProcessing"
+        @click.stop.prevent="handleSubmit"
+      >{{ this.isProcessing ? "處理中..." : "送出" }}</button>
+    </div>
+  </form>
 </template>
 
 <script>
@@ -290,16 +288,12 @@ export default {
         return;
       }
 
-      let filtration = this.originTags.filter(
-        x => !this.dish.tags.includes(x)
-      );
+      let filtration = this.originTags.filter(x => !this.dish.tags.includes(x));
 
-      let saveTags = this.originTags.filter(
-        x => this.dish.tags.includes(x)
-      );
+      let saveTags = this.originTags.filter(x => this.dish.tags.includes(x));
 
-      this.dish.removeTags = filtration.map(e => e.id)
-      this.dish.tags = saveTags
+      this.dish.removeTags = filtration.map(e => e.id);
+      this.dish.tags = saveTags;
       this.$emit("after-submit", this.dish);
     }
   }

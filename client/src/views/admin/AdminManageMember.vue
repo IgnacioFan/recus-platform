@@ -60,7 +60,7 @@
       </div>
 
       <div v-show="searchResultShow" class="searchResult">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-xl" role="document">
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title" id="exampleModalLabel">搜尋結果</h5>
@@ -161,7 +161,7 @@ export default {
           throw new Error(statusText);
         }
 
-        this.totalPage = data.totalPage;
+        this.totalPage = data.totalPage - 1;
         this.currentPage = data.currentPage;
         this.users = [...data.users]
           .map(user => {

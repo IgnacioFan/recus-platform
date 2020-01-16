@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container h-100">
     <AdminDishForm
       :dish-title="title"
       :is-processing="isProcessing"

@@ -100,7 +100,7 @@ export default {
     },
     async submitOrder() {
       try {
-        this.isProcessing= true
+        this.isProcessing = true;
         if (this.addDishes.list.length === 0) {
           throw new Error(statusText);
         }
@@ -131,7 +131,7 @@ export default {
           title: "成功新增清單",
           text: ""
         });
-        this.isProcessing= false
+        this.isProcessing = false;
       } catch (error) {
         this.$swal({
           type: "warning",
@@ -139,7 +139,7 @@ export default {
         });
         // eslint-disable-next-line
         console.log("error", error);
-        this.isProcessing= false
+        this.isProcessing = false;
       }
     }
   },
