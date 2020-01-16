@@ -11,7 +11,7 @@ function createUser() {
     let seedUser = {
       id: i + 1,
       account: i === 0 ? 'root' : `user${i}`,
-      phone: i < 2 ? `090${i}` : faker.phone.phoneNumber(),
+      phone: i < 2 ? `090${i}` : "09" + Math.random().toString().slice(-8),
       password: bcrpty.hashSync('12345678', 10),
       role: i < 2 ? 'admin' : 'member',
       isValid: true,
