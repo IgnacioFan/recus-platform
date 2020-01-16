@@ -38,9 +38,42 @@ const memberController = {
     }
   },
 
+  addMember: (req, res) => {
+    try {
+      let { account, password, passwordCheck, phone, name, email, avatar } = req.body
+      if (passwordCheck !== password) {
+        //console.log('輸入兩組不同密碼')
+        return res.json({ status: 'error', msg: '輸入兩組不同密碼！' })
+      } else {
+        User.findOrCreate({
+          where: { [Op.or]: [{ account: account }, { phone: phone }] },
+          defaults: {
+            account: account,
+            phone: phone,
+            password: bcrypt.hashSync(password, bcrypt.genSaltSync(10), null)
+          }
+        }).then(([user, created]) => {
+          if (created === false) return res.json({ status: 'success', msg: '已註冊!' })
+          else {
+            Profile.create({
+              name: name,
+              email: email,
+              avatar: avatar,
+              UserId: user.id
+            }).then(() => {
+              return res.json({ status: 'success', msg: '註冊成功！', user: user })
+            })
+          }
+        })
+      }
+    } catch (error) {
+      return res.status(500).json({ status: 'error', msg: error })
+    }
+  },
+
   getMember: (req, res) => {
     try {
-      if (Number(req.params.id) <= 0) {
+      if (Number(req.params.id) < 1) {
         return res.json({ status: 'error', msg: 'user id is undefined!' })
       }
       // 取出單一會員

@@ -14,6 +14,10 @@ const member1 = { account: 'user1', phone: '0901', password: '12345', role: 'mem
 const member2 = { account: 'user2', phone: '0902', password: '12345', role: 'member' }
 const profi1 = { name: 'ryu', email: 'ryu@example.com', UserId: 2 }
 const profi2 = { name: 'yoshi', email: 'yoshi@example.com', UserId: 3 }
+const newMember = {
+  account: 'user3', phone: '0903', password: '12345', passwordCheck: '12345',
+  name: 'tim', email: 'tim@example.com'
+}
 const tag1 = { name: "義式" }
 const tag2 = { name: "手沖" }
 const order1 = {
@@ -115,7 +119,7 @@ describe('# Admin::Member request', () => {
           .get('/api/admin/members?page=1')
           .expect(200)
           .end((err, res) => {
-            // console.log(res.body.users[0])
+            //console.log(res.body.users)
             // console.log(res.body.users[1])
             // console.log(res.body.users[2])
             // console.log(res.body.users[0].MemberOrders.length)
@@ -124,12 +128,25 @@ describe('# Admin::Member request', () => {
             expect(res.body.users[0].account).to.be.equal('root1')
             // expect(res.body.users[0].Orders.length).to.be.equal(0)
             // expect(res.body.users[0].preferredTags.length).to.be.equal(2)
-            expect(res.body.users[1].account).to.be.equal('user2')
+            expect(res.body.users[1].account).to.be.equal('user1')
             // expect(res.body.users[1].Orders.length).to.be.equal(2)
             // expect(res.body.users[1].preferredTags.length).to.be.equal(1)
-            expect(res.body.users[2].account).to.be.equal('user1')
+            expect(res.body.users[2].account).to.be.equal('user2')
             // expect(res.body.users[2].Orders.length).to.be.equal(0)
             // expect(res.body.users[2].preferredTags.length).to.be.equal(0)
+            return done()
+          })
+      })
+
+      it('should add a new member manually', (done) => {
+        request(app)
+          .post('/api/admin/members')
+          .send(newMember)
+          .expect(200)
+          .end((err, res) => {
+            //console.log(res.body)
+            expect(res.body.msg).to.be.include('註冊成功！')
+            expect(res.body.user.account).to.be.include('user3')
             return done()
           })
       })
