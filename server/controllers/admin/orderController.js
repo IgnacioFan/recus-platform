@@ -75,8 +75,6 @@ const orderController = {
         UserId: req.body.UserId !== "" ? req.body.UserId : null
       })
 
-
-
       // 新增菜單組合
       combodishes = comboDishes.forEach(item => {
         DishCombination.create({
@@ -149,64 +147,88 @@ const orderController = {
         return res.json({ status: 'error', msg: '404' })
       }
     } catch (error) {
-      console.error(error)
+      //console.error(error)
       return res.status(500).json({ status: 'error', msg: error })
     }
   },
 
   // 顯示單筆訂單
   getOrder: (req, res) => {
-    return Order.scope('todayOrder').findByPk(req.params.id, {
-      include: [{ model: db.Dish, attributes: ['name'], as: 'sumOfDishes', through: { attributes: ['perQuantity'] } }]
-    }).then(order => {
-      if (!order) return res.status(400).json({ status: 'error', msg: '查無資料!' })
-      return res.json({ order: order })
-    })
+    try {
+      Order.scope('todayOrder').findByPk(req.params.id, {
+        include: [{ model: db.Dish, attributes: ['name'], as: 'sumOfDishes', through: { attributes: ['perQuantity'] } }]
+      }).then(order => {
+        if (!order) return res.status(400).json({ status: 'error', msg: '查無資料!' })
+        return res.json({ order: order })
+      })
+    } catch (error) {
+      return res.status(500).json({ status: 'error', msg: error })
+    }
   },
 
   // 訂單狀態往後
   prevStateOrder: (req, res) => {
-    Order.findByPk(req.params.id).then(order => {
-      stateMachine.emit('prev', order)
-      return res.json(order)
-    })
+    try {
+      Order.findByPk(req.params.id).then(order => {
+        stateMachine.emit('prev', order)
+        return res.json(order)
+      })
+    } catch (error) {
+      return res.status(500).json({ status: 'error', msg: error })
+    }
   },
 
   // 訂單狀態往前
   nextStateOrder: (req, res) => {
-    Order.findByPk(req.params.id).then(order => {
-      stateMachine.emit('next', order)
-      return res.json(order)
-    })
+    try {
+      Order.findByPk(req.params.id).then(order => {
+        stateMachine.emit('next', order)
+        return res.json(order)
+      })
+    } catch (error) {
+      return res.status(500).json({ status: 'error', msg: error })
+    }
   },
 
   // 刪除訂單(訂單狀態區別強/弱刪除)
   removeOrder: (req, res) => {
-    Order.findByPk(req.params.id).then(order => {
-      if (order.state === 'paid') order.destroy()
-      else {
-        order.destroy({ force: true })
-        DishCombination.destroy({ where: { OrderId: order.id } }).then(combo => {
-          console.log(combo)
-          return res.json({ status: 'success', msg: '成功刪除了此訂單!' })
-        })
-      }
-    })
+    try {
+      Order.findByPk(req.params.id).then(order => {
+        if (order.state === 'paid') order.destroy()
+        else {
+          order.destroy({ force: true })
+          DishCombination.destroy({ where: { OrderId: order.id } }).then(combo => {
+            console.log(combo)
+            return res.json({ status: 'success', msg: '成功刪除了此訂單!' })
+          })
+        }
+      })
+    } catch (error) {
+      return res.status(500).json({ status: 'error', msg: error })
+    }
   },
 
   getPendingNums: (req, res) => {
-    Order.scope('todayOrder').count({ where: { state: 'pending' } }).then((nums => {
-      if (app.emitter) {
-        app.emitter.emit('pendingEvent', nums)
-      }
-      return res.json(nums)
-    }))
+    try {
+      Order.scope('todayOrder').count({ where: { state: 'pending' } }).then((nums => {
+        if (app.emitter) {
+          app.emitter.emit('pendingEvent', nums)
+        }
+        return res.json(nums)
+      }))
+    } catch (error) {
+      return res.status(500).json({ status: 'error', msg: error })
+    }
   },
 
   getUnpaidNums: (req, res) => {
-    Order.scope('todayOrder').count({ where: { state: 'unpaid' } }).then((nums => {
-      return res.json(nums)
-    }))
+    try {
+      Order.scope('todayOrder').count({ where: { state: 'unpaid' } }).then((nums => {
+        return res.json(nums)
+      }))
+    } catch (error) {
+      return res.status(500).json({ status: 'error', msg: error })
+    }
   }
 
 

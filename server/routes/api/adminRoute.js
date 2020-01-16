@@ -35,7 +35,7 @@ router.get('/tag', tagController.searchTag)
 router.get('/tags/:id', tagController.getTag)
 router.post('/tags', nameValidRules(), validate, tagController.addTag)
 router.put('/tags/:id', nameValidRules(), validate, tagController.updateTag)
-router.delete('/tags/:id', tagController.deleteTag)
+router.delete('/tags/:id', tagController.removeTag)
 
 // 訂單相關API
 router.get('/orders', orderController.getOrders)

@@ -4,112 +4,129 @@ const { Dish, DishAttachment, Category } = db
 
 
 const dishController = {
-
   // 取得某分類的所有品項
   getDishWithCategory: (req, res) => {
-    // if categoryId is 1,2,3,4
-    if (Number(req.query.categoryId) <= 0) {
-      return res.json({ status: 'error', msg: 'undefined category id' })
-    }
+    try {
+      if (Number(req.query.categoryId) < 1) {
+        return res.json({ status: 'error', msg: 'undefined category id' })
+      }
 
-    let whereQuery = {
-      CategoryId: req.query.categoryId
-    }
+      let whereQuery = {
+        CategoryId: req.query.categoryId
+      }
 
-    return Dish.findAll({ where: whereQuery }).then(dishes => {
-      return res.json({ dishes: dishes })
-    })
+      return Dish.findAll({ where: whereQuery }).then(dishes => {
+        return res.json({ dishes: dishes })
+      })
+    } catch (error) {
+      return res.status(500).json({ status: 'error', msg: error })
+    }
   },
 
   // 取得單筆菜單的品項
   getDish: (req, res) => {
-    if (Number(req.params.categoryId) <= 0) {
-      return res.json({ status: 'error', msg: 'undefined dish id' })
-    }
+    try {
+      if (Number(req.params.categoryId) < 1) {
+        return res.json({ status: 'error', msg: 'undefined dish id' })
+      }
 
-    return Dish.findByPk(req.params.id,
-      { include: [Category, { model: db.Tag, as: 'hasTags' }] }).then(dish => {
-        return res.json({ dish: dish })
-      })
+      return Dish.findByPk(req.params.id,
+        { include: [Category, { model: db.Tag, as: 'hasTags' }] }).then(dish => {
+          return res.json({ dish: dish })
+        })
+    } catch (error) {
+      return res.status(500).json({ status: 'error', msg: error })
+    }
   },
 
   // postDish 新增一筆品項
   addDish: (req, res) => {
-    if (!req.body.name && !req.body.price)
-      return res.json({ status: 'error', msg: 'dish name and price cannot be blank' })
+    try {
+      let { tags, name, price, image, description, CategoryId } = req.body
 
-    if (!req.body.CategoryId)
-      return res.json({ status: 'error', msg: 'category cannot be blank' })
+      if (!name && !price)
+        return res.json({ status: 'error', msg: 'dish name and price cannot be blank' })
 
-    if (Number(req.body.price) < 0)
-      return res.json({ status: 'error', msg: 'price can not be negative' })
+      if (!CategoryId)
+        return res.json({ status: 'error', msg: 'category cannot be blank' })
 
-    // if (req.body.option && typeof (req.body.option) !== 'array')
-    //   return res.json({ status: 'error', msg: 'option is wrong format' })
+      if (Number(price) < 0)
+        return res.json({ status: 'error', msg: 'price can not be negative' })
 
-    let dishObj = {
-      name: req.body.name,
-      price: req.body.price,
-      image: req.body.image,
-      // option: req.body.option,
-      description: req.body.description,
-      CategoryId: req.body.CategoryId
-    }
-
-    Dish.create(dishObj).then(dish => {
-      //console.log(dish)
-      tags = []
-      if (req.body.tags) {
-        req.body.tags.forEach(tag => {
-          DishAttachment.create({ TagId: tag.id, DishId: dish.id })
-          tags.push({ TagId: tag.id, DishId: dish.id })
-        })
+      let dishObj = {
+        name: name,
+        price: price,
+        image: image,
+        description: description,
+        CategoryId: CategoryId
       }
 
-      return res.json({ status: 'success', msg: '成功新增菜單!', dish: dish, tags: tags })
-    })
-
+      Dish.create(dishObj).then(dish => {
+        let arr = []
+        if (tags) {
+          tags.forEach(tag => {
+            DishAttachment.create({ TagId: tag.id, DishId: dish.id })
+            arr.push({ TagId: tag.id, DishId: dish.id })
+          })
+        }
+        return res.json({ status: 'success', msg: '成功新增菜單!', dish: dish, tags: arr })
+      })
+    } catch (error) {
+      return res.status(500).json({ status: 'error', msg: error })
+    }
   },
 
   // updateDish 更新某筆品項
   updateDish: (req, res) => {
-    let dishObj = {
-      name: req.body.name,
-      price: req.body.price,
-      image: req.body.image,
-      // option: req.body.option,
-      description: req.body.description,
-      CategoryId: req.body.CategoryId
-    }
+    try {
+      let { removeTags, addTags, id, name, price, image, description, CategoryId } = req.body
 
-    Dish.findByPk(req.params.id).then(dish => {
-      if (req.body.removeTags) {
-        req.body.removeTags.map(id => {
-          DishAttachment.destroy({ where: { DishId: dish.id, TagId: id } })
-        })
+      let dishObj = {
+        name: name,
+        price: price,
+        image: image,
+        description: description,
+        CategoryId: CategoryId
       }
-      dish.update(dishObj).then(dish => {
-        return res.json({ status: 'success', msg: '成功更新菜單!', dish: dish })
-      }).catch(err => {
-        return res.status(404).json({ status: 'error', msg: '更新失敗!' })
+
+      Dish.findByPk(id).then(dish => {
+        if (removeTags) {
+          removeTags.map(index => {
+            DishAttachment.destroy({ where: { DishId: dish.id, TagId: index } })
+          })
+        }
+        if (addTags) {
+          addTags.map(index => {
+            DishAttachment.findOrCreate({
+              where: { DishId: dish.id, TagId: index }, defaults: { DishId: dish.id, TagId: index }
+            })
+          })
+        }
+        dish.update(dishObj).then(dish => {
+          return res.json({ status: 'success', msg: '成功更新菜單!', dish: dish })
+        })
       })
-    })
+    } catch (error) {
+      return res.status(500).json({ status: 'error', msg: error })
+    }
   },
 
   // deleteDish 刪除某筆品項
   deleteDish: (req, res) => {
-    Dish.findByPk(req.params.id).then(dish => {
-      DishAttachment.findAll({ where: { DishId: dish.id } }).then(tags => {
-        tags.forEach(tag => {
-          tag.destroy()
+    try {
+      Dish.findByPk(req.params.id).then(dish => {
+        DishAttachment.findAll({ where: { DishId: dish.id } }).then(tags => {
+          tags.forEach(tag => {
+            tag.destroy()
+          })
+          dish.destroy()
+          //console.log(`成功刪除${dish.name}！`)
+          return res.json({ status: 'success', msg: `成功刪除${dish.name}！` })
         })
-        dish.destroy()
-        //console.log(`成功刪除${dish.name}！`)
-        return res.json({ status: 'success', msg: `成功刪除${dish.name}！` })
       })
-    }).catch(err => {
-      return res.status(404).json({ status: 'error', msg: '未能成功刪除' })
-    })
+    } catch (error) {
+      return res.status(500).json({ status: 'error', msg: error })
+    }
   }
 }
 
