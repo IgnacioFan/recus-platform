@@ -54,7 +54,7 @@ router.post('/categories', nameValidRules(), validate, categoryController.addCat
 router.put('/categories/:id', nameValidRules(), validate, categoryController.updateCategory)
 router.delete('/categories/:id', categoryController.removeCategory)
 
-// 
+// 儀表板相關API
 router.get('/dashboard', dashboardController.getDashboard)
 router.get('/dashboard/lineChart', dashboardController.getLineChart)
 

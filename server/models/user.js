@@ -43,12 +43,12 @@ module.exports = (sequelize, DataTypes) => {
       )
     }
     User.hasOne(models.Profile)
-    User.hasMany(models.MemberOrder)
-    User.belongsToMany(models.Order, {
-      through: models.MemberOrder,
-      foreignKey: 'UserId',
-      as: 'hasManyOrders',
-    })
+    User.hasMany(models.Order)
+    // User.belongsToMany(models.Order, {
+    //   through: models.MemberOrder,
+    //   foreignKey: 'UserId',
+    //   as: 'hasManyOrders',
+    // })
     User.belongsToMany(models.Tag, {
       through: models.UserPreferred,
       foreignKey: 'UserId',

@@ -4,6 +4,7 @@ upload/
 
 client
 
+server/config/config.json
 server/test/sum.js
 server/test/test.js
 

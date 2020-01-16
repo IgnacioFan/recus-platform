@@ -62,13 +62,13 @@ export default {
       this.connection = data
     })
     // realtime pending
-    this.socket.on('pending', (data) => {
-        this.pendingLength = data
-    })
+    // this.socket.on('pending', (data) => {
+    //     this.pendingLength = data
+    // })
     // realtime unpaid
-    this.socket.on('unpaid', (data) => {
-        this.unpaidLength = data
-    })
+    // this.socket.on('unpaid', (data) => {
+    //     this.unpaidLength = data
+    // })
     // this.socket.emit('pending', this.pendingLength)
     // this.socket.emit('unpaid', this.unpaidLength)
   },
@@ -82,15 +82,15 @@ export default {
         // socket should restart the response
         const response = await adminOrderAPI.orders.get({ state: state });
         
-        const { statusText } = response;
+        const { data, statusText } = response;
         if (statusText !== "OK") {
           throw new Error(statusText);
         }
         if (state === "pending") {
-          //this.pendingLength = data.orders.length;
+          this.pendingLength = data.orders.length;
         }
         if (state === "unpaid") {
-          //this.unpaidLength = data.orders.length;
+          this.unpaidLength = data.orders.length;
         }
         
         this.pendingLoading = false;
