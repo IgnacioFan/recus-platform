@@ -7,26 +7,30 @@ const moment = require('moment')
 const memberController = {
   getMemberPagination: (req, res) => {
     try {
-      if (!req.query.page || Number(req.query.page) < 1)
-        return res.json({ status: 'error', msg: 'page number is undifined!' })
-
+      const { page } = req.query
+      let pageNum = (Number(page) < 1 || page === undefined) ? 1 : Number(page)
       const pageLimit = 16
-      let offset = (req.query.page - 1) * pageLimit
 
       User.scope('getMemberData').findAndCountAll(
         {
-          include: [MemberOrder,
-            { model: Profile, attributes: ['name', 'email'] },
-            { model: Tag, as: 'preferredTags', attributes: ['id', 'name'] }],
-          offset: offset,
+          include: [
+            { model: Profile, attributes: ['name'] }
+          ],
+          attributes: ['phone', 'role', 'isValid', 'id',
+            [db.sequelize.literal("(SELECT COUNT(*) FROM Orders WHERE Orders.UserId = User.id)"), 'orders']
+          ],
+          offset: (pageNum - 1) * pageLimit,
           limit: pageLimit,
           order: [['role', 'ASC']]
-        }).then(users => {
+        }).then(result => {
 
+          let pages = Math.ceil(result.count / pageLimit)
+
+          //console.log(result.count)
           return res.json({
-            users: users.rows,
-            currentPage: Number(req.query.page) || 1,
-            totalPage: Math.ceil(users.count / pageLimit)
+            users: result.rows,
+            currPage: pageNum,
+            totalPage: pages
           })
         })
     } catch (error) {
@@ -34,9 +38,42 @@ const memberController = {
     }
   },
 
+  addMember: (req, res) => {
+    try {
+      let { account, password, passwordCheck, phone, name, email, avatar } = req.body
+      if (passwordCheck !== password) {
+        //console.log('輸入兩組不同密碼')
+        return res.json({ status: 'error', msg: '輸入兩組不同密碼！' })
+      } else {
+        User.findOrCreate({
+          where: { [Op.or]: [{ account: account }, { phone: phone }] },
+          defaults: {
+            account: account,
+            phone: phone,
+            password: bcrypt.hashSync(password, bcrypt.genSaltSync(10), null)
+          }
+        }).then(([user, created]) => {
+          if (created === false) return res.json({ status: 'success', msg: '已註冊!' })
+          else {
+            Profile.create({
+              name: name,
+              email: email,
+              avatar: avatar,
+              UserId: user.id
+            }).then(() => {
+              return res.json({ status: 'success', msg: '註冊成功！', user: user })
+            })
+          }
+        })
+      }
+    } catch (error) {
+      return res.status(500).json({ status: 'error', msg: error })
+    }
+  },
+
   getMember: (req, res) => {
     try {
-      if (Number(req.params.id) <= 0) {
+      if (Number(req.params.id) < 1) {
         return res.json({ status: 'error', msg: 'user id is undefined!' })
       }
       // 取出單一會員

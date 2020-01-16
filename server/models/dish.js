@@ -32,9 +32,7 @@ module.exports = (sequelize, DataTypes) => {
     Dish.belongsToMany(models.Tag, {
       through: models.DishAttachment,
       foreignKey: 'DishId',
-      as: 'hasTags',
-      // hooks: true,
-      // onDelete: 'CASCADE'
+      as: 'hasTags'
     })
     Dish.belongsToMany(models.Order, {
       through: models.DishCombination,
