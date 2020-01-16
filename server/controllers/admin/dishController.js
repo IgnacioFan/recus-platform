@@ -79,7 +79,7 @@ const dishController = {
   // updateDish 更新某筆品項
   updateDish: (req, res) => {
     try {
-      let { removeTags, addTags, id, name, price, image, description, CategoryId } = req.body
+      let { removeTags, addTags, name, price, image, description, CategoryId } = req.body
 
       let dishObj = {
         name: name,
@@ -89,21 +89,21 @@ const dishController = {
         CategoryId: CategoryId
       }
 
-      Dish.findByPk(id).then(dish => {
+      Dish.findByPk(req.params.id).then(dish => {
         if (removeTags) {
-          removeTags.map(index => {
-            DishAttachment.destroy({ where: { DishId: dish.id, TagId: index } })
+          removeTags.forEach(item => {
+            DishAttachment.destroy({ where: { DishId: dish.id, TagId: item.id } })
           })
         }
         if (addTags) {
-          addTags.map(index => {
+          addTags.forEach(item => {
             DishAttachment.findOrCreate({
-              where: { DishId: dish.id, TagId: index }, defaults: { DishId: dish.id, TagId: index }
+              where: { DishId: dish.id, TagId: item }, defaults: { DishId: dish.id, TagId: item.id }
             })
           })
         }
         dish.update(dishObj).then(dish => {
-          return res.json({ status: 'success', msg: '成功更新菜單!', dish: dish })
+          return res.json({ status: 'success', msg: '更新菜單品項!', dish: dish })
         })
       })
     } catch (error) {
@@ -111,19 +111,12 @@ const dishController = {
     }
   },
 
-  // deleteDish 刪除某筆品項
-  deleteDish: (req, res) => {
+  removeDish: async (req, res) => {
     try {
-      Dish.findByPk(req.params.id).then(dish => {
-        DishAttachment.findAll({ where: { DishId: dish.id } }).then(tags => {
-          tags.forEach(tag => {
-            tag.destroy()
-          })
-          dish.destroy()
-          //console.log(`成功刪除${dish.name}！`)
-          return res.json({ status: 'success', msg: `成功刪除${dish.name}！` })
-        })
-      })
+      dish = await Dish.findByPk(req.params.id)
+      await DishAttachment.destroy({ where: { DishId: dish.id } })
+      await dish.destroy()
+      return res.json({ status: 'success', msg: `已刪除${dish.name}！` })
     } catch (error) {
       return res.status(500).json({ status: 'error', msg: error })
     }

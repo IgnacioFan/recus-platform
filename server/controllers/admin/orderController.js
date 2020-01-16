@@ -76,7 +76,7 @@ const orderController = {
       })
 
       // 新增菜單組合
-      combodishes = comboDishes.forEach(item => {
+      comboDishes.forEach(item => {
         DishCombination.create({
           OrderId: order.id,
           DishId: item.DishId,

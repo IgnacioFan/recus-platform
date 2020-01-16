@@ -20,10 +20,7 @@ describe('# Admin::Dish Request', () => {
       this.getUser = sinon.stub(
         helpers, 'getUser'
       ).returns({ id: 1, role: 'admin' })
-      await db.Category.destroy({ where: {}, truncate: true })
-      await db.Dish.destroy({ where: {}, truncate: true })
-      await db.Tag.destroy({ where: {}, truncate: true })
-      await db.DishAttachment.destroy({ where: {}, truncate: true })
+
       await db.Category.create({ name: 'new' })
       await db.Category.create({ name: 'coffee' })
       await db.Dish.create({ name: 'mocha', price: 60, CategoryId: 1 })
@@ -34,9 +31,6 @@ describe('# Admin::Dish Request', () => {
       await db.Tag.create({ name: "義式豆" })
       await db.DishAttachment.create({ DishId: 1, TagId: 1 })
       await db.DishAttachment.create({ DishId: 1, TagId: 2 })
-      // await ["濃韻", "中焙", "義式豆"].forEach(item => {
-      //   db.Tag.create({ name: item })
-      // })
     })
 
     it('should get a certain category with its dishes', (done) => {
@@ -74,7 +68,7 @@ describe('# Admin::Dish Request', () => {
           return done()
         })
     })
-
+    // 檢查dish 4 是不是有兩個標籤（中焙、濃韻）
     it('should get a specific dish with its category and its tags', (done) => {
       request(app)
         .get('/api/admin/dishes/4')
@@ -82,7 +76,6 @@ describe('# Admin::Dish Request', () => {
         .end(async (err, res) => {
           if (err) return done(err)
           //console.log(res.body.dish.hasTags)
-          //console.log(res.body.hasTags[1].name)
           expect(res.body.dish.name).to.be.equal('紅茶')
           expect(res.body.dish.price).to.be.equal(40)
           expect(res.body.dish.Category.name).to.be.equal('new')
@@ -92,59 +85,48 @@ describe('# Admin::Dish Request', () => {
         })
     })
 
-    it('should not post a new dish', (done) => {
+    it('should update specific dish', (done) => {
       request(app)
-        .post('/api/admin/dishes')
-        .expect(422)
+        .put('/api/admin/dishes/4')
+        .send({ name: '阿里山紅茶', price: 60, CategoryId: 1, removeTags: [{ id: 1 }], addTags: [{ id: 3 }] })
+        .expect(200)
         .end(async (err, res) => {
           if (err) return done(err)
-          expect(res.text).to.be.include('請輸入名稱!')
+          expect(res.body.dish.name).to.be.equal('阿里山紅茶')
+          expect(res.body.dish.price).to.be.equal(60);
+          return done();
+        })
+    })
+    // 再次檢查dish 4 是不是有兩個標籤（中焙、義式豆）
+    it('should get a specific dish with its category and its tags', (done) => {
+      request(app)
+        .get('/api/admin/dishes/4')
+        .expect(200)
+        .end(async (err, res) => {
+          if (err) return done(err)
+          //console.log(res.body.dish.hasTags)
+          expect(res.body.dish.hasTags[0].name).to.be.equal('中焙')
+          expect(res.body.dish.hasTags[1].name).to.be.equal('義式豆')
           return done()
         })
     })
 
-
-    it('should update specific dish', (done) => {
-      request(app)
-        .put('/api/admin/dishes/4')
-        .send({ name: '阿里山紅茶', price: 60, CategoryId: 1, removeTags: [1] })
-        .expect(200)
-        .end(async (err, res) => {
-          if (err) return done(err)
-          expect(res.body.dish.name).to.be.not.equal('紅茶');
-          expect(res.body.dish.name).to.be.equal('阿里山紅茶')
-          db.DishAttachment.findAll({ where: { DishId: 4 } }).then(tags => {
-            expect(tags.length).to.be.equal(1)
-          })
-          return done();
-
-        })
-    })
-
-    it('should delete Dish 4', (done) => {
+    xit('should delete Dish 4', (done) => {
       request(app)
         .delete('/api/admin/dishes/4')
         .expect(200)
         .end(async (err, res) => {
           if (err) return done(err)
-          expect(res.text).to.be.include('成功刪除阿里山紅茶！')
+          expect(res.body.msg).to.be.equal('已刪除阿里山紅茶！')
           return done()
-
         })
-    })
-
-    xit('there is no tags with DishId 4', (done) => {
-      db.DishAttachment.findAll({ where: { DishId: 4 } }).then(tags => {
-        expect(tags.length).to.be.equal(0)
-        done()
-      })
     })
 
     after(async () => {
 
       this.ensureAuthenticated.restore();
       this.getUser.restore();
-      await db.User.destroy({ where: {}, truncate: true })
+
       await db.Category.destroy({ where: {}, truncate: true })
       await db.Dish.destroy({ where: {}, truncate: true })
       await db.Tag.destroy({ where: {}, truncate: true })

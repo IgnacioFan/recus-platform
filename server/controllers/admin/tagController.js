@@ -1,5 +1,5 @@
 const db = require('../../models')
-const { Tag, Dish } = db
+const { Tag, Dish, UserPreferred, DishAttachment } = db
 const Op = require('sequelize').Op
 
 const tagController = {
@@ -77,11 +77,10 @@ const tagController = {
   removeTag: async (req, res) => {
     try {
       tag = await Tag.findByPk(req.params.id)
-      await UserPreferred.destroy({ where: { TagId: tag.id } })
-      await DishAttachment.destroy({ where: { TagId: tag.id } })
-      console.log(tag.id)
-      tag.destroy()
-      return res.json({ status: 'error', msg: `成功移除${tag.name}!`, tag: tag })
+      await UserPreferred.destroy({ where: { TagId: req.params.id } })
+      await DishAttachment.destroy({ where: { TagId: req.params.id } })
+      await tag.destroy()
+      return res.json({ status: 'error', msg: `已刪除${tag.name}!`, tag: tag })
     } catch (error) {
       return res.status(500).json({ status: 'error', msg: error })
     }
