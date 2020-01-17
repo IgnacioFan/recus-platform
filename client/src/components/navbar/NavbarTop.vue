@@ -48,21 +48,15 @@ export default {
     };
   },
   created() {
-    this.fetchPendingNums();
-    this.fetchUnpaidNums();
+    // this.fetchPendingNums();
+    // this.fetchUnpaidNums();
     this.user = this.$store.state.currentUser;
-
-    // this.socket.emit("init order", {
-    //   pending: this.pendingLength,
-    //   unpaid: this.unpaidLength
-    // });
   },
   mounted() {
     // socket
     this.socket.on("status", data => {
       //this.isConnected = true;
       this.connection = data;
-      //this.socket.disconnect();
     });
 
     this.socket.on("order nums", data => {
