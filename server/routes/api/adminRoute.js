@@ -17,7 +17,7 @@ router.get('/members/:id/orders', memberController.getMemberOrders)
 router.get('/members/:id/tags', memberController.getMemberTags)
 router.get('/members/search', memberController.searchMember)
 router.get('/members/:id', memberController.getMember)
-//router.post('/members', memberController.addMember)
+router.post('/members', memberController.addMember)
 router.put('/members/:id/isvalid', memberController.toggleValid)
 router.put('/members/:id/isAdmin', memberController.toggleAdmin)
 router.delete('/members/:id', memberController.softDeleteUser)
@@ -27,7 +27,7 @@ router.get('/dishes', dishController.getDishWithCategory)
 router.get('/dishes/:id', dishController.getDish)
 router.post('/dishes', dishValidRules(), validate, dishController.addDish)
 router.put('/dishes/:id', dishValidRules(), validate, dishController.updateDish)
-router.delete('/dishes/:id', dishController.deleteDish)
+router.delete('/dishes/:id', dishController.removeDish)
 
 // 標籤相關API
 router.get('/tags', tagController.getTags)
@@ -35,7 +35,7 @@ router.get('/tag', tagController.searchTag)
 router.get('/tags/:id', tagController.getTag)
 router.post('/tags', nameValidRules(), validate, tagController.addTag)
 router.put('/tags/:id', nameValidRules(), validate, tagController.updateTag)
-router.delete('/tags/:id', tagController.deleteTag)
+router.delete('/tags/:id', tagController.removeTag)
 
 // 訂單相關API
 router.get('/orders', orderController.getOrders)
@@ -54,7 +54,7 @@ router.post('/categories', nameValidRules(), validate, categoryController.addCat
 router.put('/categories/:id', nameValidRules(), validate, categoryController.updateCategory)
 router.delete('/categories/:id', categoryController.removeCategory)
 
-// 
+// 儀表板相關API
 router.get('/dashboard', dashboardController.getDashboard)
 router.get('/dashboard/lineChart', dashboardController.getLineChart)
 

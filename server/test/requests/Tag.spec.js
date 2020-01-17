@@ -14,7 +14,7 @@ const menu = [
   { name: '花神', price: 100, CategoryId: 2 }
 ]
 const tags = ["義式", "手沖", "果酸"]
-const userPreffered = []
+const userPreferred = [{ UserId: 1, TagId: 3 }, { UserId: 2, TagId: 3 }, { UserId: 2, TagId: 3 }]
 const dishAttachment = [{ DishId: 1, TagId: 1 }, { DishId: 2, TagId: 2 }, { DishId: 2, TagId: 3 }]
 
 
@@ -28,9 +28,7 @@ describe('# Admin::Dish Request', () => {
       this.getUser = sinon.stub(
         helper, 'getUser'
       ).returns({ id: 1, role: 'admin' })
-      await db.Tag.destroy({ where: {}, truncate: true })
-      await db.Dish.destroy({ where: {}, truncate: true })
-      await db.DishAttachment.destroy({ where: {}, truncate: true })
+
       for (let i = 0; i < tags.length; i++) {
         await db.Tag.create({ name: tags[i] })
       }
@@ -39,6 +37,9 @@ describe('# Admin::Dish Request', () => {
       }
       for (let i = 0; i < dishAttachment.length; i++) {
         await db.DishAttachment.create({ DishId: dishAttachment[i].DishId, TagId: dishAttachment[i].TagId })
+      }
+      for (let i = 0; i < userPreferred.length; i++) {
+        await db.UserPreferred.create({ UserId: userPreferred[i].UserId, TagId: userPreferred[i].TagId })
       }
     })
 
@@ -100,7 +101,7 @@ describe('# Admin::Dish Request', () => {
         .expect(200)
         .end(function (err, res) {
           if (err) return done(err);
-          res.text.should.include('微酸2.0')
+          expect(res.body.tag.name).to.be.equal('微酸2.0')
           done()
         })
     })
@@ -112,20 +113,19 @@ describe('# Admin::Dish Request', () => {
         .expect(200)
         .end(function (err, res) {
           if (err) return done(err)
-          res.text.should.include('標籤已建立!')
+          expect(res.body.msg).to.be.equal('標籤已建立!')
           done()
         })
     })
 
     it('should delete tag 4', (done) => {
       request(app)
-        .delete('/api/admin/tags/4')
+        .delete('/api/admin/tags/3')
         .expect(200)
         .end(function (err, res) {
           if (err) return done(err)
-          //console.log(res.body)
-          res.body.should.be.a('object')
-          res.text.should.include('成功移除微酸2.0!')
+          //console.log(res.body.tag)
+          expect(res.body.msg).to.be.equal('已刪除果酸!')
           done();
         });
     })
@@ -136,6 +136,7 @@ describe('# Admin::Dish Request', () => {
       await db.Tag.destroy({ where: {}, truncate: true })
       await db.Dish.destroy({ where: {}, truncate: true })
       await db.DishAttachment.destroy({ where: {}, truncate: true })
+      await db.UserPreferred.destroy({ where: {}, truncate: true })
     })
   })
 })

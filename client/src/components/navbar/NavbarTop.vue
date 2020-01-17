@@ -81,7 +81,6 @@ export default {
       try {
         // socket should restart the response
         const response = await adminOrderAPI.orders.pendingNums();
-
         const { data, statusText } = response;
         if (statusText !== "OK") {
           throw new Error(statusText);

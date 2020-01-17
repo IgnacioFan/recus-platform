@@ -19,12 +19,12 @@
         <div class="d-inline-block col-4 d-flex justify-content-center">
           <nav aria-label="Page navigation example">
             <ul class="pagination mb-0">
-              <!-- 回到上一頁 previousPage -->
-              <li v-show="previousPage" class="page-item">
+              <!-- 回到上一頁 prevPage -->
+              <li v-show="prevPage" class="page-item">
                 <router-link
                   class="page-link"
                   aria-label="Previous"
-                  :to="{name: 'admin-manage-members', query: { page: previousPage }}"
+                  :to="{name: 'admin-manage-members', query: { page: prevPage }}"
                   style="padding-top: 3px;"
                 >
                   <span aria-hidden="true">&laquo;</span>
@@ -34,7 +34,7 @@
               <li
                 v-for="page in totalPage"
                 :key="page"
-                :class="['page-item', { active: currentPage === page }]"
+                :class="['page-item', { active: currPage === page }]"
               >
                 <router-link
                   class="page-link"
@@ -123,19 +123,17 @@ export default {
       searchResult: [],
       userPhone: "",
       totalPage: 1,
-      currentPage: 1,
+      currPage: 1,
       searchResultShow: false,
       isLoading: true
     };
   },
   computed: {
-    previousPage() {
-      return this.currentPage === 1 ? null : this.currentPage - 1;
+    prevPage() {
+      return this.currPage === 1 ? null : this.currPage - 1;
     },
     nextPage() {
-      return this.currentPage + 1 > this.totalPage
-        ? null
-        : this.currentPage + 1;
+      return this.currPage + 1 > this.totalPage ? null : this.currPage + 1;
     },
     leftTableUsers: function() {
       return this.users.slice(0, 8);
@@ -162,13 +160,14 @@ export default {
           throw new Error(statusText);
         }
 
-        this.totalPage = data.totalPage - 1;
-        this.currentPage = data.currentPage;
+
+        this.totalPage = data.totalPage;
+        this.currPage = data.currPage;
         this.users = [...data.users]
           .map(user => {
             return {
               ...user,
-              consumeCount: user.MemberOrders.length
+              consumeCount: user.orders
             };
           })
           .sort((a, b) => Number(a.id) - Number(b.id));
@@ -196,12 +195,12 @@ export default {
           });
           throw new Error(statusText);
         }
-        
+
         this.users = this.users.filter(user => user.id !== userId);
         this.searchResult = this.searchResult.filter(
           user => user.id !== userId
         );
-        
+
         this.$swal({
           toast: true,
           position: "top",
@@ -309,7 +308,7 @@ export default {
             showConfirmButton: false,
             timer: 3000,
             type: "warning",
-            title: "未找到會員",
+            title: "找不到該會員",
             text: ""
           });
         } else {

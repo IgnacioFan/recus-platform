@@ -12,7 +12,7 @@
           <tr>
             <th>
               <div class="d-flex justify-content-between">
-                <small>{{order.duration}}</small>
+                <small>{{order.createdAt}}</small>
                 <h4 class="mr-5">{{order.id}}</h4>
                 <button class="btn btn-primary" @click.stop.prevent="deleteOrder(order.id)">刪除</button>
               </div>
