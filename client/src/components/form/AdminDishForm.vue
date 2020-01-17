@@ -293,7 +293,10 @@ export default {
       let saveTags = this.originTags.filter(x => this.dish.tags.includes(x));
 
       this.dish.removeTags = filtration.map(e => e.id);
-      this.dish.tags = saveTags;
+
+      if (!this.dishTitle === "新增菜單") {
+        this.dish.tags = saveTags;
+      }
       this.$emit("after-submit", this.dish);
     }
   }

@@ -51,10 +51,12 @@
 </template>
 
 <script>
-import adminCategoryAPI from "../../apis/admin/category";
 
 export default {
   props: {
+    initialCategories: {
+      type: Array
+    },
     initialDishes: {
       type: Array
     }
@@ -63,24 +65,11 @@ export default {
     return {
       dishId: 0,
       isProcessing: false,
-      categories: [],
+      categories: this.initialCategories,
       dishes: this.initialDishes
     };
   },
   methods: {
-    async fetchCategories() {
-      try {
-        const response = await adminCategoryAPI.categories.get();
-        const { data, statusText } = response;
-        if (statusText !== "OK") {
-          throw new Error(statusText);
-        }
-        this.categories = data.categories;
-      } catch (error) {
-        // eslint-disable-next-line
-        console.log("error", error);
-      }
-    },
     handleDeleteButtonClick(dishId) {
       this.$emit("after-delete-dish", dishId);
     }
@@ -89,6 +78,12 @@ export default {
     this.fetchCategories();
   },
   watch: {
+    initialCategories(categories) {
+      this.categories = {
+        ...this.categories,
+        ...categories
+      };
+    },
     initialDishes(dishes) {
       this.dishes = {};
       this.dishes = {

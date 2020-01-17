@@ -6,6 +6,12 @@ export default {
       const searchParams = new URLSearchParams({ state })
       return apiHelper.get(`/admin/orders?${searchParams.toString()}`)
     },
+    pendingNums() {
+      return apiHelper.get(`/admin/orders/pendingNums`)
+    },
+    unpaidNums() {
+      return apiHelper.get(`/admin/orders/unpaidNums`)
+    },
     delete(orderId) {
       const searchParams = new URLSearchParams(orderId)
       return apiHelper.delete(`/admin/orders/${searchParams.toString()}`)

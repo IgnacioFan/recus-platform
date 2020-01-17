@@ -83,14 +83,14 @@
         <div class="col">
           <MemberTable
             :initial-users="leftTableUsers"
-            @after-delete-user="afterDeleteUser"
+            @after-valid-user="afterValidUser"
             @after-toggle-is-admin="afterToggleIsAdmin"
           />
         </div>
         <div class="col">
           <MemberTable
             :initial-users="rightTableUsers"
-            @after-delete-user="afterDeleteUser"
+            @after-valid-user="afterValidUser"
             @after-toggle-is-admin="afterToggleIsAdmin"
           />
         </div>
@@ -109,6 +109,7 @@ import roleMemberAPI from "../../apis/role/member";
 import mainUserAPI from "../../apis/main/user";
 
 export default {
+  name: "AdminManageMember",
   components: {
     NavbarTop,
     NavbarBottm,
@@ -201,6 +202,45 @@ export default {
           user => user.id !== userId
         );
         
+        this.$swal({
+          toast: true,
+          position: "top",
+          showConfirmButton: false,
+          timer: 3000,
+          type: "success",
+          title: data.msg,
+          text: ""
+        });
+      } catch (error) {
+        // eslint-disable-next-line
+        console.log("error", error);
+      }
+    },
+    async afterValidUser(userId) {
+      try {
+        const { data, statusText } = await roleMemberAPI.validMember({
+          userId
+        });
+
+        if (statusText !== "OK" || data.status !== "success") {
+          this.$swal({
+            type: "error",
+            title: data.msg
+          });
+          throw new Error(statusText);
+        }
+        
+        this.users = this.users.map(user => {
+          if (user.id !== userId) {
+            return user;
+          } else {
+            return {
+              ...user,
+              isValid: !user.isValid
+            };
+          }
+        });
+
         this.$swal({
           toast: true,
           position: "top",
