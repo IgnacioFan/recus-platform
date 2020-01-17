@@ -18,13 +18,22 @@ const getUser = (req, res, next) => {
   return next()
 }
 
+const authenticatedMember = (req, res, next) => {
+  if (!req.user) return res.status(401).json({ status: 'error', msg: 'permission denied for users' })
+  if (req.user.role === 'member') {
+    return next()
+  } else {
+    return res.status(401).json({ status: 'error', msg: '非會員/權限不足！' })
+  }
+}
+
 const authenticatedAdmin = (req, res, next) => {
   //console.log(req.user)
   if (!req.user) return res.status(401).json({ status: 'error', msg: 'permission denied for users' })
   if (req.user.role === 'admin') {
     return next()
   } else {
-    return res.status(401).json({ status: 'error', msg: '不是管理者，權限不足！' })
+    return res.status(401).json({ status: 'error', msg: '非管理者/權限不足！' })
   }
 }
 
