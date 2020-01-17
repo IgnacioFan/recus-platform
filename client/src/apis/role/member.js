@@ -12,6 +12,9 @@ export default {
   toggleAdmin({ userId }) {
     return apiHelper.put(`/admin/members/${userId}/isAdmin`)
   },
+  validMember({ userId }) {
+    return apiHelper.put(`/admin/members/${userId}/isvalid`)
+  },
   deleteMember({ userId }) {
     return apiHelper.delete(`/admin/members/${userId}99`)
   }

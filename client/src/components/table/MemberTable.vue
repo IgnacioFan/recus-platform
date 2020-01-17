@@ -6,7 +6,7 @@
         <th>手機</th>
         <th>消費次數</th>
         <th>權限</th>
-        <th>刪除</th>
+        <th>驗證</th>
       </tr>
     </thead>
     <tbody class="text-center">
@@ -35,11 +35,11 @@
         </td>
         <td>
           <button
-            v-if="user.id !== currentUser"
+            v-if="user.id !== currentUser || !user.isValid"
             type="button"
             class="btn btn-danger"
-            @click.stop.prevent="deleteUser(user.id)"
-          >Delete</button>
+            @click.stop.prevent="validCheck(user.id)"
+          >{{ user.isValid ? "取消" : "同意" }}</button>
         </td>
       </tr>
     </tbody>
@@ -60,8 +60,8 @@ export default {
     };
   },
   methods: {
-    deleteUser(userId) {
-      this.$emit("after-delete-user", userId);
+    validCheck(userId) {
+      this.$emit("after-valid-user", userId);
     },
     toggleIsAdmin(userId) {
       this.$emit("after-toggle-is-admin", userId);

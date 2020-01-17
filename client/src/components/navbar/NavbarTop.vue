@@ -24,7 +24,7 @@
 
 <script>
 import adminOrderAPI from "../../apis/admin/order";
-import io from 'socket.io-client'
+import io from "socket.io-client";
 export default {
   props: {
     initialTitle: {
@@ -43,32 +43,32 @@ export default {
       // socket setting
       socket: {},
       isConnected: false,
-      connection: 'no connection'
+      connection: "no connection"
     };
   },
   created() {
-    this.fetchOrders("pending");
-    this.fetchOrders("unpaid");
-    this.user = this.$store.state.currentUser
-    this.socket = io('http://localhost:3000')
+    this.fetchPendingNums();
+    this.fetchUnpaidNums();
+    this.user = this.$store.state.currentUser;
+    this.socket = io("http://localhost:3000");
   },
   mounted() {
     // this.socket.on('news', data => {
     //   this.connected = data
     // })
     // socket
-    this.socket.on('status', (data) => {
+    this.socket.on("status", data => {
       //this.isConnected = true;
-      this.connection = data
-    })
+      this.connection = data;
+    });
     // realtime pending
-    // this.socket.on('pending', (data) => {
-    //     this.pendingLength = data
-    // })
+    this.socket.on("pending", data => {
+      this.pendingLength = data;
+    });
     // realtime unpaid
-    // this.socket.on('unpaid', (data) => {
-    //     this.unpaidLength = data
-    // })
+    this.socket.on("unpaid", data => {
+      this.unpaidLength = data;
+    });
     // this.socket.emit('pending', this.pendingLength)
     // this.socket.emit('unpaid', this.unpaidLength)
   },
@@ -77,25 +77,53 @@ export default {
       this.$store.commit("revokeAuthentication");
       this.$router.push("/admin/signin");
     },
-    async fetchOrders(state) {
+    async fetchPendingNums() {
       try {
         // socket should restart the response
-        const response = await adminOrderAPI.orders.get({ state: state });
-        
+        const response = await adminOrderAPI.orders.pendingNums();
         const { data, statusText } = response;
         if (statusText !== "OK") {
           throw new Error(statusText);
         }
-        if (state === "pending") {
-          this.pendingLength = data.orders.length;
-        }
-        if (state === "unpaid") {
-          this.unpaidLength = data.orders.length;
-        }
-        
+        // if (state === "pending") {
+        //   this.pendingLength = data.orders.length;
+        // }
+        // if (state === "unpaid") {
+        //   this.unpaidLength = data.orders.length;
+        // }
+
+        this.pendingLength = data;
         this.pendingLoading = false;
       } catch (error) {
         this.pendingLoading = false;
+        this.$swal({
+          type: "warning",
+          title: "無法取得資料，請稍後再試"
+        });
+        // eslint-disable-next-line
+        console.log("error", error);
+      }
+    },
+    async fetchUnpaidNums() {
+      try {
+        // socket should restart the response
+        const response = await adminOrderAPI.orders.unpaidNums();
+
+        const { data, statusText } = response;
+        if (statusText !== "OK") {
+          throw new Error(statusText);
+        }
+        // if (state === "pending") {
+        //   this.pendingLength = data.orders.length;
+        // }
+        // if (state === "unpaid") {
+        //   this.unpaidLength = data.orders.length;
+        // }
+
+        this.unpaidLength = data;
+        this.unpaidLoading = false;
+      } catch (error) {
+        this.unpaidLoading = false;
         this.$swal({
           type: "warning",
           title: "無法取得資料，請稍後再試"
