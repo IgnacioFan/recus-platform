@@ -16,5 +16,6 @@ router.delete('/mypreferred', memberController.removeMyPreferred)
 
 // 會員訂單相關API
 router.get('/orders', orderController.getMyOrders)
+router.post('/orders', orderController.addOrder)
 
 module.exports = router

@@ -101,6 +101,28 @@ describe('# Member::Order Request', () => {
       }
     })
 
+    it('should add a new order', (done) => {
+      request(app)
+        .post('/api/member/orders')
+        .send({
+          quantity: 3,
+          amount: 100,
+          memo: 'this is a new order',
+          tableNum: 2,
+          isTakingAway: false,
+          dishes: [{ id: 1, quantity: 2, price: 30 }, { id: 1, quantity: 1, price: 40 }]
+        })
+        .expect(200)
+        .end((err, res) => {
+          if (err) return done(err)
+          //console.log(res.body)
+          expect(res.body.order.amount).to.be.equal(100)
+          expect(res.body.order.quantity).to.be.equal(3)
+          expect(res.body.msg).to.be.equal('訂單新增成功!')
+          return done()
+        })
+    })
+
     it('should get my all order records', (done) => {
       request(app)
         .get('/api/member/orders')
@@ -108,9 +130,10 @@ describe('# Member::Order Request', () => {
         .end((err, res) => {
           if (err) return done(err)
           //console.log(res.body.orders)
-          expect(res.body.orders.length).to.be.equal(2)
-          expect(res.body.orders[0].id).to.be.equal(1)
-          expect(res.body.orders[1].id).to.be.equal(2)
+          expect(res.body.orders.length).to.be.equal(3)
+          expect(res.body.orders[0].id).to.be.equal(3)
+          expect(res.body.orders[1].id).to.be.equal(1)
+          expect(res.body.orders[2].id).to.be.equal(2)
           return done()
         })
     })
