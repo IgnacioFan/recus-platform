@@ -112,7 +112,7 @@ router.beforeEach(async(to, from, next) => {
   }
 
   // 對於不需要驗證 token 的頁面
-  const pathsWithoutAuthentication = ['sign-up']
+  const pathsWithoutAuthentication = ['admin-sign-up']
   if (pathsWithoutAuthentication.includes(to.name)) {
     next()
     return

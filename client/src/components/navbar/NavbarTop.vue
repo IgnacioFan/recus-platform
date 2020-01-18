@@ -79,7 +79,6 @@ export default {
     },
     async fetchPendingNums() {
       try {
-        // socket should restart the response
         const response = await adminOrderAPI.orders.pendingNums();
         const { data, statusText } = response;
         if (statusText !== "OK") {

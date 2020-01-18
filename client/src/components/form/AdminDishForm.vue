@@ -127,6 +127,7 @@ export default {
         tags: [],
         description: "",
         image: "",
+        addTags: [],
         removeTags: []
       },
       originTags: [],
@@ -258,7 +259,9 @@ export default {
       this.dish.image = imageURL;
     },
     addTag(tag) {
-      this.dish.tags = [...new Set([tag, ...this.dish.tags])];
+      if(this.dish.tags.includes(tag)){
+        this.dish.tags = [...new Set([tag, ...this.dish.tags])];
+      }
     },
     removeTag(tag) {
       this.dish.tags = this.dish.tags.filter(e => e !== tag);
@@ -292,10 +295,10 @@ export default {
 
       let saveTags = this.originTags.filter(x => this.dish.tags.includes(x));
 
-      this.dish.removeTags = filtration.map(e => e.id);
+      this.dish.removeTags = filtration;
 
-      if (!this.dishTitle === "新增菜單") {
-        this.dish.tags = saveTags;
+      if (this.dishTitle !== "新增菜單") {
+        this.dish.addTags = saveTags;
       }
       this.$emit("after-submit", this.dish);
     }
