@@ -76,21 +76,22 @@ const orderController = {
       })
 
       // 新增菜單組合
-      comboDishes.forEach(item => {
-        DishCombination.create({
+      for (let i = 0; i < comboDishes.length; i++) {
+        await DishCombination.create({
           OrderId: order.id,
-          DishId: item.DishId,
-          perQuantity: item.quantity,
-          perAmount: item.amount
+          DishId: comboDishes[i].DishId,
+          perQuantity: comboDishes[i].quantity,
+          perAmount: comboDishes[i].amount
         })
+      }
 
-        // if(app.emitter && order) {
-        //   app.emitter.emit('pendingEvent', pendingNums)
-        //   //app.emitter.emit('unpaidEvent', unpaidNums)
-        // }
+      // if(app.emitter && order) {
+      //   app.emitter.emit('pendingEvent', pendingNums)
+      //   //app.emitter.emit('unpaidEvent', unpaidNums)
+      // }
 
-        return res.json({ order: order })
-      })
+      return res.json({ status: 'success', msg: '訂單新增成功!', order: order })
+
     } catch (error) {
       return res.status(500).json({ status: 'error', msg: error })
     }
@@ -203,7 +204,7 @@ const orderController = {
         else {
           order.destroy({ force: true })
           DishCombination.destroy({ where: { OrderId: order.id } }).then(combo => {
-            console.log(combo)
+            //console.log(combo)
             return res.json({ status: 'success', msg: '成功刪除了此訂單!' })
           })
         }
