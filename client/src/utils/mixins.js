@@ -8,6 +8,14 @@ export const timeFromFilter = {
   }
 }
 
+export const fromNowFilter = {
+  filters: {
+    fromNow(datetime) {
+      return datetime ? moment(datetime).fromNow() : '-'
+    }
+  }
+}
+
 export const emptyImageFilter = {
   filters: {
     emptyImage(src) {

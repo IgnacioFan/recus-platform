@@ -21,7 +21,7 @@
                     class="form-control"
                     type="text"
                     v-model="userPhone"
-                    placeholder="09xxxxxxxx"
+                    placeholder="09XXXXXXXX"
                     style="width: 110px;"
                   />
                   <button

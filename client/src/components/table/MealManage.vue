@@ -51,7 +51,6 @@
 </template>
 
 <script>
-
 export default {
   props: {
     initialCategories: {
@@ -74,9 +73,7 @@ export default {
       this.$emit("after-delete-dish", dishId);
     }
   },
-  created() {
-    this.fetchCategories();
-  },
+  created() {},
   watch: {
     initialCategories(categories) {
       this.categories = {

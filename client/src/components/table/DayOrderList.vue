@@ -11,10 +11,15 @@
         <thead>
           <tr>
             <th>
-              <div class="d-flex justify-content-between">
-                <small>{{order.createdAt}}</small>
-                <h4 class="mr-5">{{order.id}}</h4>
-                <button class="btn btn-primary" @click.stop.prevent="deleteOrder(order.id)">刪除</button>
+              <div class="row">
+                <small class="col">{{order.createdAt | fromNow}}</small>
+                <h4 class="col text-center">{{order.id}}</h4>
+                <div v-if="order.state === `paid`" class="col"></div>
+                <button
+                  v-if="order.state !== `paid`"
+                  class="btn btn-danger col"
+                  @click.stop.prevent="deleteOrder(order.id)"
+                >刪除</button>
               </div>
             </th>
           </tr>
@@ -78,10 +83,10 @@
 </template>
 
 <script>
-import { timeFromFilter } from "../../utils/mixins";
+import { timeFromFilter, fromNowFilter } from "../../utils/mixins";
 
 export default {
-  mixins: [timeFromFilter],
+  mixins: [timeFromFilter, fromNowFilter],
   props: {
     initialOrders: {
       type: Array

@@ -30,10 +30,9 @@ const dishController = {
         return res.json({ status: 'error', msg: 'undefined dish id' })
       }
 
-      return Dish.findByPk(req.params.id,
-        { include: [Category, { model: db.Tag, as: 'hasTags' }] }).then(dish => {
-          return res.json({ dish: dish })
-        })
+      return Dish.findByPk(req.params.id, { include: [Category, { model: db.Tag, as: 'hasTags' }] }).then(dish => {
+        return res.json({ dish: dish })
+      })
     } catch (error) {
       return res.status(500).json({ status: 'error', msg: error })
     }
@@ -97,8 +96,10 @@ const dishController = {
         }
         if (addTags) {
           addTags.forEach(item => {
+            console.log(item.id)
             DishAttachment.findOrCreate({
-              where: { DishId: dish.id, TagId: item }, defaults: { DishId: dish.id, TagId: item.id }
+              where: { DishId: dish.id, TagId: item.id },
+              defaults: { DishId: dish.id, TagId: item.id }
             })
           })
         }
@@ -111,7 +112,7 @@ const dishController = {
     }
   },
 
-  removeDish: async (req, res) => {
+  removeDish: async(req, res) => {
     try {
       dish = await Dish.findByPk(req.params.id)
       await DishAttachment.destroy({ where: { DishId: dish.id } })
