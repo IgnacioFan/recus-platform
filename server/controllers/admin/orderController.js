@@ -171,6 +171,11 @@ const orderController = {
     try {
       Order.findByPk(req.params.id).then(order => {
         stateMachine.emit('prev', order)
+        if (app.emitter) {
+          console.log('hey')
+          app.emitter.emit('orderNums', 10)
+          //app.emitter.emit('unpaidEvent', unpaidNums)
+        }
         return res.json(order)
       })
     } catch (error) {

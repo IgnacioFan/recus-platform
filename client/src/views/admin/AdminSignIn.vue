@@ -2,7 +2,7 @@
   <div class="container py-5">
     <form class="w-100" @submit.prevent.stop="handleSubmit">
       <div class="text-center mb-4">
-        <h1 class="h3 mb-3 font-weight-normal">Sign In</h1>
+        <h1 class="h3 mb-3 font-weight-normal">歡迎來到濾客平台</h1>
       </div>
 
       <div class="form-label-group mb-2">
@@ -20,7 +20,7 @@
       </div>
 
       <div class="form-label-group mb-3">
-        <label for="password">Password</label>
+        <label for="password">密碼</label>
         <input
           id="password"
           v-model="password"
@@ -42,17 +42,18 @@
 
       <div class="text-center mb-3">
         <p>
-          <router-link to="/admin/signup">Sign Up</router-link>
+          成為會員？
+          <router-link to="/admin/signup">註冊加入</router-link>
         </p>
       </div>
 
-      <p class="mt-5 mb-3 text-muted text-center">&copy; 2017-2018</p>
+      <p class="mt-5 mb-3 text-muted text-center">&copy; 2019-2020</p>
     </form>
   </div>
 </template>
 
 <script>
-import store from '../../store'
+import store from "../../store";
 import adminAuthorizationAPI from "../../apis/admin/authorization";
 
 export default {
@@ -95,10 +96,21 @@ export default {
 
         this.$store.commit("setCurrentUser", data.user);
 
-        store.state.isAuthenticated = await store.dispatch('fetchCurrentUser')
+        if (data.user.isValid === false) {
+          this.$swal({
+            type: "warning",
+            title: "帳號已被停權，請連繫管理者!"
+          });
+          this.isProcessing = false;
+          return;
+        }
 
+        store.state.isAuthenticated = await store.dispatch("fetchCurrentUser");
+
+        // if (data.user.role === "member") this.$router.push("/member/myorders");
+        // if (data.user.role === "admin") this.$router.push("/admin/order");
         this.$router.push("/admin/order");
-
+        
         this.$swal({
           toast: true,
           position: "top-end",

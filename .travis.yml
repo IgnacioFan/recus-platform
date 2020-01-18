@@ -23,8 +23,8 @@ script:
 # deploy:
 #   provider: heroku
 #   api_key:
-#     secure: ab134b9b-1658-4da6-938d-c573d19d8b34
-#   app: forum-express-testing-sample
+#     secure: 4e9c83a0-10fd-48ed-b932-d4761e69e76e
+#   app: recusplatform
 #   on:
 #     repo: IgnacioFan/recus-platform
 

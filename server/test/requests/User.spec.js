@@ -92,7 +92,7 @@ describe('# Admin::User request', () => {
         request(app)
           .get('/api/admin/users')
           .expect(401)
-          .expect({ status: 'error', msg: '不是管理者，權限不足！' }, done)
+          .expect({ status: 'error', msg: 'not allow!' }, done)
       })
 
       after(async () => {

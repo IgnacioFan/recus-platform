@@ -14,6 +14,16 @@ const authorizeIsAdmin = (to, from, next) => {
 }
 
 const routes = [
+  // ====================  Main  ====================
+
+  // ====================  Member  ====================
+  {
+    path: '/member/myorders',
+    name: 'member-myorders',
+    component: () =>
+      import('../views/member/MyOrder.vue')
+  },
+
   // ====================  Admin  ====================
   {
     path: '/',
@@ -96,8 +106,6 @@ const routes = [
     component: () =>
       import('../views/admin/AdminNotFound.vue')
   }
-
-  // ====================  Main  ====================
 ]
 
 const router = new VueRouter({
