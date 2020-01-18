@@ -18,19 +18,22 @@ const getUser = (req, res, next) => {
   return next()
 }
 
-const authenticatedAdmin = (req, res, next) => {
+const authMember = (req, res, next) => {
+  if (!req.user) return res.json({ status: 'error', msg: 'permission denied' })
+  if (req.user.role === 'member' && req.user.isValid === true) return next()
+  return res.status(401).json({ status: 'error', msg: 'not allow!' })
+}
+
+const authAdmin = (req, res, next) => {
   //console.log(req.user)
-  if (!req.user) return res.status(401).json({ status: 'error', msg: 'permission denied for users' })
-  if (req.user.role === 'admin') {
-    return next()
-  } else {
-    return res.status(401).json({ status: 'error', msg: '不是管理者，權限不足！' })
-  }
+  if (!req.user) return res.status(401).json({ status: 'error', msg: 'permission denied' })
+  if (req.user.role === 'admin') return next()
+  return res.status(401).json({ status: 'error', msg: 'not allow!' })
 }
 
 module.exports = (app) => {
   //app.use('/api/test', (req, res) => { return res.send('hello!')})
   app.use('/api/', main)
-  app.use('/api/member', authenticated, getUser, member)
-  app.use('/api/admin', authenticated, getUser, authenticatedAdmin, admin)
+  app.use('/api/member', authenticated, getUser, authMember, member)
+  app.use('/api/admin', authenticated, getUser, authAdmin, admin)
 }

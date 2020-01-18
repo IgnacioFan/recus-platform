@@ -18,11 +18,7 @@ const bodyParser = require('body-parser')
 const app = require('express')()
 // socket setup
 const http = require('http').Server(app);
-const socketio = require('socket.io')(http);
-const events = require('events')
-
-const db = require('./models')
-const Order = db.Order
+const io = require('socket.io')(http);
 
 // use middleware
 app.use(cors())
@@ -45,44 +41,7 @@ app.use(bodyParser.json())
 // use router
 //app.use('/api/', routes)
 require('./routes/api/index')(app)
-
-socketio.on('connection', (socket) => {
-  console.log('a user is connected', socket.id)
-
-  socket.emit('status', 'hello socket!')
-
-  socket.on('pending', (length) => {
-    console.log('pending length:', length)
-  })
-
-  socket.on('unpaid', (length) => {
-    console.log('unpaid length:', length)
-  })
-
-  Order.scope('todayOrder').count({ where: { state: 'pending' } }).then((nums => {
-    socket.emit('pending', nums)
-  }))
-
-  Order.scope('todayOrder').count({ where: { state: 'unpaid' } }).then((nums => {
-    socket.emit('unpaid', nums)
-  }))
-
-  // var eventEmitter = new events.EventEmitter()
-  // eventEmitter.on('pendingEvent', (data) => {
-  //   console.log('pending does fire!!!!!!!!!!!!!!!!!!!!!')
-  //   //data = 2
-  //   socket.emit('pending', data)
-  // })
-
-  // eventEmitter.on('unpaidEvent', (data) => {
-  //   console.log('unpaid does fire ===================')
-  //   data =3
-  //   socket.emit('unpaid', data)
-  // })
-
-  //exports.emitter = eventEmitter
-
-})
+require('./config/socket')(io)
 
 // app.listen(port, () => console.log(`server is listening to port ${port}`))
 http.listen(port, () => console.log(`server is listening to port ${port}`))

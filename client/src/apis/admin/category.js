@@ -7,8 +7,8 @@ export default {
     }
   },
   category: {
-    get() {
-      return apiHelper.get(`/admin/categories`)
+    get(categoryId) {
+      return apiHelper.get(`/admin/categories/${categoryId}`)
     },
     post(name) {
       return apiHelper.post(`/admin/categories`, name)
