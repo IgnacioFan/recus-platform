@@ -203,7 +203,7 @@ const orderController = {
         else {
           order.destroy({ force: true })
           DishCombination.destroy({ where: { OrderId: order.id } }).then(combo => {
-            console.log(combo)
+            //console.log(combo)
             return res.json({ status: 'success', msg: '成功刪除了此訂單!' })
           })
         }

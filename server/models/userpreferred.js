@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
     TagId: DataTypes.INTEGER,
     UserId: DataTypes.INTEGER
   }, {});
-  UserPreferred.associate = function(models) {
+  UserPreferred.associate = function (models) {
     // associations can be defined here
   };
   return UserPreferred;

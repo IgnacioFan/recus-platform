@@ -47,7 +47,7 @@ describe('# Member::Order Request', () => {
       ).returns(true)
       this.getUser = sinon.stub(
         helper, 'getUser'
-      ).returns({ id: 1, role: 'member' })
+      ).returns({ id: 1, role: 'member', isValid: true })
     })
 
     it('should pass the test', (done) => {
@@ -70,7 +70,7 @@ describe('# Member::Order Request', () => {
       ).returns(true)
       this.getUser = sinon.stub(
         helper, 'getUser'
-      ).returns({ id: 1, role: 'member' })
+      ).returns({ id: 1, role: 'member', isValid: true })
       tk.freeze(nowTime)
 
       await db.Order.destroy({ where: {}, force: true, truncate: true })
