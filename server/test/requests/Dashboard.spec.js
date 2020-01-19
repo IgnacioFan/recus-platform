@@ -12,9 +12,9 @@ const db = require('../../models')
 const moment = require('moment')
 var tk = require('timekeeper')
 const nowTime = new Date()
-const time1 = moment(nowTime, "YYYY-M-D H:m").subtract(1, 'days').toDate() //moment().subtract(1, 'days')
-const time2 = moment(nowTime, "YYYY-M-D H:m").subtract(2, 'days').toDate()
-const time3 = moment(nowTime, "YYYY-M-D H:m").subtract(3, 'days').toDate()
+const time1 = moment(nowTime, "YYYY-M-D H:m").subtract(1, 'weeks').day(1).toDate() //moment().subtract(1, 'days')
+const time2 = moment(nowTime, "YYYY-M-D H:m").subtract(1, 'weeks').day(2).toDate()
+const time3 = moment(nowTime, "YYYY-M-D H:m").subtract(1, 'weeks').day(3).toDate()
 const tags = ["淺焙", "中焙", "深焙", "衣索比亞", "肯亞", "印尼", "微果酸", "果香味", "手沖", "義式機", "新品"] // 11
 const menu = [
   { name: '黑框美式', price: 60, CategoryId: 1, tags: [{ id: 3 }, { id: 10 }, { id: 11 }] },
@@ -66,6 +66,8 @@ const member2 = { account: 'user2', phone: '0902', password: '12345', role: 'mem
 const member3 = { account: 'user3', phone: '0903', password: '12345', role: 'member' }
 const profi1 = { name: 'nacho', email: 'nacho@example.com', UserId: 2 }
 const profi2 = { name: 'kirwen', email: 'kirwen@example.com', UserId: 3 }
+const userPreferred = [{ TagId: 1, UserId: 2 }, { TagId: 8, UserId: 3 }, { TagId: 3, UserId: 2 }
+  , { TagId: 1, UserId: 3 }, { TagId: 4, UserId: 2 }, { TagId: 10, UserId: 2 }]
 
 describe('# Admin::Dashboard Request', () => {
   context('go to Dashboard feature', () => {
@@ -81,6 +83,7 @@ describe('# Admin::Dashboard Request', () => {
       await db.Dish.destroy({ where: {}, truncate: true })
       await db.Order.destroy({ where: {}, force: true, truncate: true })
       await db.User.destroy({ where: {}, force: true, truncate: true })
+      await db.UserPreferred.destroy({ where: {}, truncate: true })
       await db.DishCombination.destroy({ where: {}, truncate: true })
       await db.DishAttachment.destroy({ where: {}, truncate: true })
       await db.Profile.destroy({ where: {}, truncate: true })
@@ -114,6 +117,16 @@ describe('# Admin::Dashboard Request', () => {
             })
           })
       }
+      for (let i = 0; i < userPreferred.length; i++) {
+        let currentTime
+        if (i < userPreferred.length / 2) currentTime = time1
+        else currentTime = time3
+        await db.UserPreferred.create({
+          TagId: userPreferred[i].TagId,
+          UserId: userPreferred[i].UserId,
+          createdAt: currentTime
+        })
+      }
       await db.User.create(member1)
       await db.User.create(member2)
       await db.User.create(member3)
@@ -142,7 +155,7 @@ describe('# Admin::Dashboard Request', () => {
 
     context('weekly anaylsis report', () => {
 
-      xit('hot products/ hot tags/ hot members', (done) => {
+      it('hot products/ hot tags/ hot members', (done) => {
         request(app)
           .get('/api/admin/dashboard/pieChart?range=weekly')
           .expect(200)
@@ -152,6 +165,7 @@ describe('# Admin::Dashboard Request', () => {
             // console.log(time1)
             // console.log(time2)
             // console.log(time3)
+            // console.log(res.body.data1)
             // console.log(res.body.hotProducts)
             // console.log(res.body.hotMembers)
             // console.log(res.body.hotTags)
@@ -165,17 +179,48 @@ describe('# Admin::Dashboard Request', () => {
           })
       })
 
-      it('hot products growing', (done) => {
+      it('products growing', (done) => {
         request(app)
-          .get('/api/admin/dashboard/lineChart?range=weekly&id=1&id=7')
+          .get('/api/admin/dashboard/lineChart?type=product&range=weekly&id=1&id=7')
           .expect(200)
           .end((err, res) => {
             if (err) return done(err)
-            console.log(res.body.days)
-            console.log(res.body.pChart)
-            console.log(res.body.products)
+            // console.log(res.body.days)
+            // console.log(res.body.pChart)
+            // console.log(res.body.products)
             expect(res.body.days.length).to.be.equal(3)
             expect(Object.keys(res.body.pChart)).to.eql(['黑框美式', '皇后花園'])
+            return done()
+          })
+      })
+
+      it('times of member visiting growing', (done) => {
+        request(app)
+          .get('/api/admin/dashboard/lineChart?type=user&range=weekly&id=2&id=3')
+          .expect(200)
+          .end((err, res) => {
+            if (err) return done(err)
+            // console.log(res.body.days)
+            // console.log(res.body.uChart)
+            // console.log(res.body.users)
+            expect(res.body.days.length).to.be.equal(2)
+            expect(Object.keys(res.body.uChart)).to.eql(['nacho', 'kirwen'])
+            return done()
+          })
+      })
+
+      it('tags of member preferred growing', (done) => {
+        request(app)
+          .get('/api/admin/dashboard/lineChart?type=tag&range=weekly&id=1&id=10')
+          .expect(200)
+          .end((err, res) => {
+            if (err) return done(err)
+            //console.log(res.body)
+            console.log(res.body.days)
+            console.log(res.body.tChart)
+            console.log(res.body.tags)
+            // expect(res.body.days.length).to.be.equal(3)
+            // expect(Object.keys(res.body.pChart)).to.eql(['黑框美式', '皇后花園'])
             return done()
           })
       })
@@ -183,7 +228,7 @@ describe('# Admin::Dashboard Request', () => {
 
     xcontext('monthly anaylsis report', () => {
 
-      it('hot products/ hot tags/ hot members', (done) => {
+      xit('hot products/ hot tags/ hot members', (done) => {
         request(app)
           .get('/api/admin/dashboard/pieChart?range=monthly')
           .expect(200)
@@ -228,6 +273,7 @@ describe('# Admin::Dashboard Request', () => {
       await db.Tag.destroy({ where: {}, truncate: true })
       await db.Dish.destroy({ where: {}, truncate: true })
       await db.User.destroy({ where: {}, force: true, truncate: true })
+      await db.UserPreferred.destroy({ where: {}, truncate: true })
       await db.Order.destroy({ where: {}, force: true, truncate: true })
       await db.DishCombination.destroy({ where: {}, truncate: true })
       await db.DishAttachment.destroy({ where: {}, truncate: true })
