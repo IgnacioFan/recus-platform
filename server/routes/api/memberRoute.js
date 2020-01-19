@@ -18,4 +18,8 @@ router.delete('/mypreferred', memberController.removeMyPreferred)
 router.get('/orders', orderController.getMyOrders)
 router.post('/orders', orderController.addOrder)
 
+// 取得分類與訂單相關API
+router.get('/categories', orderController.getCategories)
+router.get('/dishes', orderController.getDishWithCategory)
+
 module.exports = router

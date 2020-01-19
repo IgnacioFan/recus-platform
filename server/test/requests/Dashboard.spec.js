@@ -121,11 +121,30 @@ describe('# Admin::Dashboard Request', () => {
       await db.Profile.create(profi2)
     })
 
+    xcontext('get basic info report', () => {
+      it("current member numbers/ today's order numbers/ current order numbers", (done) => {
+        request(app)
+          .get('/api/admin/dashboard')
+          .expect(200)
+          .end((err, res) => {
+            if (err) return done(err)
+            console.log(res.body)
+            // expect(res.body.hotProducts[0]).to.eql({ id: 1, name: '黑框美式', count: 4 })
+            // expect(res.body.hotProducts.length).to.be.equal(5)
+            // expect(res.body.hotMembers[0]).to.eql({ id: 2, name: 'nacho', count: 4 })
+            // expect(res.body.hotMembers.length).to.be.equal(2)
+            // expect(res.body.hotTags[0]).to.eql({ id: 9, name: '手沖', count: 10 })
+            // expect(res.body.hotTags.length).to.be.equal(5)
+            return done()
+          })
+      })
+    })
+
     context('weekly anaylsis report', () => {
 
-      it('hot products/ hot tags/ hot members', (done) => {
+      xit('hot products/ hot tags/ hot members', (done) => {
         request(app)
-          .get('/api/admin/dashboard?range=weekly')
+          .get('/api/admin/dashboard/pieChart?range=weekly')
           .expect(200)
           .end((err, res) => {
             if (err) return done(err)
@@ -148,13 +167,13 @@ describe('# Admin::Dashboard Request', () => {
 
       it('hot products growing', (done) => {
         request(app)
-          .get('/api/admin/dashboard/lineChart?id=1&id=7')
+          .get('/api/admin/dashboard/lineChart?range=weekly&id=1&id=7')
           .expect(200)
           .end((err, res) => {
             if (err) return done(err)
-            // console.log(res.body.days)
-            // console.log(res.body.pChart)
-            //console.log(res.body.products)
+            console.log(res.body.days)
+            console.log(res.body.pChart)
+            console.log(res.body.products)
             expect(res.body.days.length).to.be.equal(3)
             expect(Object.keys(res.body.pChart)).to.eql(['黑框美式', '皇后花園'])
             return done()
@@ -162,11 +181,11 @@ describe('# Admin::Dashboard Request', () => {
       })
     })
 
-    context('monthly anaylsis report', () => {
+    xcontext('monthly anaylsis report', () => {
 
       it('hot products/ hot tags/ hot members', (done) => {
         request(app)
-          .get('/api/admin/dashboard?range=monthly')
+          .get('/api/admin/dashboard/pieChart?range=monthly')
           .expect(200)
           .end((err, res) => {
             if (err) return done(err)

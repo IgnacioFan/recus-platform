@@ -4,7 +4,18 @@ const { Order, DishCombination, Tag, Dish, User, Profile } = db
 
 const dashboardController = {
 
-  getDashboard: async (req, res) => {
+  getBasicInfo: async (req, res) => {
+    try {
+      totalMembers = await User.scope('excludedAdmin').count()
+      todayOrders = await Order.scope('todayOrder').count()
+      totalOrders = await Order.count()
+      return res.json({ totalMembers: totalMembers, todayOrders: todayOrders, totalOrders: totalOrders })
+    } catch (error) {
+      return res.status(500).json({ status: 'error', msg: error })
+    }
+  },
+
+  getPieChart: async (req, res) => {
     try {
       if (!req.query.range) return res.json({ status: 'error', msg: 'undefined!' })
 
@@ -91,17 +102,28 @@ const dashboardController = {
       let days = {} // 取得天數組
       let pChart = {} // 取得產品成長的成長分析, p 是product的簡寫
       let tChart = {}
-
-      products = await DishCombination.scope('weekly').findAll(
-        {
-          where: { DishId: req.query.id },
-          attributes: ['DishId', 'OrderId', 'createdAt'],
-          include: [{
-            model: Dish, attributes: ['name'],
-            //include: [{ model: Tag, as: 'hasTags', attributes: ['id', 'name'] }]
-          }]
-        })
-
+      if (req.query.range === 'weekly') {
+        products = await DishCombination.scope('weekly').findAll(
+          {
+            where: { DishId: req.query.id },
+            attributes: ['DishId', 'OrderId', 'createdAt'],
+            include: [{
+              model: Dish, attributes: ['name'],
+              //include: [{ model: Tag, as: 'hasTags', attributes: ['id', 'name'] }]
+            }]
+          })
+      }
+      if (req.query.range === 'monthly') {
+        products = await DishCombination.scope('monthly').findAll(
+          {
+            where: { DishId: req.query.id },
+            attributes: ['DishId', 'OrderId', 'createdAt'],
+            include: [{
+              model: Dish, attributes: ['name'],
+              //include: [{ model: Tag, as: 'hasTags', attributes: ['id', 'name'] }]
+            }]
+          })
+      }
       // 計算前七天內產品成長的折線圖
       for (let product of products) {
         let createdAt = moment(product.createdAt).format("MM-DD")

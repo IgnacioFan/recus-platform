@@ -14,7 +14,9 @@ var tk = require('timekeeper')
 const nowTime = new Date()
 const time1 = moment(nowTime, "YYYY-M-D H:m").subtract(1, 'days').toDate() //moment().subtract(1, 'days')
 const time2 = moment(nowTime, "YYYY-M-D H:m").subtract(2, 'days').toDate()
-
+const categories = ['義式', '手沖']
+const tags = ['new', '微酸', '淺焙']
+const dishAttach = [{ TagId: 1, DishId: 1 }, { TagId: 2, DishId: 1 }, { TagId: 1, DishId: 2 }, { TagId: 3, DishId: 2 }]
 const order1 = {
   quantity: 4,
   amount: 140,
@@ -73,13 +75,25 @@ describe('# Member::Order Request', () => {
       ).returns({ id: 1, role: 'member', isValid: true })
       tk.freeze(nowTime)
 
-      await db.Order.destroy({ where: {}, force: true, truncate: true })
-      await db.DishCombination.destroy({ where: {}, truncate: true })
-      await db.Dish.destroy({ where: {}, truncate: true })
-
       await db.Dish.create(dish1)
       await db.Dish.create(dish2)
       await db.Order.create(order1)
+      for (let i = 0; i < categories.length; i++) {
+        await db.Category.create({
+          name: categories[i]
+        })
+      }
+      for (let i = 0; i < tags.length; i++) {
+        await db.Tag.create({
+          name: tags[i]
+        })
+      }
+      for (let i = 0; i < dishAttach.length; i++) {
+        await db.DishAttachment.create({
+          TagId: dishAttach[i].TagId,
+          DishId: dishAttach[i].DishId
+        })
+      }
       for (let i = 0; i < dishCombo1.length; i++) {
         await db.DishCombination.create({
           DishId: dishCombo1[i].id,
@@ -99,6 +113,34 @@ describe('# Member::Order Request', () => {
           createdAt: time2
         })
       }
+    })
+
+    it('should see all categories', (done) => {
+      request(app)
+        .get('/api/member/categories')
+        .expect(200)
+        .end((err, res) => {
+          if (err) return done(err)
+          //console.log(res.body)
+          expect(res.body.categories[0].name).to.be.equal('義式')
+          expect(res.body.categories[1].name).to.be.equal('手沖')
+          return done()
+        })
+    })
+
+    it('should get all dishes from category 1', (done) => {
+      request(app)
+        .get('/api/member/dishes?categoryId=1')
+        .expect(200)
+        .end((err, res) => {
+          if (err) return done(err)
+          //console.log(res.body.dishes[0].hasTags)
+          expect(res.body.dishes[0].name).to.be.equal('mocha')
+          expect(res.body.dishes[0].hasTags.length).to.be.equal(2)
+          expect(res.body.dishes[1].name).to.be.equal('latie')
+          expect(res.body.dishes[1].hasTags.length).to.be.equal(2)
+          return done()
+        })
     })
 
     it('should add a new order', (done) => {
@@ -143,6 +185,9 @@ describe('# Member::Order Request', () => {
       this.getUser.restore()
       tk.reset()
       await db.Order.destroy({ where: {}, force: true, truncate: true })
+      await db.Category.destroy({ where: {}, truncate: true })
+      await db.Tag.destroy({ where: {}, truncate: true })
+      await db.DishAttachment.destroy({ where: {}, truncate: true })
       await db.DishCombination.destroy({ where: {}, truncate: true })
       await db.Dish.destroy({ where: {}, truncate: true })
     })

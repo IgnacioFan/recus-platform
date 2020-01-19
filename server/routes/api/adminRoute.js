@@ -55,7 +55,8 @@ router.put('/categories/:id', nameValidRules(), validate, categoryController.upd
 router.delete('/categories/:id', categoryController.removeCategory)
 
 // 儀表板相關API
-router.get('/dashboard', dashboardController.getDashboard)
+router.get('/dashboard', dashboardController.getBasicInfo)
+router.get('/dashboard/pieChart', dashboardController.getPieChart)
 router.get('/dashboard/lineChart', dashboardController.getLineChart)
 
 module.exports = router

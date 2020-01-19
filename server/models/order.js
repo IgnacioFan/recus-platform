@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
         //paranoid: false
       },
       scopes: {
-        orderWithMember: {
+        orderWithoutMember: {
           where: {
             UserId: { [Op.gt]: 0 }
           }
