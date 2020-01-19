@@ -22,7 +22,7 @@
                     type="text"
                     v-model="userPhone"
                     placeholder="09XXXXXXXX"
-                    style="width: 110px;"
+                    style="width: 115px;"
                   />
                   <button
                     class="btn btn-outline-success mx-2"
@@ -55,7 +55,7 @@
     </template>
 
     <div v-show="searchResultShow" class="searchResult">
-      <div class="modal-dialog modal-xl" role="document">
+      <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="exampleModalLabel">會員資料</h5>
@@ -95,7 +95,7 @@ import AdminMemberForm from "../../components/form/AdminMemberForm";
 import Spinner from "../../components/spinner/Spinner";
 import adminDishAPI from "../../apis/admin/dish";
 import adminCategoryAPI from "../../apis/admin/category";
-import roleMemberAPI from "../../apis/role/member";
+import roleMemberAPI from "../../apis/admin/member";
 
 export default {
   name: "AdminOrder",
@@ -207,7 +207,7 @@ export default {
     },
     afterAddToOrder(payload) {
       const { id, name, price, quantity } = payload;
-      this.addDishes.list.push({
+      this.addDishes.list.unshift({
         PK: this.dishPK++,
         id: id,
         name: name,

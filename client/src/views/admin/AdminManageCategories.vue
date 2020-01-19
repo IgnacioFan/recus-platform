@@ -101,7 +101,7 @@ export default {
   methods: {
     async fetchcategories() {
       try {
-        const response = await adminCategoryAPI.category.get();
+        const response = await adminCategoryAPI.categories.get();
         const { data, statusText } = response;
         if (statusText !== "OK") {
           throw new Error(statusText);

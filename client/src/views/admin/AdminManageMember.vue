@@ -68,12 +68,34 @@
             <div class="modal-body">
               <MemberTable
                 :initial-users="searchResult"
-                @after-delete-user="afterDeleteUser"
+                @after-valid-user="afterValidUser"
                 @after-toggle-is-admin="afterToggleIsAdmin"
+                @after-show-profile="afterShowProfile"
               />
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-primary" @click.stop.prevent="closeResult">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div v-show="showProfile" class="profileForm">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">會員資料</h5>
+              <button
+                type="button"
+                class="btn btn-danger"
+                @click.stop.prevent="deleteUser(profile.id)"
+              >刪除會員</button>
+            </div>
+            <div class="modal-body">
+              <AdminMemberForm :initial-user="profile" />
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" @click.stop.prevent="closeProfile">關閉</button>
             </div>
           </div>
         </div>
@@ -85,6 +107,7 @@
             :initial-users="leftTableUsers"
             @after-valid-user="afterValidUser"
             @after-toggle-is-admin="afterToggleIsAdmin"
+            @after-show-profile="afterShowProfile"
           />
         </div>
         <div class="col">
@@ -92,6 +115,7 @@
             :initial-users="rightTableUsers"
             @after-valid-user="afterValidUser"
             @after-toggle-is-admin="afterToggleIsAdmin"
+            @after-show-profile="afterShowProfile"
           />
         </div>
       </div>
@@ -104,9 +128,10 @@
 import NavbarTop from "../../components/navbar/NavbarTop";
 import NavbarBottm from "../../components/navbar/NavbarBottm";
 import MemberTable from "../../components/table/MemberTable";
+import AdminMemberForm from "../../components/form/AdminMemberForm";
 import Spinner from "../../components/spinner/Spinner";
-import roleMemberAPI from "../../apis/role/member";
-import mainUserAPI from "../../apis/main/user";
+import roleMemberAPI from "../../apis/admin/member";
+import mainUserAPI from "../../apis/admin/user";
 
 export default {
   name: "AdminManageMember",
@@ -114,6 +139,7 @@ export default {
     NavbarTop,
     NavbarBottm,
     MemberTable,
+    AdminMemberForm,
     Spinner
   },
   data() {
@@ -124,6 +150,8 @@ export default {
       userPhone: "",
       totalPage: 1,
       currPage: 1,
+      profile: {},
+      showProfile: false,
       searchResultShow: false,
       isLoading: true
     };
@@ -160,7 +188,6 @@ export default {
           throw new Error(statusText);
         }
 
-
         this.totalPage = data.totalPage;
         this.currPage = data.currPage;
         this.users = [...data.users]
@@ -182,7 +209,7 @@ export default {
         console.log("error", error);
       }
     },
-    async afterDeleteUser(userId) {
+    async deleteUser(userId) {
       try {
         const { data, statusText } = await roleMemberAPI.deleteMember({
           userId
@@ -194,13 +221,11 @@ export default {
             title: data.msg
           });
           throw new Error(statusText);
-        }
-
-        this.users = this.users.filter(user => user.id !== userId);
-        this.searchResult = this.searchResult.filter(
-          user => user.id !== userId
-        );
-
+        }        
+        this.showProfile = false;
+        this.searchResultShow = false;
+        const { page = 1 } = this.$route.query;
+        this.fetchProfiles({ page });
         this.$swal({
           toast: true,
           position: "top",
@@ -228,7 +253,7 @@ export default {
           });
           throw new Error(statusText);
         }
-        
+
         this.users = this.users.map(user => {
           if (user.id !== userId) {
             return user;
@@ -301,19 +326,16 @@ export default {
         if (statusText !== "OK") {
           throw new Error(statusText);
         }
-        if (!data) {
+        if (data.status === "error") {
           this.$swal({
             toast: true,
             position: "top",
             showConfirmButton: false,
             timer: 3000,
             type: "warning",
-            title: "找不到該會員",
-            text: ""
+            title: data.msg
           });
         } else {
-          // eslint-disable-next-line
-          console.log("data", data);
           this.userPhone = "";
           this.searchResult = [data.user];
           let member = this.searchResult[0].Profile;
@@ -326,7 +348,41 @@ export default {
       }
     },
     closeResult() {
+      this.searchResult = [];
       this.searchResultShow = false;
+    },
+    async afterShowProfile(userPhone) {
+      try {
+        const response = await roleMemberAPI.searchMember({
+          phone: userPhone
+        });
+        const { data, statusText } = response;
+        if (statusText !== "OK") {
+          throw new Error(statusText);
+        }
+
+        if (data.status === "error") {
+          this.$swal({
+            toast: true,
+            position: "top",
+            showConfirmButton: false,
+            timer: 3000,
+            type: "warning",
+            title: "未找到會員",
+            text: ""
+          });
+        } else {
+          this.profile = data.user;
+          this.showProfile = true;
+        }
+      } catch (error) {
+        // eslint-disable-next-line
+        console.log("error", error);
+      }
+    },
+    closeProfile() {
+      this.profile = {};
+      this.showProfile = false;
     }
   }
 };
@@ -336,6 +392,16 @@ export default {
 .searchResult {
   position: absolute;
   z-index: 200;
+  /* display: none; */
+  top: 0;
+  height: 100vh;
+  width: 100vw;
+  overflow: auto;
+}
+
+.profileForm {
+  position: absolute;
+  z-index: 300;
   /* display: none; */
   top: 0;
   height: 100vh;

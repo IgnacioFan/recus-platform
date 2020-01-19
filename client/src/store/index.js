@@ -10,7 +10,7 @@ export default new Vuex.Store({
       id: -1,
       account: "",
       phone: "",
-      role: "member",
+      role: "",
       name: "",
       avatar: ""
     },
@@ -65,5 +65,10 @@ export default new Vuex.Store({
       }
     }
   },
-  modules: {}
+  getters: {
+    controlPanelRouteName: state => {
+      if (state.currentUser.role === 'Admin') return 'admin-order'
+      if (state.currentUser.role === 'member') return 'member-myorders'
+    }
+  }
 })
