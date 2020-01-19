@@ -9,7 +9,7 @@
           class="btn btn-outline-primary m-2"
           :to="{ name: 'admin-dash-board', 
         query: {range: `weekly`}}"
-        >前七週</router-link>
+        >前七天</router-link>
         <router-link
           class="btn btn-outline-primary"
           :to="{ name: 'admin-dash-board', 
@@ -17,17 +17,17 @@
         >前一個月</router-link>
       </div>
       <div class="row justify-content-around">
-        <div class="col-4">
+        <div class="col-4 border border-secondary rounded">
           <h3 class="text-center mt-3">HotProducts</h3>
           <PieChart class="my-3" :initial-data="hotProducts" />
           <DashBoardTable :initial-category="hotProducts" />
         </div>
-        <div class="col-4">
+        <div class="col-4 border border-secondary rounded">
           <h3 class="text-center mt-3">HotTags</h3>
           <PieChart class="my-3" :initial-data="hotTags" />
           <DashBoardTable :initial-category="hotTags" />
         </div>
-        <div class="col-4">
+        <div class="col-4 border border-secondary rounded">
           <h3 class="text-center mt-3">HotMembers</h3>
           <PieChart class="my-3" :initial-data="hotMembers" />
           <DashBoardTable :initial-category="hotMembers" />
@@ -74,26 +74,27 @@ export default {
   created() {
     const { range = "weekly" } = this.$route.query;
     this.fetchDashboard({ range });
+    this.fetchss({ id: 1 });
   },
   beforeRouteUpdate(to, from, next) {
     const { range = "weekly" } = to.query;
     this.fetchDashboard({ range });
+    this.fetchss({ id: 1 });
     next();
   },
   methods: {
     async fetchDashboard(range) {
       try {
         this.isLoading = true;
-        this.hotProducts= [];
-        this.hotTags= [];
-        this.hotMembers= [];
-        const response = await adminDashboardAPI.get(range);
+        this.hotProducts = [];
+        this.hotTags = [];
+        this.hotMembers = [];
+        const response = await adminDashboardAPI.getPieChart(range);
         const { data, statusText } = response;
         if (statusText !== "OK") {
           throw new Error(statusText);
         }
-        // eslint-disable-next-line
-        console.log("data", data);
+
         for (var productprop in data.hotProducts) {
           this.hotProducts.push(data.hotProducts[productprop]);
         }
@@ -110,6 +111,24 @@ export default {
         this.isLoading = false;
       } catch (error) {
         this.isLoading = false;
+        this.$swal({
+          type: "warning",
+          title: "無法取得資料，請稍後再試"
+        });
+        // eslint-disable-next-line
+        console.log("error", error);
+      }
+    },
+    async fetchss(id) {
+      try {
+        const response = await adminDashboardAPI.getLineChart(id);
+        const { data, statusText } = response;
+        if (statusText !== "OK") {
+          throw new Error(statusText);
+        }
+        // eslint-disable-next-line
+        console.log("data", data);
+      } catch (error) {
         this.$swal({
           type: "warning",
           title: "無法取得資料，請稍後再試"

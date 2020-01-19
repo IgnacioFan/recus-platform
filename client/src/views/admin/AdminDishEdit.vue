@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container h-100">
     <AdminDishForm
       :dish-title="title"
       :is-processing="isProcessing"
@@ -29,7 +29,10 @@ export default {
     async handleAfterSubmit(formData) {
       try {
         this.isProcessing = true;
-        const { data, statusText } = await adminDishAPI.dish.put({dishId: this.$route.params.id,formData});
+        const { data, statusText } = await adminDishAPI.dish.put({
+          dishId: this.$route.params.id,
+          formData
+        });
         if (statusText !== "OK" || data.status !== "success") {
           throw new Error(statusText);
         }

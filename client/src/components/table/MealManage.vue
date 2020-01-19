@@ -8,7 +8,7 @@
         >{{ category.name }}</router-link>
       </li>
     </ul>
-    <div class="row border border-warning meal">
+    <div class="row border border-dark meal">
       <div v-for="dish in dishes" :key="dish.id" class="col-4 px-1 mb-2">
         <div class="card">
           <div class="card-header d-flex justify-content-between p-0">

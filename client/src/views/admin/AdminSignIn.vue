@@ -1,8 +1,9 @@
 <template>
-  <div class="container py-5">
-    <form class="w-100" @submit.prevent.stop="handleSubmit">
-      <div class="text-center mb-4">
-        <h1 class="h3 mb-3 font-weight-normal">歡迎來到濾客平台</h1>
+  <div class="box-center bg-image">
+    <div class="overlay"></div>
+    <form class="p-5 border rounded" @submit.prevent.stop="handleSubmit" style="width: 25vw;">
+      <div class="mb-4 text-center">
+        <h2 class="mb-5 font-weight-normal">歡迎來到濾客平台</h2>
       </div>
 
       <div class="form-label-group mb-2">
@@ -19,7 +20,7 @@
         />
       </div>
 
-      <div class="form-label-group mb-3">
+      <div class="form-label-group mb-3 pb-4 border-bottom">
         <label for="password">密碼</label>
         <input
           id="password"
@@ -47,7 +48,7 @@
         </p>
       </div>
 
-      <p class="mt-5 mb-3 text-muted text-center">&copy; 2019-2020</p>
+      <p class="mt-5 text-center">&copy; 2019-2020</p>
     </form>
   </div>
 </template>
@@ -107,10 +108,9 @@ export default {
 
         store.state.isAuthenticated = await store.dispatch("fetchCurrentUser");
 
-        // if (data.user.role === "member") this.$router.push("/member/myorders");
-        // if (data.user.role === "admin") this.$router.push("/admin/order");
-        this.$router.push("/admin/order");
-        
+        if (data.user.role === "member") this.$router.push("/member/myorders");
+        if (data.user.role === "admin") this.$router.push("/admin/order");
+
         this.$swal({
           toast: true,
           position: "top-end",
@@ -135,3 +135,34 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.box-center {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.bg-image {
+  z-index: -200;
+  background-image: url(https://images.pexels.com/photos/1422286/pexels-photo-1422286.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 100%;
+  height: 100%;
+}
+.overlay {
+    z-index: -100;
+    background: rgba(0, 0, 0, .5);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+}
+
+form{
+  background-color: rgba(250, 250, 250, .85);
+}
+</style>
