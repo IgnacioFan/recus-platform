@@ -1,5 +1,5 @@
 const db = require('../../models')
-const { Dish, DishAttachment, Category } = db
+const { Dish, DishAttachment, Category, Tag } = db
 //const Category = db.Category
 
 
@@ -15,7 +15,7 @@ const dishController = {
         CategoryId: req.query.categoryId
       }
 
-      return Dish.findAll({ where: whereQuery }).then(dishes => {
+      Dish.findAll({ where: whereQuery }).then(dishes => {
         return res.json({ dishes: dishes })
       })
     } catch (error) {
@@ -29,10 +29,11 @@ const dishController = {
       if (Number(req.params.categoryId) < 1) {
         return res.json({ status: 'error', msg: 'undefined dish id' })
       }
-
-      return Dish.findByPk(req.params.id, { include: [Category, { model: db.Tag, as: 'hasTags' }] }).then(dish => {
-        return res.json({ dish: dish })
-      })
+      Dish.findByPk(req.params.id,
+        { include: [Category, { model: Tag, as: 'hasTags', through: { attributes: [] } }] })
+        .then(dish => {
+          return res.json({ dish: dish })
+        })
     } catch (error) {
       return res.status(500).json({ status: 'error', msg: error })
     }

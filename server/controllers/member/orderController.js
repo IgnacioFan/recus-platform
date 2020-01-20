@@ -1,6 +1,6 @@
 // const helper = require('../../_helpers')
 const db = require('../../models')
-const { Order, Dish, DishCombination } = db
+const { Order, Dish, DishCombination, Category, Tag } = db
 
 const orderController = {
   addOrder: async (req, res) => {
@@ -74,7 +74,36 @@ const orderController = {
     } catch (error) {
       return res.status(500).json({ status: 'error', msg: error })
     }
-  }
+  },
+
+  getCategories: (req, res) => {
+    try {
+      Category.findAll().then(categories => {
+        return res.json({ categories: categories })
+      })
+    } catch (error) {
+      return res.status(500).json({ status: 'error', msg: error })
+    }
+  },
+
+  // 取得某分類的所有品項
+  getDishWithCategory: (req, res) => {
+    try {
+      if (Number(req.query.categoryId) < 1) {
+        return res.json({ status: 'error', msg: 'undefined category id' })
+      }
+
+      Dish.findAll({
+        where: { CategoryId: req.query.categoryId },
+        attributes: ['id', 'name', 'price', 'image', 'description'],
+        include: [{ model: Tag, as: 'hasTags', attributes: ['name'] }]
+      }).then(dishes => {
+        return res.json({ dishes: dishes })
+      })
+    } catch (error) {
+      return res.status(500).json({ status: 'error', msg: error })
+    }
+  },
 }
 
 module.exports = orderController

@@ -60,9 +60,13 @@ const routes = [
     path: '/admin/order/index',
     name: 'admin-order-index',
     component: () =>
-      import ('../views/admin/AdminOrderIndex.vue'),
-    beforeEnter: authentication.isAdmin
+      import('../views/admin/AdminOrderIndex.vue')
   }, {
+    //   path: '/admin/order/:categoryId',
+    //   name: 'admin-order-category',
+    //   component: () =>
+    //     import('../views/admin/AdminOrderCategory.vue')
+    // }, {
     path: '/admin/manage/members',
     name: 'admin-manage-members',
     component: () =>

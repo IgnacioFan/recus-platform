@@ -7,5 +7,7 @@ const { signupValidationRules, signinValidRules, validate } = require('../../con
 router.post('/signup', signupValidationRules(), validate, userController.signUp)
 router.post('/signin', signinValidRules(), validate, userController.signIn)
 router.get('/test', (req, res) => { res.json({ status: 'success', msg: 'successfully connected' }) })
+// 無驗證版
+router.get('/user', userController.getCurrentUser)
 
 module.exports = router

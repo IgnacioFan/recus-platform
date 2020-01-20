@@ -14,16 +14,16 @@ module.exports = (sequelize, DataTypes) => {
         weekly: {
           where: {
             createdAt: {
-              [Op.gte]: moment().subtract(7, 'days').hours(0)
-              , [Op.lte]: moment().subtract(1, 'days').hours(23)
+              [Op.gte]: moment().subtract(1, 'weeks').startOf('week')
+              , [Op.lte]: moment().subtract(1, 'weeks').endOf('week')
             }
           }
         },
         monthly: {
           where: {
             createdAt: {
-              [Op.gte]: moment().subtract(30, 'days')
-              , [Op.lte]: moment().subtract(1, 'days')
+              [Op.gte]: moment().subtract(1, 'months').startOf('month')
+              , [Op.lte]: moment().subtract(1, 'months').endOf('month')
             }
           }
         }

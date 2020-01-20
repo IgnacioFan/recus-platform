@@ -34,6 +34,6 @@ const authAdmin = (req, res, next) => {
 module.exports = (app) => {
   //app.use('/api/test', (req, res) => { return res.send('hello!')})
   app.use('/api/', main)
-  app.use('/api/member', authenticated, getUser, authMember, member)
+  app.use('/api/member', authenticated, getUser, member)
   app.use('/api/admin', authenticated, getUser, authAdmin, admin)
 }

@@ -36,6 +36,11 @@ const order2 = {
   isTakingAway: true,
   UserId: 3
 }
+const dishCombos = [
+  { OrderId: 1, DishId: 1, perQuantity: 2, perAmount: 60 }, { OrderId: 1, DishId: 2, perQuantity: 2, perAmount: 80 },
+  { OrderId: 2, DishId: 1, perQuantity: 2, perAmount: 60 }, { OrderId: 2, DishId: 2, perQuantity: 1, perAmount: 40 }]
+const dishes = [{ name: 'mocha', price: 30, CategoryId: 1 }, { name: 'latie', price: 40, CategoryId: 1 }]
+
 
 describe('# Admin::Member request', () => {
 
@@ -49,10 +54,7 @@ describe('# Admin::Member request', () => {
         this.getUser = sinon.stub(
           helper, 'getUser'
         ).returns({ id: 1, role: 'admin' })
-        await db.User.destroy({ where: {}, force: true, truncate: true })
-        await db.Profile.destroy({ where: {}, truncate: true })
-        await db.Tag.destroy({ where: {}, truncate: true })
-        await db.Order.destroy({ where: {}, force: true, truncate: true })
+
         await db.User.create(admin)
         await db.User.create(member1)
         await db.User.create(member2)
@@ -65,6 +67,12 @@ describe('# Admin::Member request', () => {
         await db.UserPreferred.create({ UserId: 1, TagId: 1 })
         await db.UserPreferred.create({ UserId: 1, TagId: 2 })
         await db.UserPreferred.create({ UserId: 3, TagId: 1 })
+        for (let i = 0; i < dishCombos.length; i++) {
+          await db.DishCombination.create(dishCombos[i])
+        }
+        for (let i = 0; i < dishes.length; i++) {
+          await db.Dish.create(dishes[i])
+        }
       })
 
       it('should get a specific user who is not admin', (done) => {
@@ -97,8 +105,10 @@ describe('# Admin::Member request', () => {
           .get('/api/admin/members/3/orders')
           .expect(200)
           .end((err, res) => {
-            //console.log(res.body)
+            // console.log(res.body.orders)
             expect(res.body.orders.length).to.be.equal(2)
+            expect(res.body.orders[0].sumOfDishes.length).to.be.equal(2)
+            expect(res.body.orders[1].sumOfDishes.length).to.be.equal(2)
             return done()
           })
       })
@@ -206,6 +216,8 @@ describe('# Admin::Member request', () => {
         await db.Tag.destroy({ where: {}, truncate: true })
         await db.Order.destroy({ where: {}, force: true, truncate: true })
         await db.UserPreferred.destroy({ where: {}, truncate: true })
+        await db.DishCombination.destroy({ where: {}, truncate: true })
+        await db.Dish.destroy({ where: {}, truncate: true })
       })
     })
 
