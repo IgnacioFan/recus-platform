@@ -23,8 +23,8 @@
 </template>
 
 <script>
-// import adminOrderAPI from "../../apis/admin/order";
-import io from "socket.io-client";
+import adminOrderAPI from "../../apis/admin/order";
+//import io from "socket.io-client";
 
 export default {
   props: {
@@ -43,8 +43,8 @@ export default {
       unpaidLoading: true,
       // socket setting
       isConnected: false,
-      connection: "no connection",
-      socket: io("http://localhost:3000")
+      connection: "no connection"
+      //socket: io("http://localhost:3000")
     };
   },
   created() {
@@ -54,78 +54,74 @@ export default {
   },
   mounted() {
     // socket
-    this.socket.on("status", data => {
-      //this.isConnected = true;
-      this.connection = data;
-    });
-
-    this.socket.on("order nums", data => {
-      this.pendingLength = data.pending;
-      this.unpaidLength = data.unpaid;
-
-      this.socket.disconnect();
-    });
+    // this.socket.on("status", data => {
+    //   //this.isConnected = true;
+    //   this.connection = data;
+    // });
+    // this.socket.on("order nums", data => {
+    //   this.pendingLength = data.pending;
+    //   this.unpaidLength = data.unpaid;
+    //   this.socket.disconnect();
+    // });
   },
   methods: {
     logout() {
       this.$store.commit("revokeAuthentication");
       this.$router.push("/admin/signin");
+    },
+    async fetchPendingNums() {
+      try {
+        const response = await adminOrderAPI.orders.pendingNums();
+        const { data, statusText } = response;
+        if (statusText !== "OK") {
+          throw new Error(statusText);
+        }
+        // if (state === "pending") {
+        //   this.pendingLength = data.orders.length;
+        // }
+        // if (state === "unpaid") {
+        //   this.unpaidLength = data.orders.length;
+        // }
+
+        this.pendingLength = data;
+        this.pendingLoading = false;
+      } catch (error) {
+        this.pendingLoading = false;
+        this.$swal({
+          type: "warning",
+          title: "無法取得資料，請稍後再試"
+        });
+        // eslint-disable-next-line
+        console.log("error", error);
+      }
+    },
+    async fetchUnpaidNums() {
+      try {
+        const response = await adminOrderAPI.orders.unpaidNums();
+
+        const { data, statusText } = response;
+        if (statusText !== "OK") {
+          throw new Error(statusText);
+        }
+        // if (state === "pending") {
+        //   this.pendingLength = data.orders.length;
+        // }
+        // if (state === "unpaid") {
+        //   this.unpaidLength = data.orders.length;
+        // }
+
+        this.unpaidLength = data;
+        this.unpaidLoading = false;
+      } catch (error) {
+        this.unpaidLoading = false;
+        this.$swal({
+          type: "warning",
+          title: "無法取得資料，請稍後再試"
+        });
+        // eslint-disable-next-line
+        console.log("error", error);
+      }
     }
-    // async fetchPendingNums() {
-    //   try {
-    //     // socket should restart the response
-    //     const response = await adminOrderAPI.orders.pendingNums();
-    //     const { data, statusText } = response;
-    //     if (statusText !== "OK") {
-    //       throw new Error(statusText);
-    //     }
-    //     // if (state === "pending") {
-    //     //   this.pendingLength = data.orders.length;
-    //     // }
-    //     // if (state === "unpaid") {
-    //     //   this.unpaidLength = data.orders.length;
-    //     // }
-
-    //     this.pendingLength = data;
-    //     this.pendingLoading = false;
-    //   } catch (error) {
-    //     this.pendingLoading = false;
-    //     this.$swal({
-    //       type: "warning",
-    //       title: "無法取得資料，請稍後再試"
-    //     });
-    //     // eslint-disable-next-line
-    //     console.log("error", error);
-    //   }
-    // },
-    // async fetchUnpaidNums() {
-    //   try {
-    //     // socket should restart the response
-    //     const response = await adminOrderAPI.orders.unpaidNums();
-
-    //     const { data, statusText } = response;
-    //     if (statusText !== "OK") {
-    //       throw new Error(statusText);
-    //     }
-    //     // if (state === "pending") {
-    //     //   this.pendingLength = data.orders.length;
-    //     // }
-    //     // if (state === "unpaid") {
-    //     //   this.unpaidLength = data.orders.length;
-    //     // }
-
-    //     this.unpaidLength = data;
-    //     this.unpaidLoading = false;
-    //   } catch (error) {
-    //     this.unpaidLoading = false;
-    //     this.$swal({
-    //       type: "warning",
-    //       title: "無法取得資料，請稍後再試"
-    //     });
-    //     // eslint-disable-next-line
-    //     console.log("error", error);
-    //   }
-    // }
   }
 };
 </script>

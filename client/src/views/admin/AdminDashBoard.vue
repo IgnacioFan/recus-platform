@@ -74,12 +74,12 @@ export default {
   created() {
     const { range = "weekly" } = this.$route.query;
     this.fetchDashboard({ range });
-    this.fetchss({ id: 1 });
+    //this.fetchss({ id: 1 });
   },
   beforeRouteUpdate(to, from, next) {
     const { range = "weekly" } = to.query;
     this.fetchDashboard({ range });
-    this.fetchss({ id: 1 });
+    //this.fetchss({ id: 1 });
     next();
   },
   methods: {

@@ -1,5 +1,4 @@
 import { apiHelper } from '../../utils/helpers'
-import store from '../../store'
 
 export default {
   signIn({ account, password }) {
@@ -14,6 +13,6 @@ export default {
     })
   },
   getCurrentUser() {
-    return apiHelper.get(`/${store.state.currentUser.role}/user`)
+    return apiHelper.get(`/user`)
   }
 }

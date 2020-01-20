@@ -19,7 +19,7 @@
 
       <div class="col-9" v-if="!this.initialCreateMember">
         <div class="row">
-          <div class="form-group col-6">
+          <div class="form-group col-4">
             <label for="name">稱呼</label>
             <div v-show="!this.initialEditUser">{{ user.Profile.name }}</div>
             <input
@@ -34,7 +34,7 @@
             />
           </div>
 
-          <div class="form-group col-6">
+          <div class="form-group col-4">
             <label for="phone">手機號碼</label>
             <div v-show="!this.initialEditUser">{{ user.phone }}</div>
             <input
@@ -49,22 +49,7 @@
             />
           </div>
 
-          <div class="form-group col-6" v-show="!this.initialCreateMember">
-            <label for="account">帳號</label>
-            <div v-show="!this.initialEditUser">{{ user.account }}</div>
-            <input
-              id="account"
-              v-model="user.account"
-              type="text"
-              class="form-control"
-              name="account"
-              placeholder="Enter account"
-              required
-              v-show="this.initialEditUser"
-            />
-          </div>
-
-          <div class="form-group col-6" v-show="!this.initialCreateMember">
+          <div class="form-group col-4">
             <label for="email">Email</label>
             <div v-show="!this.initialEditUser">{{ user.Profile.email }}</div>
             <input
@@ -79,32 +64,27 @@
             />
           </div>
 
-          <div class="form-group col-6" v-show="this.initialEditUser">
-            <label for="password">Password</label>
-            <input
-              id="password"
-              v-model="user.password"
-              name="password"
-              type="password"
-              class="form-control"
-              placeholder="Password"
-              required
-              autocomplete
-            />
-          </div>
-
-          <div class="form-group col-6" v-show="this.initialEditUser">
-            <label for="password-check">Password Check</label>
-            <input
-              id="password-check"
-              v-model="user.passwordCheck"
-              name="passwordCheck"
-              type="password"
-              class="form-control"
-              placeholder="password Check"
-              required
-              autocomplete
-            />
+          <div class="form-group col-12">
+            <table class="table table-striped m-0 table-bordered text-center">
+              <thead class="thead-dark">
+                <tr>
+                  <th width="40%" scope="col">餐點</th>
+                  <th width="15%" scope="col" class="text-center">數量</th>
+                  <th scope="col">日期</th>
+                </tr>
+              </thead>
+            </table>
+            <div class="table-data text-center">
+              <table class="table table-striped table-bordered">
+                <tbody>
+                  <tr v-for="order in this.initialOrders" :key="order.id">
+                    <td width="40%">{{ order.sumOfDishes[0].name }}</td>
+                    <td width="15%">{{ order.quantity }}</td>
+                    <td>{{ order.createdAt | timeFrom }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
 
           <div v-show="this.initialEditUser" class="form-group col-12 mt-3">
@@ -228,10 +208,10 @@
 
 <script>
 import adminAuthorizationAPI from "../../apis/admin/authorization";
-import { emptyImageFilter } from "../../utils/mixins";
+import { timeFromFilter, emptyImageFilter } from "../../utils/mixins";
 
 export default {
-  mixins: [emptyImageFilter],
+  mixins: [timeFromFilter, emptyImageFilter],
   name: "AdminMemberForm",
   props: {
     initialUser: {
@@ -243,9 +223,12 @@ export default {
           name: ""
         },
         account: "",
+        orders: [],
         phone: "",
         role: ""
       })
+    },
+    initialOrders: {
     },
     initialEditUser: {
       type: Boolean
@@ -264,6 +247,7 @@ export default {
         },
         account: "",
         phone: "",
+        orders: [],
         password: "",
         passwordCheck: "",
         role: ""
@@ -302,6 +286,7 @@ export default {
         phone: "",
         password: "",
         passwordCheck: "",
+        orders: [],
         role: ""
       };
       this.$emit("after-form-edit-cancel");
@@ -351,11 +336,13 @@ export default {
         });
 
         this.formEditCancel();
+        this.isProcessing = false;
       } catch (error) {
         this.$swal({
           type: "warning",
           title: "無法取得資料，請稍後再試"
         });
+        this.isProcessing = false;
         // eslint-disable-next-line
         console.log("error", error);
       }
@@ -369,5 +356,14 @@ export default {
   position: absolute;
   opacity: 0;
   cursor: pointer;
+}
+.table td,
+.table th {
+  padding: 0.4rem;
+  vertical-align: middle;
+}
+.table-data {
+  max-height: 160px;
+  overflow-y: auto;
 }
 </style>

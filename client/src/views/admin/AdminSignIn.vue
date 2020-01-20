@@ -1,7 +1,7 @@
 <template>
   <div class="box-center bg-image">
     <div class="overlay"></div>
-    <form class="p-5 border rounded" @submit.prevent.stop="handleSubmit" style="width: 25vw;">
+    <form class="p-5 border rounded" @submit.prevent.stop="handleSubmit" style="width: 360px;">
       <div class="mb-4 text-center">
         <h2 class="mb-5 font-weight-normal">歡迎來到濾客平台</h2>
       </div>

@@ -7,7 +7,7 @@
 
 <script>
 import NavbarTop from "../../components/navbar/NavbarTop";
-import roleMemberAPI from "../../apis/member/order";
+import adminMemberAPI from "../../apis/member/order";
 
 export default {
   name: "MemberMyOrders",
@@ -23,7 +23,7 @@ export default {
   methods: {
     async fetchCategories() {
       try {
-        const response = await roleMemberAPI.get();
+        const response = await adminMemberAPI.get();
         const { data, statusText } = response;
         if (statusText !== "OK") {
           throw new Error(statusText);

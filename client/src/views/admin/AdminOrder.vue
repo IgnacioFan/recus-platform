@@ -69,6 +69,7 @@
           <div class="modal-body">
             <AdminMemberForm
               :initial-user="user"
+              :initial-orders="orders"
               :initial-edit-user="editUser"
               :initial-create-member="createMember"
               @after-form-edit-cancel="afterFormEditCancel"
@@ -95,7 +96,7 @@ import AdminMemberForm from "../../components/form/AdminMemberForm";
 import Spinner from "../../components/spinner/Spinner";
 import adminDishAPI from "../../apis/admin/dish";
 import adminCategoryAPI from "../../apis/admin/category";
-import roleMemberAPI from "../../apis/admin/member";
+import adminMemberAPI from "../../apis/admin/member";
 
 export default {
   name: "AdminOrder",
@@ -122,6 +123,7 @@ export default {
       userPhone: "",
       createMember: false,
       user: {},
+      orders: {},
       dishPK: 0,
       searchResultShow: false,
       editUser: false,
@@ -173,14 +175,14 @@ export default {
     },
     async searchUser() {
       try {
-        const response = await roleMemberAPI.searchMember({
+        const response = await adminMemberAPI.searchMember({
           phone: this.userPhone
         });
         const { data, statusText } = response;
         if (statusText !== "OK") {
           throw new Error(statusText);
         }
-
+        
         if (data.status === "error") {
           this.$swal({
             toast: true,
@@ -192,6 +194,7 @@ export default {
             text: ""
           });
         } else {
+          this.getMemberOrders(data.user.id)
           this.user = data.user;
           this.searchResultShow = true;
         }
@@ -237,7 +240,17 @@ export default {
     },
     closeResult() {
       this.searchResultShow = false;
-      this.user = {};
+      this.user = {
+        Profile: {
+          avatar: "",
+          email: "",
+          name: ""
+        },
+        account: "",
+        password: "",
+        phone: "",
+        role: ""
+      };
       this.editUser = false;
     },
     afterFormEditCancel() {
@@ -258,12 +271,38 @@ export default {
           name: ""
         },
         account: "",
+        password: "",
         phone: "",
         role: ""
       };
       this.createMember = true;
       this.searchResultShow = true;
       this.editUser = true;
+    },
+    async getMemberOrders(userId) {
+      try {
+        const response = await adminMemberAPI.getMemberOrders(userId);
+        const { data, statusText } = response;
+        if (statusText !== "OK") {
+          throw new Error(statusText);
+        }
+        
+        if (data.status === "error") {
+          this.$swal({
+            toast: true,
+            position: "top",
+            showConfirmButton: false,
+            timer: 3000,
+            type: "warning",
+            title: data.msg
+          });
+        } else {
+          this.orders = data.orders
+        }
+      } catch (error) {
+        // eslint-disable-next-line
+        console.log("error", error);
+      }
     }
   }
 };
