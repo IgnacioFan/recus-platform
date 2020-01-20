@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs')
 const db = require('../../models')
-const { User, Profile, Order, MemberOrder, Tag, UserPreferred } = db
+const { User, Profile, Order, MemberOrder, Tag, UserPreferred, Dish } = db
 const Op = require('sequelize').Op
 const moment = require('moment')
 
@@ -79,7 +79,10 @@ const memberController = {
       // 取出單一會員
       User.scope('getMemberData').findByPk(req.params.id,
         {
-          include: [{ model: Tag, as: 'preferredTags' }]
+          include: [{
+            model: Tag, as: 'preferredTags', attributes: ['name'],
+            through: { attributes: [] }
+          }]
         }).then(user => {
           if (!user) return res.json({ status: 'error', msg: 'no such user!' })
           return res.json({ user: user })
@@ -115,16 +118,20 @@ const memberController = {
       // 取出單一會員
       Order.findAll(
         {
-          attributes: ['amount', 'quantity', 'createdAt'],
+          attributes: ['id', 'amount', 'quantity', 'createdAt'],
+          include: [{
+            model: Dish, as: 'sumOfDishes', attributes: ['name']
+            , through: { attributes: [] }
+          }],
           where: { UserId: req.params.id },
           order: [['createdAt', 'DESC']]
         }).then(orders => {
           if (!orders) return res.json({ status: 'error', msg: 'no such user!' })
           // 訂單資料整理
-          orders = orders.map(order => ({
-            ...order.dataValues,
-            createdAt: moment(order.createdAt).format('YYYY-MM-DD HH:mm')
-          }))
+          // orders = orders.map(order => ({
+          //   ...order.dataValues,
+          //   createdAt: moment(order.createdAt).format('YYYY-MM-DD HH:mm')
+          // }))
           return res.json({ orders: orders })
         })
     } catch (error) {
