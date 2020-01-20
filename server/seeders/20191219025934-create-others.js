@@ -2,7 +2,7 @@
 const faker = require('faker')
 const moment = require('moment')
 const today = moment().toDate()
-const lastMonth = moment().subtract(1, 'months').toDate()
+const lastMonth = moment().subtract(1, 'months').startOf('months').toDate()
 
 const categorySeeder = ['New', '夏日氣泡世界', '冰低咖啡', '義式咖啡', '單品手沖', '茶飲']
 const menuSeeder = {
@@ -27,7 +27,7 @@ const menuSeeder = {
     { name: '荔枝烏龍', price: 150 }, { name: '草木紅葉', price: 150 }, { name: '有機薄荷', price: 150 }]
 }
 const tagSeeder = ["淺焙", "中焙", "深焙", "衣索比亞", "肯亞", "印尼", "微果酸", "果香味", "推荐", "新品"]
-const states = ['pending', 'making', 'unpaid', 'paid']
+
 
 
 
@@ -42,10 +42,11 @@ function createCategory(categories) {
 
 function createDish(categories, dishes) {
   let menu = []
+  let j = 1
   for (let i = 0; i < categories.length; i++) {
-    //if (categories[i] in dishes) {
     dishes[categories[i].name].forEach(dish => {
       let obj = {
+        id: j,
         name: dish.name,
         price: dish.price,
         image: faker.image.imageUrl(),
@@ -53,20 +54,24 @@ function createDish(categories, dishes) {
         CategoryId: i + 1
       }
       menu.push(obj)
+      j++
     })
-    //}
   }
+
   return menu
 }
 
 function createDishCombo(menu) {
   let combo = []
-  for (let i = 0; i < menu.length; i++) {
+  for (let i = 0; i < 100; i++) {
+    let dish = menu[Math.floor(Math.random() * menu.length)]
     let obj = {
-      DishId: i + 1,
+      id: i + 1,
+      // DishId: i + 1,
+      DishId: dish.id,
       OrderId: i + 1,
       perQuantity: 1,
-      perAmount: menu[i].price,
+      perAmount: dish.price,
       createdAt: faker.date.between(lastMonth, today),
       updatedAt: new Date()
     }
@@ -75,16 +80,16 @@ function createDishCombo(menu) {
   return combo
 }
 
-function createOrder(combo, states) {
+function createOrder(combo) {
   let orders = []
-  for (let i = 0; i < combo.length; i++) {
+  for (let i = 0; i < 100; i++) {
     let obj = {
       id: i + 1,
       amount: combo[i].perAmount,
       quantity: combo[i].perQuantity,
       memo: faker.lorem.words(),
       isTakingAway: true,
-      state: states[Math.floor(Math.random() * 4)],
+      state: 'paid',
       UserId: Math.floor(Math.random() * 30) + 2,
       createdAt: combo[i].createdAt,
       updatedAt: new Date()
@@ -95,22 +100,10 @@ function createOrder(combo, states) {
   return orders
 }
 
-function createMemberOrder(orders) {
-  let memberOrders = []
-  for (let i = 0; i < orders.length; i++) {
-    let obj = {
-      OrderId: orders[i].id,
-      UserId: orders[i].UserId
-    }
-    memberOrders.push(obj)
-  }
-  return memberOrders
-}
-
 function createTag(arr) {
   let tags = []
   for (let i = 0; i < arr.length; i++) {
-    let obj = { name: arr[i] }
+    let obj = { id: i + 1, name: arr[i] }
     tags.push(obj)
   }
   return tags
@@ -118,10 +111,12 @@ function createTag(arr) {
 
 function createDishAttach(dishes) {
   let dishAttaches = []
+  let index = 1
   for (let i = 0; i < dishes.length; i++) {
     for (let j = 0; j < Math.floor(Math.random() * 3) + 1; j++) {
-      let obj = { DishId: i + 1, TagId: Math.floor(Math.random() * 10) + 1 }
+      let obj = { id: index, DishId: dishes[i].id, TagId: Math.floor(Math.random() * 10) + 1 }
       dishAttaches.push(obj)
+      index++
     }
   }
   //console.log(dishAttaches)
@@ -132,6 +127,7 @@ function createUserPreferred() {
   let userPreferred = []
   for (let i = 0; i < 32; i++) {
     let obj = {
+      id: i + 1,
       UserId: Math.floor(Math.random() * 30) + 2,
       TagId: Math.floor(Math.random() * 10) + 1,
       createdAt: faker.date.between(lastMonth, today),
@@ -148,8 +144,7 @@ module.exports = {
     const categories = createCategory(categorySeeder)
     const dishes = createDish(categories, menuSeeder)
     const combos = createDishCombo(dishes)
-    const orders = createOrder(combos, states)
-    const memberOrders = createMemberOrder(orders)
+    const orders = createOrder(combos)
     const tags = createTag(tagSeeder)
     const dishAttaches = createDishAttach(dishes)
     const userPreferreds = createUserPreferred()
@@ -158,7 +153,6 @@ module.exports = {
     await queryInterface.bulkInsert('Dishes', dishes, {})
     await queryInterface.bulkInsert('DishCombinations', combos, {})
     await queryInterface.bulkInsert('Orders', orders, {})
-    await queryInterface.bulkInsert('MemberOrders', memberOrders, {})
     await queryInterface.bulkInsert('Tags', tags, {})
     await queryInterface.bulkInsert('DishAttachments', dishAttaches, {})
     await queryInterface.bulkInsert('UserPreferreds', userPreferreds, {})
@@ -169,7 +163,6 @@ module.exports = {
     queryInterface.bulkDelete('Dishes', null, { truncate: true })
     queryInterface.bulkDelete('DishCombinations', null, { truncate: true })
     queryInterface.bulkDelete('Orders', null, { truncate: true })
-    queryInterface.bulkDelete('MemberOrders', null, { truncate: true })
     queryInterface.bulkDelete('Tags', null, { truncate: true })
     queryInterface.bulkDelete('DishAttachments', null, { truncate: true })
     return queryInterface.bulkDelete('UserPreferreds', null, { truncate: true })

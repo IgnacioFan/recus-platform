@@ -166,7 +166,7 @@ describe('# Admin::Dashboard Request', () => {
             // console.log(time1)
             // console.log(time2)
             // console.log(time3)
-            // console.log(res.body)
+            console.log(res.body)
             expect(res.body.hotProducts[0]).to.eql({ id: 1, name: '黑框美式', count: 4 })
             expect(res.body.hotProducts.length).to.be.equal(5)
             expect(res.body.hotMembers[0]).to.eql({ id: 2, name: 'nacho', count: 4 })
