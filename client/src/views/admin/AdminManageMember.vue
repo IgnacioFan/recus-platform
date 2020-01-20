@@ -92,7 +92,7 @@
               >刪除會員</button>
             </div>
             <div class="modal-body">
-              <AdminMemberForm :initial-user="profile" />
+              <AdminMemberForm :initial-user="profile" :initial-orders="orders"/>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-primary" @click.stop.prevent="closeProfile">關閉</button>
@@ -130,8 +130,8 @@ import NavbarBottm from "../../components/navbar/NavbarBottm";
 import MemberTable from "../../components/table/MemberTable";
 import AdminMemberForm from "../../components/form/AdminMemberForm";
 import Spinner from "../../components/spinner/Spinner";
-import roleMemberAPI from "../../apis/admin/member";
-import mainUserAPI from "../../apis/admin/user";
+import adminMemberAPI from "../../apis/admin/member";
+import adminUserAPI from "../../apis/admin/user";
 
 export default {
   name: "AdminManageMember",
@@ -147,6 +147,7 @@ export default {
       title: "會員管理",
       users: [],
       searchResult: [],
+      orders: [],
       userPhone: "",
       totalPage: 1,
       currPage: 1,
@@ -182,7 +183,7 @@ export default {
   methods: {
     async fetchProfiles(page) {
       try {
-        const { data, statusText } = await roleMemberAPI.getMembers(page);
+        const { data, statusText } = await adminMemberAPI.getMembers(page);
 
         if (statusText !== "OK") {
           throw new Error(statusText);
@@ -211,7 +212,7 @@ export default {
     },
     async deleteUser(userId) {
       try {
-        const { data, statusText } = await roleMemberAPI.deleteMember({
+        const { data, statusText } = await adminMemberAPI.deleteMember({
           userId
         });
 
@@ -242,7 +243,7 @@ export default {
     },
     async afterValidUser(userId) {
       try {
-        const { data, statusText } = await roleMemberAPI.validMember({
+        const { data, statusText } = await adminMemberAPI.validMember({
           userId
         });
 
@@ -281,7 +282,7 @@ export default {
     },
     async afterToggleIsAdmin(userId) {
       try {
-        const { data, statusText } = await roleMemberAPI.toggleAdmin({
+        const { data, statusText } = await adminMemberAPI.toggleAdmin({
           userId
         });
 
@@ -321,7 +322,7 @@ export default {
     },
     async searchUser() {
       try {
-        const response = await mainUserAPI.user.get({ phone: this.userPhone });
+        const response = await adminUserAPI.user.get({ phone: this.userPhone });
         const { data, statusText } = response;
         if (statusText !== "OK") {
           throw new Error(statusText);
@@ -347,13 +348,39 @@ export default {
         console.log("error", error);
       }
     },
+    async getMemberOrders(userId) {
+      try {
+        const response = await adminMemberAPI.getMemberOrders(userId);
+        const { data, statusText } = response;
+        if (statusText !== "OK") {
+          throw new Error(statusText);
+        }
+        
+        if (data.status === "error") {
+          this.$swal({
+            toast: true,
+            position: "top",
+            showConfirmButton: false,
+            timer: 3000,
+            type: "warning",
+            title: data.msg
+          });
+        } else {
+          this.orders = data.orders
+          this.showProfile = true;
+        }
+      } catch (error) {
+        // eslint-disable-next-line
+        console.log("error", error);
+      }
+    },
     closeResult() {
       this.searchResult = [];
       this.searchResultShow = false;
     },
     async afterShowProfile(userPhone) {
       try {
-        const response = await roleMemberAPI.searchMember({
+        const response = await adminMemberAPI.searchMember({
           phone: userPhone
         });
         const { data, statusText } = response;
@@ -373,7 +400,7 @@ export default {
           });
         } else {
           this.profile = data.user;
-          this.showProfile = true;
+          this.getMemberOrders(data.user.id)
         }
       } catch (error) {
         // eslint-disable-next-line
