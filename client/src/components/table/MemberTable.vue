@@ -13,7 +13,7 @@
       <tr v-for="user in users" :key="user.id">
         <th>
           <p
-            class="text-capitalize text-primary"
+            class="text-capitalize text-primary" style="cursor: pointer;"
             @click.stop.prevent="showProfile(user.phone)"
           >{{ user.Profile.name }}</p>
         </th>

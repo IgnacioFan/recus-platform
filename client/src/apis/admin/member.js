@@ -15,6 +15,9 @@ export default {
   validMember({ userId }) {
     return apiHelper.put(`/admin/members/${userId}/isvalid`)
   },
+  getMemberOrders(userId) {
+    return apiHelper.get(`/admin/members/${userId}/orders`)
+  },
   deleteMember({ userId }) {
     return apiHelper.delete(`/admin/members/${userId}`)
   }
