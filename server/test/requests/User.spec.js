@@ -131,7 +131,7 @@ describe('# Admin::User request', () => {
           })
       })
 
-      it('should get current user', (done) => {
+      xit('should get current user', (done) => {
         request(app)
           .get('/api/admin/user')
           .set('Authorization', `bearer ${testToken}`)

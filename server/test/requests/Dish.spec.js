@@ -37,12 +37,13 @@ describe('# Admin::Dish Request', () => {
       request(app)
         .get('/api/admin/dishes?categoryId=2')
         .set('Accept', 'application/json')
+        .expect(200)
         .end(function (err, res) {
           if (err) return done(err);
-          res.status.should.be.eql(200)
-          res.text.should.include('americana')
-          res.text.should.include('latei')
+          // res.text.should.include('americana')
+          // res.text.should.include('latei')
           expect(res.body).to.have.property('dishes')
+          expect(res.body.dishes.length).to.be.equal(2)
           return done();
         });
     })
@@ -54,8 +55,7 @@ describe('# Admin::Dish Request', () => {
           name: '紅茶',
           price: 40,
           CategoryId: 1,
-          tags: [{ id: 1 }, { id: 2 }],
-          //option: { sugar: ["no", "30%", "half", "70%", "full"] }
+          tags: [{ id: 1 }, { id: 2 }]
         })
         .expect(200)
         .end(async (err, res) => {
@@ -75,7 +75,7 @@ describe('# Admin::Dish Request', () => {
         .expect(200)
         .end(async (err, res) => {
           if (err) return done(err)
-          //console.log(res.body.dish.hasTags)
+          console.log(res.body.dish)
           expect(res.body.dish.name).to.be.equal('紅茶')
           expect(res.body.dish.price).to.be.equal(40)
           expect(res.body.dish.Category.name).to.be.equal('new')

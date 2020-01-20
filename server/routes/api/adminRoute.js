@@ -11,7 +11,7 @@ const { nameValidRules, dishValidRules, validate } = require('../../controllers/
 
 
 // 會員相關API
-router.get('/user', userController.getCurrentUser)
+// router.get('/user', userController.getCurrentUser)
 router.get('/members', memberController.getMemberPagination)
 router.get('/members/:id/orders', memberController.getMemberOrders)
 router.get('/members/:id/tags', memberController.getMemberTags)

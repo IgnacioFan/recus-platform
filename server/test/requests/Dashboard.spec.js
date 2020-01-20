@@ -68,9 +68,9 @@ const orders = [
   }
 
 ]
-const member1 = { account: 'user1', phone: '0901', password: '12345', role: 'admin' }
-const member2 = { account: 'user2', phone: '0902', password: '12345', role: 'member' }
-const member3 = { account: 'user3', phone: '0903', password: '12345', role: 'member' }
+const member1 = { id: 1, account: 'user1', phone: '0901', password: '12345', role: 'admin' }
+const member2 = { id: 2, account: 'user2', phone: '0902', password: '12345', role: 'member' }
+const member3 = { id: 3, account: 'user3', phone: '0903', password: '12345', role: 'member' }
 const profi1 = { name: 'nacho', email: 'nacho@example.com', UserId: 2 }
 const profi2 = { name: 'kirwen', email: 'kirwen@example.com', UserId: 3 }
 const userPreferred = [{ TagId: 1, UserId: 2 }, { TagId: 8, UserId: 3 }, { TagId: 3, UserId: 2 }
