@@ -1,6 +1,7 @@
 const db = require('../../models')
 const moment = require('moment')
 const { Order, DishCombination, Tag, Dish, User, Profile, UserPreferred } = db
+const sequelize = require('sequelize')
 
 // 使天數的組數一致
 function timeAxis(days, Chart) {
@@ -15,7 +16,6 @@ function timeAxis(days, Chart) {
   })
 }
 
-
 const dashboardController = {
 
   getBasicInfo: async (req, res) => {
@@ -23,6 +23,7 @@ const dashboardController = {
       totalMembers = await User.scope('excludedAdmin').count()
       todayOrders = await Order.scope('todayOrder').count()
       totalOrders = await Order.count()
+      // return res.json({ order: order, order1: order1 })
       return res.json({ totalMembers: totalMembers, todayOrders: todayOrders, totalOrders: totalOrders })
     } catch (error) {
       return res.status(500).json({ status: 'error', msg: error })
@@ -36,7 +37,7 @@ const dashboardController = {
       let hotTags = {}
       let hotProducts = {}
       let hotMembers = {}
-      //let hotCombo = {}
+
       dishes = await DishCombination.scope(req.query.range).findAll(
         {
           attributes: ['DishId', 'OrderId'], include: [{
@@ -114,48 +115,88 @@ const dashboardController = {
   getLineChart: async (req, res) => {
     try {
       let days = {} // 取得天數組
-      let pChart = {} // 取得產品成長的成長分析, p 是product的簡寫
-      let uChart = {} // 取得會員拜訪次數的成長分析, u 是user的簡寫
-      let tChart = {} // 取得標籤被會員加入的成長分析, t 是tag的簡寫
+      let pChart = {} // 取得dish的成長趨勢, p 是product的簡寫
+      let uChart = {} // 取得會員拜訪次數的成長趨勢, u 是user的簡寫
+      let tChart = {} // 取得標籤被會員加入的成長趨勢, t 是tag的簡寫
 
-      // 產品成長的成長分析
+      // 取出過去時間範圍內，dishCombo與相關欄位
       if (req.query.type === 'product') {
-        products = await DishCombination.scope(req.query.range).findAll(
-          {
-            where: { DishId: req.query.id },
-            attributes: ['DishId', 'OrderId', 'createdAt'],
-            include: [{
-              model: Dish, attributes: ['name'],
-              //include: [{ model: Tag, as: 'hasTags', attributes: ['id', 'name'] }]
-            }]
-          })
+        if (req.query.range === 'weekly') {
+          products = await DishCombination.scope(req.query.range).findAll(
+            {
+              where: { DishId: req.query.id },
+              attributes: [
+                'DishId', 'createdAt',
+                [sequelize.literal("(SELECT name FROM Dishes WHERE Dishes.id = DishCombination.DishId)"), 'name']
+              ]
+            })
+        }
+        if (req.query.range === 'monthly') {
+          products = await DishCombination.scope(req.query.range).findAll(
+            {
+              where: { DishId: req.query.id },
+              attributes: [
+                [sequelize.fn('YEARWEEK', sequelize.col('createdAt')), 'week'],
+                [sequelize.fn('COUNT', sequelize.col('DishId')), 'dishNum'],
+                [sequelize.literal("(SELECT name FROM Dishes WHERE Dishes.id = DishCombination.DishId)"), 'name']
+              ],
+              group: ['week', 'DishId'],
+            })
+        }
 
-        // 計算前七天內產品成長的折線圖
-        for (let product of products) {
-          let createdAt = moment(product.createdAt).format("MM-DD")
-          // 計算天數組
-          if (!days[createdAt]) days[createdAt] = 1
-          // 沒有產品的key
-          if (!pChart[product.Dish.name]) {
-            pChart[product.Dish.name] = {
-              [createdAt]: {
-                count: 1
+        // 計算前一週dish成長的折線圖
+        if (req.query.range === 'weekly') {
+          for (let product of products) {
+            let createdAt = moment(product.dataValues.createdAt).format("MM-DD")
+            // 計算天數組
+            if (!days[createdAt]) days[createdAt] = 1
+            // (初始化)沒有這個dish的key, create a new obj
+            if (!pChart[product.dataValues.name]) {
+              pChart[product.dataValues.name] = {
+                [createdAt]: {
+                  count: 1
+                }
               }
-            }
-          } else {
-            // 已有產品的key
-            if (!(createdAt in pChart[product.Dish.name])) {
-              pChart[product.Dish.name][createdAt] = {
-                count: 1
+            } else {
+              // 發現一個新dish的key, create a new obj
+              if (!(createdAt in pChart[product.dataValues.name])) {
+                pChart[product.dataValues.name][createdAt] = {
+                  count: 1
+                }
               }
-            }
-            else {
-              pChart[product.Dish.name][createdAt].count++
+              else { // 重複的key,增加原本的數量
+                pChart[product.dataValues.name][createdAt].count++
+              }
             }
           }
         }
 
-        // 使各產品之中天數的組數一致
+        // 計算前一個月dish成長的折線圖
+        if (req.query.range === 'monthly') {
+          for (let product of products) {
+            let week = moment(product.dataValues.week, "ggggww").endOf('week').format("YYYY-MM-DD")
+
+            // 計算週數組
+            if (!days[week]) days[week] = 1
+            // (初始化)沒有這個dish的key, create a new obj
+            if (!pChart[product.dataValues.name]) {
+              pChart[product.dataValues.name] = {
+                [week]: {
+                  count: product.dataValues.dishNum
+                }
+              }
+            } else {
+              // 發現一個新dish的key, create a new obj
+              if (!(week in pChart[product.dataValues.name])) {
+                pChart[product.dataValues.name][week] = {
+                  count: product.dataValues.dishNum
+                }
+              }
+            }
+          }
+        }
+
+        // 整理時間週，使每組的天數一致
         timeAxis(days, pChart)
 
         return res.json({ days: Object.keys(days), pChart: pChart, products: products })
@@ -163,37 +204,75 @@ const dashboardController = {
 
       // 會員拜訪次數的成長分析
       if (req.query.type === 'user') {
-        users = await Order.scope('orderWithMember', req.query.range).findAll(
-          {
-            where: { UserId: req.query.id },
-            attributes: ['UserId', 'createdAt'],
-            include: [{
-              model: User, attributes: ['id'], where: { role: 'member' },
-              include: [{ model: Profile, attributes: ['name'] }]
-            }]
-          })
+        if (req.query.range === 'weekly') {
+          users = await Order.scope('orderWithMember', req.query.range).findAll(
+            {
+              where: { UserId: req.query.id },
+              attributes: [
+                'UserId', 'createdAt',
+                [sequelize.literal("(SELECT name FROM Profiles WHERE Profiles.UserId = Order.UserId)"), 'name']
+              ]
+            })
+        }
+        if (req.query.range === 'monthly') {
+          users = await Order.scope(req.query.range).findAll(
+            {
+              where: { UserId: req.query.id },
+              attributes: [
+                [sequelize.fn('YEARWEEK', sequelize.col('createdAt')), 'week'],
+                [sequelize.fn('COUNT', sequelize.col('UserId')), 'userNum'],
+                [sequelize.literal("(SELECT name FROM Profiles WHERE Profiles.UserId = Order.UserId)"), 'name']
+              ],
+              group: ['week', 'UserId'],
+            })
+        }
 
         // 計算前七天內會員拜訪次數成長的折線圖
-        for (let user of users) {
-          let createdAt = moment(user.createdAt).format("MM-DD")
-          // 計算天數組
-          if (!days[createdAt]) days[createdAt] = 1
-          // 沒有會員的key
-          if (!uChart[user.User.Profile.name]) {
-            uChart[user.User.Profile.name] = {
-              [createdAt]: {
-                count: 1
+        if (req.query.range === 'weekly') {
+          for (let user of users) {
+            let createdAt = moment(user.dataValues.createdAt).format("MM-DD")
+            // 計算天數組
+            if (!days[createdAt]) days[createdAt] = 1
+            // 沒有會員的key
+            if (!uChart[user.dataValues.name]) {
+              uChart[user.dataValues.name] = {
+                [createdAt]: {
+                  count: 1
+                }
+              }
+            } else {
+              // 已有會員的key
+              if (!(createdAt in uChart[user.dataValues.name])) {
+                uChart[user.dataValues.name][createdAt] = {
+                  count: 1
+                }
+              }
+              else {
+                uChart[user.dataValues.name][createdAt].count++
               }
             }
-          } else {
-            // 已有會員的key
-            if (!(createdAt in uChart[user.User.Profile.name])) {
-              uChart[user.User.Profile.name][createdAt] = {
-                count: 1
+          }
+        }
+        if (req.query.range === 'monthly') {
+          for (let user of users) {
+            let week = moment(user.dataValues.week, "ggggww").endOf('week').format("YYYY-MM-DD")
+
+            // 計算週數組
+            if (!days[week]) days[week] = 1
+            // (初始化)沒有這個user的key, create a new obj
+            if (!uChart[user.dataValues.name]) {
+              uChart[user.dataValues.name] = {
+                [week]: {
+                  count: user.dataValues.userNum
+                }
               }
-            }
-            else {
-              uChart[user.User.Profile.name][createdAt].count++
+            } else {
+              // 發現一個新user的key, create a new obj
+              if (!(week in uChart[user.dataValues.name])) {
+                uChart[user.dataValues.name][week] = {
+                  count: user.dataValues.userNum
+                }
+              }
             }
           }
         }
@@ -204,95 +283,85 @@ const dashboardController = {
         return res.json({ days: Object.keys(days), uChart: uChart, users: users })
       }
 
+      // 被收藏標籤的成長分析
       if (req.query.type === 'tag') {
-        tags = await UserPreferred.scope(req.query.range).findAll(
-          {
-            where: { TagId: req.query.id },
-            attributes: ['createdAt'],
-            include: [{
-              model: Tag, attributes: ['name', 'id'],
-              //   include: [{ model: Profile, attributes: ['name'] }]
-            }]
-          })
+        if (req.query.range === 'weekly') {
+          tags = await UserPreferred.scope(req.query.range).findAll(
+            {
+              where: { TagId: req.query.id },
+              attributes: [
+                'createdAt',
+                [sequelize.literal("(SELECT name FROM Tags WHERE Tags.id = UserPreferred.TagId)"), 'name']
+              ]
+            })
+        }
+        if (req.query.range === 'monthly') {
+          tags = await UserPreferred.scope(req.query.range).findAll(
+            {
+              where: { TagId: req.query.id },
+              attributes: [
+                [sequelize.fn('YEARWEEK', sequelize.col('createdAt')), 'week'],
+                [sequelize.fn('COUNT', sequelize.col('TagId')), 'tagNum'],
+                [sequelize.literal("(SELECT name FROM Tags WHERE Tags.id = UserPreferred.TagId)"), 'name']
+              ],
+              group: ['week', 'TagId'],
+            })
+        }
 
         // 計算前七天內被收藏標籤成長的折線圖
-        for (let tag of tags) {
-          let createdAt = moment(tag.createdAt).format("MM-DD")
-          // 計算天數組
-          if (!days[createdAt]) days[createdAt] = 1
-          // 沒有標籤的key
-          if (!tChart[tag.Tag.name]) {
-            tChart[tag.Tag.name] = {
-              [createdAt]: {
-                count: 1
+        if (req.query.range === 'weekly') {
+          for (let tag of tags) {
+            let createdAt = moment(tag.dataValues.createdAt).format("MM-DD")
+            // 計算天數組
+            if (!days[createdAt]) days[createdAt] = 1
+            // 沒有標籤的key
+            if (!tChart[tag.dataValues.name]) {
+              tChart[tag.dataValues.name] = {
+                [createdAt]: {
+                  count: 1
+                }
               }
-            }
-          } else {
-            // 已有標籤的key
-            if (!(createdAt in tChart[tag.Tag.name])) {
-              tChart[tag.Tag.name][createdAt] = {
-                count: 1
+            } else {
+              // 已有標籤的key
+              if (!(createdAt in tChart[tag.dataValues.name])) {
+                tChart[tag.dataValues.name][createdAt] = {
+                  count: 1
+                }
               }
-            }
-            else {
-              tChart[tag.Tag.name][createdAt].count++
+              else {
+                tChart[tag.dataValues.name][createdAt].count++
+              }
             }
           }
         }
+        if (req.query.range === 'monthly') {
+          for (let tag of tags) {
+            let week = moment(tag.dataValues.week, "ggggww").endOf('week').format("YYYY-MM-DD")
 
+            // 計算週數組
+            if (!days[week]) days[week] = 1
+            // (初始化)沒有這個tag的key, create a new obj
+            if (!tChart[tag.dataValues.name]) {
+              tChart[tag.dataValues.name] = {
+                [week]: {
+                  count: tag.dataValues.tagNum
+                }
+              }
+            } else {
+              // 發現一個新tag的key, create a new obj
+              if (!(week in tChart[tag.dataValues.name])) {
+                tChart[tag.dataValues.name][week] = {
+                  count: tag.dataValues.tagNum
+                }
+              }
+            }
+          }
+        }
         // 使各標籤之天數的組數一致
         timeAxis(days, tChart)
 
         return res.json({ days: Object.keys(days), tChart: tChart, tags: tags })
       }
-      // if (req.query.range === 'monthly') {
-      //   products = await DishCombination.scope('monthly').findAll(
-      //     {
-      //       where: { DishId: req.query.id },
-      //       attributes: ['DishId', 'OrderId', 'createdAt'],
-      //       include: [{
-      //         model: Dish, attributes: ['name'],
-      //         //include: [{ model: Tag, as: 'hasTags', attributes: ['id', 'name'] }]
-      //       }]
-      //     })
-      // }
-
-      // 計算前七天內標籤成長的的折線圖
-      // for (let item of product.Dish.hasTags) {
-      //   if (!tChart[item.name]) {
-      //     tChart[item.name] = {
-      //       [createdAt]: {
-      //         //id: item.id,
-      //         //name: item.name,
-      //         count: 1
-      //       }
-      //     }
-      //   } else {
-      //     if (!(createdAt in tChart[item.name])) {
-      //       tChart[item.name][createdAt] = {
-      //         //id: item.id,
-      //         //name: item.name,
-      //         count: 1
-      //       }
-      //     } else {
-      //       tChart[item.name][createdAt].count++
-      //     }
-      //   }
-      // }
-
-
-      // 使各標籤之中天數的組數一致
-      // Object.values(tChart).forEach(tag => {
-      //   Object.keys(days).map(day => {
-      //     if (!(day in tag)) {
-      //       tag[day] = {
-      //         count: 0
-      //       }
-      //     }
-      //   })
-      // })
-
-
     } catch (error) {
       return res.status(500).json({ status: 'error', msg: 'not found!' })
     }
