@@ -2,7 +2,7 @@
   <nav class="text-right">
     <h1 class="d-inline float-left">{{this.initialTitle}}</h1>
 
-    <p class="d-inline-block text-capitalize mr-3">{{this.connection}}</p>
+    <!-- <p class="d-inline-block text-capitalize mr-3">{{this.connection}}</p> -->
     <p class="d-inline-block text-capitalize mr-3">Hi,{{user.name}}</p>
     <router-link :to="{name: 'admin-dash-board'}" class="mr-3">儀錶板</router-link>
     <router-link

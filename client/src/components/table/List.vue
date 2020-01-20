@@ -4,7 +4,7 @@
       <h5 class="col-auto mr-auto px-0">清單</h5>
       <h5 class="col-auto">總數：{{this.addDishes.quantity}}件</h5>
     </div>
-    <div class="border border-warning list">
+    <div class="border border-dark list">
       <div
         v-for="dish in this.addDishes.list"
         :key="dish.id"

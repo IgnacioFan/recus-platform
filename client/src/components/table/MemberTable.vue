@@ -12,12 +12,10 @@
     <tbody class="text-center">
       <tr v-for="user in users" :key="user.id">
         <th>
-          <router-link
-            class="text-capitalize"
-            v-if="user.Profile"
-            :to="{path:'/users', params:{id:user.id}}"
-          >{{ user.Profile.name }}</router-link>
-          <router-link v-else :to="{path:'/users', params:{id:user.id}}">{{ "User" }}</router-link>
+          <p
+            class="text-capitalize text-primary"
+            @click.stop.prevent="showProfile(user.phone)"
+          >{{ user.Profile.name }}</p>
         </th>
         <td height="50px">
           <div class="user-name">{{ user.phone }}</div>
@@ -65,6 +63,9 @@ export default {
     },
     toggleIsAdmin(userId) {
       this.$emit("after-toggle-is-admin", userId);
+    },
+    showProfile(userPhone) {
+      this.$emit("after-show-profile", userPhone);
     }
   },
   watch: {

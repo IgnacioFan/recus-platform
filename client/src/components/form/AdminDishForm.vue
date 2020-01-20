@@ -127,6 +127,7 @@ export default {
         tags: [],
         description: "",
         image: "",
+        addTags: [],
         removeTags: []
       },
       originTags: [],
@@ -187,7 +188,9 @@ export default {
           throw new Error(statusText);
         }
 
-        this.allTags = data.tags;
+        data.tags.map(tag => {
+          this.allTags.push({ id: tag.id, name: tag.name });
+        });
         this.loadedTags = true;
       } catch (error) {
         this.loadedTags = true;
@@ -205,8 +208,10 @@ export default {
         this.dish.name = data.dish.name;
         this.dish.CategoryId = data.dish.CategoryId;
         this.dish.price = data.dish.price;
-        this.dish.tags = data.dish.hasTags;
-        this.originTags = data.dish.hasTags;
+        data.dish.hasTags.map(tag => {
+          this.dish.tags.push({ id: tag.id, name: tag.name });
+          this.originTags.push({ id: tag.id, name: tag.name });
+        });
         this.dish.description = data.dish.description;
         this.dish.image = data.dish.image;
         this.loadedDish = true;
@@ -244,7 +249,11 @@ export default {
           });
         }
 
-        this.searchResult = data;
+        this.searchResult = [];
+
+        data.map(tag => {
+          this.searchResult.push({ id: tag.id, name: tag.name });
+        });
       } catch (error) {
         // eslint-disable-next-line
         console.log("error", error);
@@ -258,7 +267,15 @@ export default {
       this.dish.image = imageURL;
     },
     addTag(tag) {
-      this.dish.tags = [...new Set([tag, ...this.dish.tags])];
+      var result = this.dish.tags
+        .map(item => {
+          return item.name;
+        })
+        .indexOf(tag.name);
+
+      if (result === -1) {
+        this.dish.tags.unshift(tag);
+      }
     },
     removeTag(tag) {
       this.dish.tags = this.dish.tags.filter(e => e !== tag);
@@ -287,15 +304,13 @@ export default {
         });
         return;
       }
-
+      
       let filtration = this.originTags.filter(x => !this.dish.tags.includes(x));
 
-      let saveTags = this.originTags.filter(x => this.dish.tags.includes(x));
+      this.dish.removeTags = filtration;
 
-      this.dish.removeTags = filtration.map(e => e.id);
-
-      if (!this.dishTitle === "新增菜單") {
-        this.dish.tags = saveTags;
+      if (this.dishTitle !== "新增菜單") {
+        this.dish.addTags = this.dish.tags;
       }
       this.$emit("after-submit", this.dish);
     }

@@ -9,7 +9,7 @@
         >{{ category.name }}</router-link>
       </li>
     </ul>
-    <div class="border border-warning meal overflow-auto">
+    <div class="border border-dark meal overflow-auto">
       <h1 v-if="!dishes.length > 0" class="box-center">新增一些餐點吧!</h1>
       <div class="card-columns">
         <div
@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import mainUserAPI from "../../apis/main/user";
+import mainUserAPI from "../../apis/admin/user";
 
 export default {
   props: {

@@ -32,8 +32,6 @@
 </template>
 
 <script>
-//import roleMemberAPI from "../../apis/role/member";
-
 export default {
   props: {
     userName: {

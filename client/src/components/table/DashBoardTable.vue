@@ -58,4 +58,7 @@ export default {
   padding: 0.4rem;
   vertical-align: middle;
 }
+.table tr:hover td {
+  background-color: yellow;
+}
 </style>

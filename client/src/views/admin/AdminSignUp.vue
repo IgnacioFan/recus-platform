@@ -108,6 +108,7 @@ export default {
     return {
       account: "",
       name: "",
+      phone: "",
       email: "",
       password: "",
       passwordCheck: "",
@@ -115,48 +116,47 @@ export default {
     };
   },
   methods: {
-    handleSubmit() {
-      if (
-        !this.account || 
-        !this.password || 
-        !this.phone || 
-        !this.email
-        ) {
-        Toast.fire({
-          type: "warning",
-          title: "請填完所有必須資料"
-        });
-        return;
-      }
-
-      this.isProcessing = true;
-
-      adminAuthorizationAPI
-        .signUp({
+    async handleSubmit() {
+      try {
+        if (!this.account || !this.password || !this.phone || !this.email) {
+          Toast.fire({
+            type: "warning",
+            title: "請填完所有必須資料"
+          });
+          return;
+        }
+        this.isProcessing = true;
+        const response = await adminAuthorizationAPI.signUp({
           account: this.account,
           name: this.name,
           phone: this.phone,
           email: this.email,
           password: this.password,
           passwordCheck: this.passwordCheck
-        })
-        .then(response => {
-          // 取得 API 請求後的資料
-          const { data } = response;
-          console.log(data);
-          // 成功登入後轉址到登入
-          this.$router.push("admin-sign-in");
-        })
-        .catch(error => {
-          // 顯示錯誤提示
-          Toast.fire({
-            type: "warning",
-            title: "表單輸入有誤"
-          });
-          this.isProcessing = false;
-          console.log(error);
+        });
+        const { data, statusText } = response;
+        if (statusText !== "OK" || data.status !== "success") {
+          throw new Error(statusText);
+        }
+
+        this.$swal({
+          toast: true,
+          position: "top",
+          showConfirmButton: false,
+          timer: 3000,
+          type: "success",
+          title: data.msg
         });
 
+        this.$router.push("admin-sign-in");
+      } catch (error) {
+        this.$swal({
+          type: "warning",
+          title: "無法取得資料，請稍後再試"
+        });
+        // eslint-disable-next-line
+        console.log("error", error);
+      }
     }
   }
 };

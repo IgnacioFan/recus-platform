@@ -16,6 +16,6 @@ export default {
     return apiHelper.put(`/admin/members/${userId}/isvalid`)
   },
   deleteMember({ userId }) {
-    return apiHelper.delete(`/admin/members/${userId}99`)
+    return apiHelper.delete(`/admin/members/${userId}`)
   }
 }

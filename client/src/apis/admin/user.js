@@ -8,6 +8,6 @@ export default {
     },
     delete({ userId }) {
       return apiHelper.delete(`/admin/members/${userId}`)
-    },
+    }
   }
 }
