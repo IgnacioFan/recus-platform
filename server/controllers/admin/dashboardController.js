@@ -1,5 +1,6 @@
 const db = require('../../models')
 const moment = require('moment')
+// moment.locale('zh_tw')
 const { Order, DishCombination, Tag, Dish, User, Profile, UserPreferred } = db
 const sequelize = require('sequelize')
 
@@ -21,10 +22,19 @@ const dashboardController = {
   getBasicInfo: async (req, res) => {
     try {
       totalMembers = await User.scope('excludedAdmin').count()
-      todayOrders = await Order.scope('todayOrder').count()
-      totalOrders = await Order.count()
-      // return res.json({ order: order, order1: order1 })
-      return res.json({ totalMembers: totalMembers, todayOrders: todayOrders, totalOrders: totalOrders })
+      memWithTags = await UserPreferred.findAll({
+          attributes: ['UserId'],
+          group: ['UserId']
+        })
+      // todayOrders = await Order.scope('todayOrder').count({where: {state: 'paid'}})
+      // memWithOrder = await Order.scope('orderWithMember').count({where: {state: 'paid'}})
+      memWithoutOrder = await Order.scope('orderWithoutMember').count({where: {state: 'paid'}})
+      totalOrder = await Order.count()
+      // console.log(memberWithTags)
+      return res.json({
+        memWithTags: !memWithTags? 0: memWithTags.length, totalMembers: totalMembers, 
+        memWithoutOrder: memWithoutOrder, totalOrder: totalOrder
+      })
     } catch (error) {
       return res.status(500).json({ status: 'error', msg: error })
     }

@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
       defaultScope: {
-        //where: { 'isValid': true }
+        
       },
       scopes: {
         'excludedAdmin': {
@@ -32,7 +32,6 @@ module.exports = (sequelize, DataTypes) => {
           attributes: ['id', 'account', 'phone', 'role', 'isValid']
         }
       },
-      //deletedAt: 'destroyTime',
       timestamps: true,
       paranoid: true
     });

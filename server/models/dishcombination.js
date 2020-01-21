@@ -1,6 +1,7 @@
 'use strict';
 const Op = require('sequelize').Op
 const moment = require('moment')
+moment.locale('zh_tw')
 
 module.exports = (sequelize, DataTypes) => {
   const DishCombination = sequelize.define('DishCombination', {

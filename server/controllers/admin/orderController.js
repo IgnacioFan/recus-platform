@@ -157,6 +157,7 @@ const orderController = {
   getOrder: (req, res) => {
     try {
       Order.scope('todayOrder').findByPk(req.params.id, {
+        attributes: ['id','amount','quantity','memo','isTakingAway','tableNum','createdAt'],
         include: [{ model: db.Dish, attributes: ['name'], as: 'sumOfDishes', through: { attributes: ['perQuantity'] } }]
       }).then(order => {
         if (!order) return res.status(400).json({ status: 'error', msg: '查無資料!' })

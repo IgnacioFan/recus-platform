@@ -4,10 +4,15 @@ const Op = require('sequelize').Op
 module.exports = (sequelize, DataTypes) => {
   const Dish = sequelize.define('Dish', {
     name: DataTypes.STRING,
-    price: DataTypes.INTEGER,
-    //option: DataTypes.JSON,
+    price: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0
+    },
     image: DataTypes.STRING,
-    description: DataTypes.TEXT,
+    description: {
+      type: DataTypes.TEXT,
+      defaultValue: 'none'
+    },
     CategoryId: DataTypes.INTEGER
   }, {
       indexes: [

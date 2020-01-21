@@ -1,16 +1,29 @@
 'use strict';
 const Op = require('sequelize').Op
 const moment = require('moment')
+moment.locale('zh_tw')
 
 module.exports = (sequelize, DataTypes) => {
   const Order = sequelize.define('Order', {
-    state: DataTypes.STRING,
+    state: {
+      type: DataTypes.STRING,
+      defaultValue: 'pending'
+    },
     amount: DataTypes.INTEGER,
     quantity: DataTypes.INTEGER,
-    memo: DataTypes.STRING,
+    memo: {
+      type: DataTypes.STRING,
+      defaultValue: 'none'
+    },
     isTakingAway: DataTypes.BOOLEAN,
-    tableNum: DataTypes.INTEGER,
-    UserId: DataTypes.INTEGER
+    tableNum: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0
+    },
+    UserId: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0
+    }
   }, {
       defaultScope: {
         //where: { deleted_at: null }
@@ -20,6 +33,11 @@ module.exports = (sequelize, DataTypes) => {
         orderWithMember: {
           where: {
             UserId: { [Op.gt]: 0 }
+          }
+        },
+        orderWithoutMember: {
+          where: {
+            UserId: { [Op.eq]: 0 }
           }
         },
         todayOrder: {

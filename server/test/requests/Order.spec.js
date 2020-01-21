@@ -116,8 +116,6 @@ describe('# Admin::Order Request', () => {
           perQuantity: dishCombo2[i].quantity
         })
       }
-      //tk.travel(time)
-      //tk.freeze(time)
     })
 
     it('should get all orders today', (done) => {
@@ -136,30 +134,12 @@ describe('# Admin::Order Request', () => {
         })
     })
 
-
-    xit('should get no any order today', (done) => {
-      //time = new Date(1893448800000)
-
-      request(app)
-        .get('/api/admin/orders?state=pending')
-        .expect(200)
-        .end((err, res) => {
-          console.log(res.body.orders)
-          let date1 = new Date
-          let ms = Date.now()
-          console.log(date1, ms)
-          expect(res.body).to.have.property('orders')
-          expect(res.body.orders.length).to.be.equal(2)
-          return done()
-        })
-    })
-
     it('should get order 1', (done) => {
       request(app)
         .get('/api/admin/orders/1')
         .expect(200)
         .end((err, res) => {
-          //console.log(res.body.order)
+          // console.log(res.body.order)
           expect(res.body).to.have.property('order')
           expect(res.body.order.amount).to.be.equal(140)
           expect(res.body.order.sumOfDishes[0].DishCombination.perQuantity).to.be.equal(2)

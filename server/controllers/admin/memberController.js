@@ -9,7 +9,7 @@ const memberController = {
     try {
       const { page } = req.query
       let pageNum = (Number(page) < 1 || page === undefined) ? 1 : Number(page)
-      const pageLimit = 16
+      const pageLimit = 22
 
       User.scope('getMemberData').findAndCountAll(
         {

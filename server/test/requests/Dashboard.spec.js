@@ -10,7 +10,7 @@ var should = chai.should();
 var expect = chai.expect;
 const db = require('../../models')
 const moment = require('moment')
-moment.locale('zh_TW')
+moment.locale('zh_tw')
 var tk = require('timekeeper')
 const nowTime = new Date()
 
@@ -35,7 +35,7 @@ const menu = [
 ]
 const orders = [
   {
-    quantity: 3, amount: 240, memo: 'this is second order', isTakingAway: true, UserId: 1,
+    quantity: 3, amount: 240, memo: 'this is second order', isTakingAway: true, UserId: 0,
     dishes: [{ id: 1, quantity: 1, price: 60 }, { id: 2, quantity: 1, price: 80 }, { id: 4, quantity: 1, price: 100 }]
   },
   {
@@ -43,11 +43,11 @@ const orders = [
     dishes: [{ id: 7, quantity: 2, price: 100 }, { id: 7, quantity: 1, price: 100 }]
   },
   {
-    quantity: 3, amount: 300, memo: 'this is third order', isTakingAway: true, UserId: 1,
+    quantity: 3, amount: 300, memo: 'this is third order', isTakingAway: true, UserId: 0,
     dishes: [{ id: 6, quantity: 2, price: 100 }, { id: 8, quantity: 1, price: 100 }]
   },
   {
-    quantity: 3, amount: 220, memo: 'this is fourth order', isTakingAway: true, UserId: 1,
+    quantity: 3, amount: 220, memo: 'this is fourth order', isTakingAway: true, UserId: 0,
     dishes: [{ id: 1, quantity: 2, price: 60 }, { id: 5, quantity: 1, price: 100 }]
   },
   {
@@ -101,7 +101,7 @@ describe('# Admin::Dashboard Request', () => {
           curretnTime = time3
         }
         await db.Order.create({
-          quantity: orders[i].quantity, amount: orders[i].amount, createdAt: curretnTime,
+          quantity: orders[i].quantity, amount: orders[i].amount, createdAt: curretnTime, state: 'paid',
           memo: orders[i].memo, isTakingAway: orders[i].isTakingAway, UserId: orders[i].UserId
         })
         for (let j = 0; j < orders[i].dishes.length; j++) {
@@ -135,20 +135,20 @@ describe('# Admin::Dashboard Request', () => {
       await db.Profile.create(profi2)
     })
 
-    xcontext('get basic info report', () => {
+    context('get basic info report', () => {
       it("current member numbers/ today's order numbers/ current order numbers", (done) => {
         request(app)
           .get('/api/admin/dashboard')
           .expect(200)
           .end((err, res) => {
             if (err) return done(err)
-            console.log(res.body)
-            // expect(res.body.hotProducts[0]).to.eql({ id: 1, name: '黑框美式', count: 4 })
-            // expect(res.body.hotProducts.length).to.be.equal(5)
-            // expect(res.body.hotMembers[0]).to.eql({ id: 2, name: 'nacho', count: 4 })
-            // expect(res.body.hotMembers.length).to.be.equal(2)
-            // expect(res.body.hotTags[0]).to.eql({ id: 9, name: '手沖', count: 10 })
-            // expect(res.body.hotTags.length).to.be.equal(5)
+            // console.log(res.body)
+            // 分析有收藏標籤的會員
+            expect(res.body.memWithTags).to.be.equal(2)
+            expect(res.body.totalMembers).to.be.equal(2)
+            // 分析有會員與無會員訂單的比例
+            expect(res.body.memWithoutOrder).to.be.equal(3)
+            expect(res.body.totalOrder).to.be.equal(8)
             return done()
           })
       })
@@ -166,7 +166,7 @@ describe('# Admin::Dashboard Request', () => {
             // console.log(time1)
             // console.log(time2)
             // console.log(time3)
-            console.log(res.body)
+            // console.log(res.body)
             expect(res.body.hotProducts[0]).to.eql({ id: 1, name: '黑框美式', count: 4 })
             expect(res.body.hotProducts.length).to.be.equal(5)
             expect(res.body.hotMembers[0]).to.eql({ id: 2, name: 'nacho', count: 4 })
@@ -341,8 +341,8 @@ describe('# Admin::Dashboard Request', () => {
             // console.log(res.body)
             // console.log(res.body.uChart)
             // console.log(res.body.users)
-            expect(res.body.days.length).to.be.equal(3)
-            expect(Object.keys(res.body.uChart)).to.eql(['null', 'nacho'])
+            expect(res.body.days.length).to.be.equal(2)
+            expect(Object.keys(res.body.uChart)).to.eql(['nacho'])
             return done()
           })
       })
