@@ -23,16 +23,16 @@ const dashboardController = {
     try {
       totalMembers = await User.scope('excludedAdmin').count()
       memWithTags = await UserPreferred.findAll({
-          attributes: ['UserId'],
-          group: ['UserId']
-        })
+        attributes: ['UserId'],
+        group: ['UserId']
+      })
       // todayOrders = await Order.scope('todayOrder').count({where: {state: 'paid'}})
       // memWithOrder = await Order.scope('orderWithMember').count({where: {state: 'paid'}})
-      memWithoutOrder = await Order.scope('orderWithoutMember').count({where: {state: 'paid'}})
+      memWithoutOrder = await Order.scope('orderWithoutMember').count({ where: { state: 'paid' } })
       totalOrder = await Order.count()
       // console.log(memberWithTags)
       return res.json({
-        memWithTags: !memWithTags? 0: memWithTags.length, totalMembers: totalMembers, 
+        memWithTags: !memWithTags ? 0 : memWithTags.length, totalMembers: totalMembers,
         memWithoutOrder: memWithoutOrder, totalOrder: totalOrder
       })
     } catch (error) {
@@ -109,13 +109,23 @@ const dashboardController = {
       }
 
       // 篩選與排序前五名的熱門商品
-      hotProducts = Object.values(hotProducts).sort((a, b) => (b.count - a.count)).slice(0, 5)
+      Products = Object.values(hotProducts).sort((a, b) => (b.count - a.count))
+      hotProducts = Products.slice(0, 5)
+      otherProducts = Products.length > 5 ? Products.length - 5 : 0
       // 篩選與排序前五名的熱門標籤
-      hotTags = Object.values(hotTags).sort((a, b) => (b.count - a.count)).slice(0, 5)
+      Tags = Object.values(hotTags).sort((a, b) => (b.count - a.count))
+      hotTags = Tags.slice(0, 5)
+      otherTags = Tags.length > 5 ? Tags.length - 5 : 0
       // 篩選與排序購買數前五名的會員
-      hotMembers = Object.values(hotMembers).sort((a, b) => (b.count - a.count)).slice(0, 5)
+      Members = Object.values(hotMembers).sort((a, b) => (b.count - a.count))
+      hotMembers = Members.slice(0, 5)
+      otherMembers = Members.length > 5 ? Members.length - 5 : 0
 
-      return res.json({ hotProducts: hotProducts, hotTags: hotTags, hotMembers: hotMembers, data1: users, data2: dishes })
+      return res.json({
+        hotProducts: hotProducts, otherProducts: otherProducts, products: Products.length,
+        hotTags: hotTags, otherTags: otherTags, tags: Tags.length,
+        hotMembers: hotMembers, otherMembers: otherMembers, members: Members.length
+      })
 
     } catch (error) {
       return res.status(500).json({ status: 'error', msg: error })

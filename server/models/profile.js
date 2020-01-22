@@ -3,7 +3,7 @@ module.exports = (sequelize, DataTypes) => {
   const Profile = sequelize.define('Profile', {
     name: {
       type: DataTypes.STRING,
-      defaultValue: 'none'
+      allowNull: false
     },
     email: DataTypes.STRING,
     avatar: DataTypes.STRING,
