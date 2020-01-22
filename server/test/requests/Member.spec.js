@@ -154,7 +154,7 @@ describe('# Admin::Member request', () => {
           .send(newMember)
           .expect(200)
           .end((err, res) => {
-            //console.log(res.body)
+            // console.log(res.body)
             expect(res.body.msg).to.be.include('註冊成功！')
             expect(res.body.user.account).to.be.include('user3')
             return done()
