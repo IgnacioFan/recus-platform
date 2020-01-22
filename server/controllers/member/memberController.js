@@ -26,7 +26,7 @@ const memberController = {
       let { account, phone, name, email, avatar } = req.body
 
       user = await User.findByPk(req.user.id, {
-        attributes: ['id', 'account', 'phone'],
+        attributes: ['id', 'account', 'phone', 'password'],
         include: [Profile]
       })
 

@@ -34,7 +34,7 @@ const signupValidationRules = () => {
 
 const signinValidRules = () => {
   return [
-    body('account')
+    body('username')
       .not().isEmpty(),
 
     body('password')
