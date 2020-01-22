@@ -13,13 +13,13 @@ const passportJWT = require('passport-jwt')
 const userController = {
   signIn: (req, res) => {
     try {
-      let { username, password } = req.body
+      let { account, password } = req.body
 
       User.findOne({
         where: {
           [Op.or]: [
-            { account: username },
-            { phone: username }
+            { account: account },
+            { phone: account }
           ]
         }
       }).then(user => {

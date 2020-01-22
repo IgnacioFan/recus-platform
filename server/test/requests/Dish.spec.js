@@ -111,7 +111,7 @@ describe('# Admin::Dish Request', () => {
         })
     })
 
-    xit('should delete Dish 4', (done) => {
+    it('should delete Dish 4', (done) => {
       request(app)
         .delete('/api/admin/dishes/4')
         .expect(200)

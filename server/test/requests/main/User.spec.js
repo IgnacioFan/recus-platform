@@ -46,7 +46,7 @@ describe('# Admin::User request', () => {
         request(app)
           .post('/api/signin')
           .send({
-            username: 'root', password: '123456'
+            account: 'root', password: '123456'
           })
           .expect(200)
           .end((err, res) => {
@@ -121,7 +121,7 @@ describe('# Admin::User request', () => {
         request(app)
           .post('/api/signin')
           .send({
-            username: '0900', password: '12345'
+            account: '0900', password: '12345'
           })
           .expect(200)
           .end((err, res) => {
