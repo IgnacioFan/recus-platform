@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs')
 const db = require('../../models')
-const { User, Profile, Order } = db
+const { User, Profile } = db
 const Op = require('sequelize').Op
 
 // Json Web Token
@@ -52,8 +52,7 @@ const userController = {
       let { account, phone, password, passwordCheck, name, email, avatar } = req.body
 
       if (passwordCheck !== password) {
-        //console.log('輸入兩組不同密碼')
-        return res.status(401).json({ status: 'error', msg: '輸入兩組不同密碼!' })
+        return res.status(401).json({ status: 'error', msg: '密碼不一致!' })
       }
       else {
         user = await User.create({
@@ -101,6 +100,36 @@ const userController = {
             name: user.dataValues.name,
             avatar: user.dataValues.avatar
           })
+        })
+      })
+    } catch (error) {
+      return res.status(500).json({ status: 'error', msg: error })
+    }
+  },
+
+  changePassword: (req, res) => {
+    try {
+      let { passwordOld, passwordNew, passwordCheck } = req.body
+      if (passwordCheck !== passwordNew)
+        return res.status(401).json({ status: 'error', msg: '密碼不一致!' })
+
+      if (!req.headers.authorization)
+        return res.status(401).json({ status: 'error', msg: '未得授權!' })
+
+      let TokenArray = req.headers.authorization.split(" ");
+      let authorization = TokenArray[1]
+
+      jwt.verify(authorization, process.env.JWT_SECRET, (err, authorizedData) => {
+        User.findByPk(authorizedData.id, {
+          attributes: ['id', 'password']
+        }).then(user => {
+          if (!bcrypt.compareSync(passwordOld, user.password))
+            return res.status(401).json({ status: 'error', msg: '密碼輸入錯誤!' })
+
+          user.update({
+            password: bcrypt.hashSync(passwordNew, bcrypt.genSaltSync(10), null)
+          })
+          return res.json({ status: 'success', msg: '密碼成功更新!' })
         })
       })
     } catch (error) {

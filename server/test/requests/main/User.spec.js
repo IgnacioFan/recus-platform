@@ -153,19 +153,16 @@ describe('# Admin::User request', () => {
           })
       })
 
-      xit('should change password', (done) => {
+      it('should change password', (done) => {
         request(app)
           .post('/api/password/change')
           .set('Authorization', `bearer ${testToken}`)
+          .send({ passwordOld: '12345', passwordNew: '123456', passwordCheck: '123456' })
           .expect(200)
           .end((err, res) => {
             if (err) return done(err)
             // console.log(res.body)
-            // expect(res.body.id).to.be.equal(1)
-            expect(res.body.phone).to.be.equal('0900')
-            expect(res.body.role).to.be.equal('admin')
-            expect(res.body.name).to.be.equal('nacho')
-            expect(res.body.avatar).to.be.null
+            expect(res.body.msg).to.be.equal('密碼成功更新!')
             return done()
           })
       })
