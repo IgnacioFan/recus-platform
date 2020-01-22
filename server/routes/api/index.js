@@ -6,6 +6,7 @@ const main = require('./mainRoute')
 const passport = require('../../config/passport')
 const helper = require('../../_helpers')
 
+
 const authenticated = (req, res, next) => {
   if (helper.ensureAuthenticated()) {
     return next()

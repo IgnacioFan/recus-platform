@@ -1,26 +1,35 @@
 const db = require('../models')
 const Order = db.Order
 
-module.exports = (io) => {
-  io.on('connection', async (socket) => {
-    try {
-      console.log('a user is connected', socket.id)
 
-      pending = await Order.scope('todayOrder').count({ where: { state: 'pending' } })
-      unpaid = await Order.scope('todayOrder').count({ where: { state: 'unpaid' } })
-      //console.log({ pending: pending, unpaid: unpaid })
-      if (pending || unpaid) {
-        socket.emit('status', 'hello socket!')
-        socket.emit('order nums', { pending: pending, unpaid: unpaid })
-      } else {
-        socket.disconnect()
-      }
-      // socket.on('disconnect', () => {
-      //   console.log('a user disconnected')
-      // })
-    } catch (err) {
-      done(err, false)
-    }
-  })
+const realtime = async (req, res, next) => {
+  try {
+    let socket = req.app.get('socket')
+    // console.log('you do emmit socket!!!')
+    // console.log('fuck a user is connected', socket.id)
+    socket.emit('status', 'global')
+    pending = await Order.scope('todayOrder').count({ where: { state: 'pending' } })
+    unpaid = await Order.scope('todayOrder').count({ where: { state: 'unpaid' } })
+    socket.emit('realtime', { pending: pending, unpaid: unpaid })
+    // socket.disconnect()
+    return next()
+  } catch (error) {
+    console.log('error', error)
+    return next()
+  }
+}
 
+// const validate = (req, res, next) => {
+
+//   const errors = validationResult(req)
+//   if (errors.isEmpty()) return next()
+
+//   const extractedErrors = []
+//   errors.array().map(err => extractedErrors.push({ [err.param]: err.msg }))
+
+//   return res.status(422).json({ errors: extractedErrors })
+// }
+
+module.exports = {
+  realtime
 }
