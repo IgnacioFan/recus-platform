@@ -99,8 +99,8 @@ const orderController = {
         })
       }
 
-      let socket = req.app.get('socket')
-      socketMachine.emit('connect', socket, res)
+      // let socket = req.app.get('socket')
+      // socketMachine.emit('connect', socket, res)
 
       return res.json({ status: 'success', msg: '訂單新增成功!', order: order })
 
