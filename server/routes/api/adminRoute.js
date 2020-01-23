@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const userController = require('../../controllers/main/userController')
+const profileController = require('../../controllers/admin/profileController')
 const memberController = require('../../controllers/admin/memberController')
 const dishController = require('../../controllers/admin/dishController')
 const orderController = require('../../controllers/admin/orderController')
@@ -11,8 +11,11 @@ const { nameValidRules, dishValidRules, validate } = require('../../controllers/
 
 const { realtime } = require('../../config/socket')
 
+// 個人頁面相關API
+router.get('/profile', profileController.getProfile)
+router.put('/profile', profileController.updateProfile)
+
 // 會員相關API
-// router.get('/user', userController.getCurrentUser)
 router.get('/members', realtime, memberController.getMemberPagination)
 router.get('/members/:id/orders', realtime, memberController.getMemberOrders)
 router.get('/members/:id/tags', realtime, memberController.getMemberTags)

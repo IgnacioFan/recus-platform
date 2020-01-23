@@ -16,7 +16,8 @@ stateMachine.on('prev', (order) => {
   if (order.state === 'making') prevState = 'pending'
   if (order.state === 'unpaid') prevState = 'making'
   if (order.state === 'paid') prevState = 'unpaid'
-  return order.update({ state: prevState })
+  order.update({ state: prevState })
+  // return prevState
 })
 
 stateMachine.on('next', (order) => {
@@ -25,7 +26,8 @@ stateMachine.on('next', (order) => {
   if (order.state === 'making') nextState = 'unpaid'
   if (order.state === 'unpaid') nextState = 'paid'
   if (order.state === 'paid') return
-  return order.update({ state: nextState })
+  order.update({ state: nextState })
+  // return nextState
 })
 
 socketMachine.on('connect', async (socket, res) => {
@@ -33,10 +35,10 @@ socketMachine.on('connect', async (socket, res) => {
     // console.log('you do emmit socket!!!')
     // console.log('fuck a user is connected', socket.id)
     socket.emit('status', 'local')
-    
+
     pending = await Order.scope('todayOrder').count({ where: { state: 'pending' } })
     unpaid = await Order.scope('todayOrder').count({ where: { state: 'unpaid' } })
-    socket.emit('realtime', { pending: pending, unpaid: unpaid })
+    return socket.emit('realtime', { pending: pending, unpaid: unpaid })
     // socket.disconnect()
   } catch (error) {
     return res.status(500).json({ status: 'error', msg: error })
@@ -97,8 +99,8 @@ const orderController = {
         })
       }
 
-      let socket = req.app.get('socket')
-      socketMachine.emit('connect', socket, res)
+      // let socket = req.app.get('socket')
+      // socketMachine.emit('connect', socket, res)
 
       return res.json({ status: 'success', msg: '訂單新增成功!', order: order })
 
@@ -166,14 +168,15 @@ const orderController = {
   // 訂單狀態往後
   prevStateOrder: (req, res) => {
     try {
-      Order.findByPk(req.params.id).then(order => {
-        stateMachine.emit('prev', order)
+      Order.findByPk(req.params.id)
+        .then(order => {
+          stateMachine.emit('prev', order)
+        }).then(order => {
+          let socket = req.app.get('socket')
+          socketMachine.emit('connect', socket, res)
+          return res.json(order)
+        })
 
-        let socket = req.app.get('socket')
-        socketMachine.emit('connect', socket, res)
-
-        return res.json(order)
-      })
     } catch (error) {
       return res.status(500).json({ status: 'error', msg: error })
     }
@@ -182,14 +185,14 @@ const orderController = {
   // 訂單狀態往前
   nextStateOrder: (req, res) => {
     try {
-      Order.findByPk(req.params.id).then(order => {
-        stateMachine.emit('next', order)
-
-        let socket = req.app.get('socket')
-        socketMachine.emit('connect', socket, res)
-
-        return res.json(order)
-      })
+      Order.findByPk(req.params.id)
+        .then(order => {
+          stateMachine.emit('next', order)
+        }).then(order => {
+          let socket = req.app.get('socket')
+          socketMachine.emit('connect', socket, res)
+          return res.json(order)
+        })
     } catch (error) {
       return res.status(500).json({ status: 'error', msg: error })
     }
