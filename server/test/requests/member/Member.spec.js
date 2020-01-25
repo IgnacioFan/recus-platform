@@ -98,7 +98,7 @@ describe('# Member::Member Request', () => {
 
       request(app)
         .post('/api/member/mypreferred')
-        .send({ addTags: [{ id: 5 }, { id: 6 }] })
+        .send({ tags: [{ id: 5 }, { id: 6 }] })
         .expect(200)
         .end((err, res) => {
           if (err) return done(err)

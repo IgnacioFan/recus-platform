@@ -49,8 +49,7 @@ const memberController = {
 
   addMyPreferred: async (req, res) => {
     try {
-      let tags = req.body.addTags
-      //console.log(req.body.addTags)
+      let tags = req.body.tags
       if (!tags) return res.json({ status: 'error', msg: '請加入標籤!' })
       for (let tag of tags) {
         await UserPreferred.create({ TagId: tag.id, UserId: req.user.id })
