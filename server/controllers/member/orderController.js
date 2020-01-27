@@ -79,16 +79,34 @@ const orderController = {
   // 取得某分類的所有品項
   getDishesAndCategories: async (req, res) => {
     try {
-      if (Number(req.query.categoryId) < 1) {
-        return res.json({ status: 'error', msg: 'undefined category id' })
-      }
-      categories = await Category.findAll()
+      menu = {}
+
+      categories = await Category.findAll({ attributes: ['id', 'name'] })
       dishes = await Dish.findAll({
-        where: { CategoryId: req.query.categoryId },
-        attributes: ['id', 'name', 'price', 'image', 'description'],
-        include: [{ model: Tag, as: 'hasTags', attributes: ['name'] }]
+        attributes: ['id', 'name', 'price', 'image', 'description', 'CategoryId'],
+        // include: [{ model: Tag, as: 'hasTags', attributes: ['name'] }]
       })
-      return res.json({ categories: categories, dishes: dishes })
+
+      for (let i = 0; i < categories.length; i++) {
+        if (!menu[categories[i].id]) {
+          menu[categories[i].id] = {
+            name: categories[i].name
+          }
+        }
+      }
+
+      for (let i = 0; i < dishes.length; i++) {
+        if (dishes[i].CategoryId in menu) {
+          menu[dishes[i].CategoryId][dishes[i].id] = {
+            name: dishes[i].name,
+            price: dishes[i].price,
+            image: dishes[i].image,
+            description: dishes[i].description
+          }
+        }
+      }
+
+      return res.json({ menu: menu })
 
     } catch (error) {
       return res.status(500).json({ status: 'error', msg: error })
