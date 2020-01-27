@@ -115,30 +115,20 @@ describe('# Member::Order Request', () => {
       }
     })
 
-    it('should see all categories', (done) => {
-      request(app)
-        .get('/api/member/categories')
-        .expect(200)
-        .end((err, res) => {
-          if (err) return done(err)
-          //console.log(res.body)
-          expect(res.body.categories[0].name).to.be.equal('義式')
-          expect(res.body.categories[1].name).to.be.equal('手沖')
-          return done()
-        })
-    })
-
     it('should get all dishes from category 1', (done) => {
       request(app)
-        .get('/api/member/dishes?categoryId=1')
+        .get('/api/member/menu?categoryId=1')
         .expect(200)
         .end((err, res) => {
           if (err) return done(err)
-          //console.log(res.body.dishes[0].hasTags)
+          console.log(res.body)
           expect(res.body.dishes[0].name).to.be.equal('mocha')
           expect(res.body.dishes[0].hasTags.length).to.be.equal(2)
           expect(res.body.dishes[1].name).to.be.equal('latie')
           expect(res.body.dishes[1].hasTags.length).to.be.equal(2)
+
+          expect(res.body.categories[0].name).to.be.equal('義式')
+          expect(res.body.categories[1].name).to.be.equal('手沖')
           return done()
         })
     })
