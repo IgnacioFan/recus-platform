@@ -76,30 +76,20 @@ const orderController = {
     }
   },
 
-  getCategories: (req, res) => {
-    try {
-      Category.findAll().then(categories => {
-        return res.json({ categories: categories })
-      })
-    } catch (error) {
-      return res.status(500).json({ status: 'error', msg: error })
-    }
-  },
-
   // 取得某分類的所有品項
-  getDishWithCategory: (req, res) => {
+  getDishesAndCategories: async (req, res) => {
     try {
       if (Number(req.query.categoryId) < 1) {
         return res.json({ status: 'error', msg: 'undefined category id' })
       }
-
-      Dish.findAll({
+      categories = await Category.findAll()
+      dishes = await Dish.findAll({
         where: { CategoryId: req.query.categoryId },
         attributes: ['id', 'name', 'price', 'image', 'description'],
         include: [{ model: Tag, as: 'hasTags', attributes: ['name'] }]
-      }).then(dishes => {
-        return res.json({ dishes: dishes })
       })
+      return res.json({ categories: categories, dishes: dishes })
+
     } catch (error) {
       return res.status(500).json({ status: 'error', msg: error })
     }
