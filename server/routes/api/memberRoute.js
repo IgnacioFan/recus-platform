@@ -13,6 +13,7 @@ router.get('/profile', memberController.getProfile)
 router.put('/profile', memberController.updateProfile)
 router.post('/mypreferred', memberController.addMyPreferred)
 router.delete('/mypreferred', memberController.removeMyPreferred)
+router.get('/tag', memberController.searchTag)
 
 // 會員訂單相關API
 router.get('/orders', orderController.getMyOrders)

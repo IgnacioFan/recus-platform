@@ -1,5 +1,6 @@
 const db = require('../../models')
 const { User, Profile, Tag, UserPreferred } = db
+const Op = require('sequelize').Op
 
 const memberController = {
   testRoute: (req, res) => {
@@ -23,7 +24,7 @@ const memberController = {
 
   updateProfile: async (req, res) => {
     try {
-      let { account, phone, name, email, avatar } = req.body
+      let { account, phone, name, email, avatar, tags } = req.body
 
       user = await User.findByPk(req.user.id, {
         attributes: ['id', 'account', 'phone', 'password'],
@@ -40,6 +41,16 @@ const memberController = {
         email: email,
         avatar: avatar
       })
+
+      if (tags) {
+        // await UserPreferred.delete({ where: { UserId: req.user.id } })
+        for (let tag of tags) {
+          await UserPreferred.findOrCreate({
+            where: { TagId: tag.id, UserId: req.user.id },
+            defaults: { TagId: tag.id, UserId: req.user.id }
+          })
+        }
+      }
 
       return res.json({ status: 'success', msg: '更新成功!', user: user })
     } catch (error) {
@@ -73,6 +84,23 @@ const memberController = {
       return res.status(500).json({ status: 'error', msg: error })
     }
   },
+
+  searchTag: (req, res) => {
+    try {
+      // console.log(`%${req.query}%`)
+      Tag.findAll({
+        where: {
+          name: {
+            [Op.like]: `%${req.query.name}%`
+          }
+        }
+      }).then(tag => {
+        return res.json(tag)
+      })
+    } catch (error) {
+      return res.status(500).json({ status: 'error', msg: error })
+    }
+  }
 }
 
 module.exports = memberController

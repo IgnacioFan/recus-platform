@@ -58,7 +58,7 @@ describe('# Member::Member Request', () => {
       await db.Profile.create(profile)
       for (let item of tags) {
         tag = await db.Tag.create(item)
-        if (tag.id < 5) {
+        if (tag.id < 3) {
           await db.UserPreferred.create({ TagId: tag.id, UserId: 1 })
         }
       }
@@ -73,7 +73,7 @@ describe('# Member::Member Request', () => {
           //console.log(res.body.user)
           expect(res.body.user.account).to.be.equal('user1')
           expect(res.body.user.Profile.name).to.be.equal('ryu')
-          expect(res.body.user.preferredTags.length).to.be.equal(4)
+          expect(res.body.user.preferredTags.length).to.be.equal(2)
           return done()
         })
     })
@@ -81,7 +81,7 @@ describe('# Member::Member Request', () => {
     it("should update the user1's profile", (done) => {
       request(app)
         .put('/api/member/profile')
-        .send({ account: 'user2', name: 'nacho', email: 'nacho@example.com' })
+        .send({ account: 'user2', name: 'nacho', email: 'nacho@example.com', tags: [{ id: 2 }, { id: 3 }, { id: 4 }] })
         .expect(200)
         .end((err, res) => {
           if (err) return done(err)
@@ -90,6 +90,19 @@ describe('# Member::Member Request', () => {
           expect(res.body.user.Profile.name).to.be.equal('nacho')
           expect(res.body.user.Profile.email).to.be.equal('nacho@example.com')
           expect(res.body.msg).to.be.equal('更新成功!')
+          return done()
+        })
+    })
+
+    it("should search somet tags", (done) => {
+      request(app)
+        .get('/api/member/tag?name=ne')
+        .expect(200)
+        .end((err, res) => {
+          if (err) return done(err)
+          // console.log(res.body)
+          expect(res.body[0].id).to.be.equal(4)
+          expect(res.body[0].name).to.be.equal('new')
           return done()
         })
     })
