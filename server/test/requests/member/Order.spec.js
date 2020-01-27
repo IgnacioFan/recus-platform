@@ -115,20 +115,17 @@ describe('# Member::Order Request', () => {
       }
     })
 
-    it('should get all dishes from category 1', (done) => {
+    it('should get menu', (done) => {
       request(app)
-        .get('/api/member/menu?categoryId=1')
+        .get('/api/member/menu')
         .expect(200)
         .end((err, res) => {
           if (err) return done(err)
-          console.log(res.body)
-          expect(res.body.dishes[0].name).to.be.equal('mocha')
-          expect(res.body.dishes[0].hasTags.length).to.be.equal(2)
-          expect(res.body.dishes[1].name).to.be.equal('latie')
-          expect(res.body.dishes[1].hasTags.length).to.be.equal(2)
-
-          expect(res.body.categories[0].name).to.be.equal('義式')
-          expect(res.body.categories[1].name).to.be.equal('手沖')
+          // console.log(Object.values(res.body.menu)[0]['2'])
+          expect(Object.values(res.body.menu)[0].name).to.be.equal('義式')
+          expect(Object.values(res.body.menu)[0]['1']).to.be.eql({ name: 'mocha', price: 30, image: 'none', description: 'none' })
+          expect(Object.values(res.body.menu)[0]['2']).to.be.eql({ name: 'latie', price: 40, image: 'none', description: 'none' })
+          expect(Object.values(res.body.menu)[1].name).to.be.equal('手沖')
           return done()
         })
     })
@@ -161,7 +158,7 @@ describe('# Member::Order Request', () => {
         .expect(200)
         .end((err, res) => {
           if (err) return done(err)
-          //console.log(res.body.orders)
+          console.log(res.body.orders)
           expect(res.body.orders.length).to.be.equal(3)
           expect(res.body.orders[0].id).to.be.equal(3)
           expect(res.body.orders[1].id).to.be.equal(1)
