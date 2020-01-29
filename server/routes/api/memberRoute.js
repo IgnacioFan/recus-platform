@@ -16,6 +16,7 @@ router.delete('/mypreferred', memberController.removeMyPreferred)
 router.get('/tag', memberController.searchTag)
 
 // 會員訂單相關API
+router.get('/orders/today', orderController.getTodayOrder)
 router.get('/orders', orderController.getMyOrders)
 router.post('/orders', orderController.addOrder)
 

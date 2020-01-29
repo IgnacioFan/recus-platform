@@ -152,17 +152,30 @@ describe('# Member::Order Request', () => {
         })
     })
 
+    it('should get today order', (done) => {
+      request(app)
+        .get('/api/member/orders/today')
+        .expect(200)
+        .end((err, res) => {
+          if (err) return done(err)
+          // console.log(res.body.order)
+          expect(res.body.order[0].id).to.be.equal(3)
+          expect(res.body.order[0].amount).to.be.equal(100)
+          expect(res.body.order[0].quantity).to.be.equal(3)
+          return done()
+        })
+    })
+
     it('should get my all order records', (done) => {
       request(app)
         .get('/api/member/orders')
         .expect(200)
         .end((err, res) => {
           if (err) return done(err)
-          console.log(res.body.orders)
-          expect(res.body.orders.length).to.be.equal(3)
-          expect(res.body.orders[0].id).to.be.equal(3)
-          expect(res.body.orders[1].id).to.be.equal(1)
-          expect(res.body.orders[2].id).to.be.equal(2)
+          // console.log(res.body.orders)
+          expect(res.body.orders.length).to.be.equal(2)
+          expect(res.body.orders[0].id).to.be.equal(1)
+          expect(res.body.orders[1].id).to.be.equal(2)
           return done()
         })
     })
