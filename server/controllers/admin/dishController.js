@@ -44,15 +44,6 @@ const dishController = {
     try {
       let { tags, name, price, image, description, CategoryId } = req.body
 
-      if (!name && !price)
-        return res.json({ status: 'error', msg: 'dish name and price cannot be blank' })
-
-      if (!CategoryId)
-        return res.json({ status: 'error', msg: 'category cannot be blank' })
-
-      if (Number(price) < 0)
-        return res.json({ status: 'error', msg: 'price can not be negative' })
-
       let dishObj = {
         name: name,
         price: price,

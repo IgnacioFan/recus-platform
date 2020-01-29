@@ -89,7 +89,7 @@ describe('# Admin::Dish Request', () => {
         .expect(422)
         .end(function (err, res) {
           if (err) return done(err);
-          res.text.should.include('請輸入名稱!')
+          res.text.should.include('名稱不可空白!')
           done()
         })
     })

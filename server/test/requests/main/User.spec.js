@@ -28,7 +28,7 @@ describe('# Admin::User request', () => {
         request(app)
           .post('/api/signup')
           .send({
-            account: 'root', phone: '0903', password: '123456', passwordCheck: '123456',
+            account: 'root', phone: '0903567824', password: '123456', passwordCheck: '123456',
             name: 'nacho', email: 'nacho@example.com', avatar: null
           })
           .expect(200)

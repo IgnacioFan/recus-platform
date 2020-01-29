@@ -31,6 +31,10 @@ const memberController = {
         include: [Profile]
       })
 
+      // if(user.account !== account){
+      //   account = await User.searchIsAccount(account)
+      // } 
+
       await user.update({
         account: account,
         phone: phone,

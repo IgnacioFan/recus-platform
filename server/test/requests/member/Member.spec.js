@@ -15,7 +15,7 @@ const nowTime = new Date()
 // const time1 = moment(nowTime, "YYYY-M-D H:m").subtract(1, 'days').toDate() //moment().subtract(1, 'days')
 // const time2 = moment(nowTime, "YYYY-M-D H:m").subtract(2, 'days').toDate()
 
-const member = { account: 'user1', phone: '0900', password: '12345', role: 'member', isValid: true }
+const member = { account: 'user1', phone: '0912345667', password: '12345', role: 'member', isValid: true }
 const profile = { name: 'ryu', email: 'ryu@example.com', UserId: 1 }
 const tags = [{ name: "義式" }, { name: "手沖" }, { name: "淺焙" }, { name: "new" }, { name: "肯亞" }, { name: "微酸" }]
 
@@ -70,7 +70,7 @@ describe('# Member::Member Request', () => {
         .expect(200)
         .end((err, res) => {
           if (err) return done(err)
-          //console.log(res.body.user)
+          // console.log(res.body)
           expect(res.body.user.account).to.be.equal('user1')
           expect(res.body.user.Profile.name).to.be.equal('ryu')
           expect(res.body.user.preferredTags.length).to.be.equal(2)
@@ -81,12 +81,12 @@ describe('# Member::Member Request', () => {
     it("should update the user1's profile", (done) => {
       request(app)
         .put('/api/member/profile')
-        .send({ account: 'user2', name: 'nacho', email: 'nacho@example.com', tags: [{ id: 2 }, { id: 3 }, { id: 4 }] })
+        .send({ account: 'user1', phone: '0912345667', name: 'nacho', email: 'nacho@example.com', tags: [{ id: 2 }, { id: 3 }, { id: 4 }] })
         .expect(200)
         .end((err, res) => {
           if (err) return done(err)
-          //console.log(res.body)
-          expect(res.body.user.account).to.be.equal('user2')
+          // console.log(res.body)
+          expect(res.body.user.account).to.be.equal('user1')
           expect(res.body.user.Profile.name).to.be.equal('nacho')
           expect(res.body.user.Profile.email).to.be.equal('nacho@example.com')
           expect(res.body.msg).to.be.equal('更新成功!')
@@ -141,7 +141,7 @@ describe('# Member::Member Request', () => {
         .end((err, res) => {
           if (err) return done(err)
           //console.log(res.body.user)
-          expect(res.body.user.account).to.be.equal('user2')
+          expect(res.body.user.account).to.be.equal('user1')
           expect(res.body.user.Profile.name).to.be.equal('nacho')
           expect(res.body.user.preferredTags.length).to.be.equal(3)
           return done()

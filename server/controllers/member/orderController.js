@@ -61,7 +61,7 @@ const orderController = {
 
   getMyOrders: (req, res) => {
     try {
-      Order.findAll({
+      Order.scope('pastOrder').findAll({
         attributes: ['id', 'amount', 'quantity', 'isTakingAway', 'state', 'createdAt'],
         include: [{ model: Dish, as: 'sumOfDishes', attributes: ['name', 'price'] }],
         where: { UserId: req.user.id },
@@ -70,6 +70,23 @@ const orderController = {
         //console.log(orders)
         if (!orders) return res.status.json({ status: 'error', msg: '查無資料!' })
         return res.json({ orders: orders })
+      })
+    } catch (error) {
+      return res.status(500).json({ status: 'error', msg: error })
+    }
+  },
+
+  getTodayOrder: (req, res) => {
+    try {
+      Order.scope('todayOrder').findAll({
+        attributes: ['id', 'amount', 'quantity', 'isTakingAway', 'state', 'createdAt'],
+        include: [{ model: Dish, as: 'sumOfDishes', attributes: ['name', 'price'] }],
+        where: { UserId: req.user.id },
+        order: [['createdAt', 'DESC']]
+      }).then(order => {
+        //console.log(orders)
+        if (!order) return res.status.json({ status: 'error', msg: '查無資料!' })
+        return res.json({ order: order })
       })
     } catch (error) {
       return res.status(500).json({ status: 'error', msg: error })

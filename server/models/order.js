@@ -48,6 +48,14 @@ module.exports = (sequelize, DataTypes) => {
             }
           }
         },
+        pastOrder: {
+          where: {
+            createdAt: {
+              // [Op.gte]: moment().startOf('day')//new Date().setHours(0, 0, 0)
+              [Op.lt]: moment().startOf('day')
+            }
+          }
+        },
         weekly: {
           where: {
             createdAt: {
