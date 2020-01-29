@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
       defaultScope: {
-        
+
       },
       scopes: {
         'excludedAdmin': {
@@ -36,6 +36,16 @@ module.exports = (sequelize, DataTypes) => {
       paranoid: true
     });
   User.associate = function (models) {
+    User.searchIsAccount = (value) => {
+      return models.User.findOne(
+        { attributes: ['account'], where: { 'account': value } }
+      )
+    }
+    User.searchIsPhone = (value) => {
+      return models.User.findOne(
+        { attributes: ['phone'], where: { 'phone': value } }
+      )
+    }
     User.findUserByPhone = (value) => {
       return models.User.findOne(
         { where: { 'phone': value }, include: [models.Profile] }

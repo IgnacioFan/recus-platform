@@ -72,7 +72,7 @@ describe('# Admin::Category Request', () => {
           if (err) return done(err);
           //console.log(res.text)
           res.status.should.be.eql(422);
-          res.text.should.include('請輸入名稱!')
+          res.text.should.include('名稱不可空白!')
           done();
         });
     })
