@@ -79,7 +79,7 @@ const orderController = {
   getTodayOrder: (req, res) => {
     try {
       Order.scope('todayOrder').findAll({
-        attributes: ['id', 'amount', 'quantity', 'isTakingAway', 'state', 'createdAt'],
+        attributes: ['id', 'amount', 'quantity', 'isTakingAway', 'state', 'isTakingAway', 'tableNum', 'createdAt'],
         include: [{ model: Dish, as: 'sumOfDishes', attributes: ['name', 'price'] }],
         where: { UserId: req.user.id },
         order: [['createdAt', 'DESC']]

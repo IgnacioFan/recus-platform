@@ -31,10 +31,6 @@ const memberController = {
         include: [Profile]
       })
 
-      // if(user.account !== account){
-      //   account = await User.searchIsAccount(account)
-      // } 
-
       await user.update({
         account: account,
         phone: phone,
@@ -47,12 +43,10 @@ const memberController = {
       })
 
       if (tags) {
-        // await UserPreferred.delete({ where: { UserId: req.user.id } })
-        for (let tag of tags) {
-          await UserPreferred.findOrCreate({
-            where: { TagId: tag.id, UserId: req.user.id },
-            defaults: { TagId: tag.id, UserId: req.user.id }
-          })
+        await UserPreferred.destroy({ where: { UserId: req.user.id } })
+
+        for (let i = 0; i < tags.length; i++) {
+          await UserPreferred.create({ TagId: tags[i].id, UserId: req.user.id })
         }
       }
 
@@ -62,28 +56,38 @@ const memberController = {
     }
   },
 
-  addMyPreferred: async (req, res) => {
-    try {
-      let tags = req.body.tags
-      if (!tags) return res.json({ status: 'error', msg: '請加入標籤!' })
-      for (let tag of tags) {
-        await UserPreferred.create({ TagId: tag.id, UserId: req.user.id })
-      }
-      return res.json({ status: 'success', msg: '新增成功!' })
-    } catch (error) {
-      return res.status(500).json({ status: 'error', msg: error })
-    }
-  },
+  // addMyPreferred: async (req, res) => {
+  //   try {
+  //     let tags = req.body.tags
+  //     if (!tags) return res.json({ status: 'error', msg: '請加入標籤!' })
+  //     for (let tag of tags) {
+  //       await UserPreferred.create({ TagId: tag.id, UserId: req.user.id })
+  //     }
+  //     return res.json({ status: 'success', msg: '新增成功!' })
+  //   } catch (error) {
+  //     return res.status(500).json({ status: 'error', msg: error })
+  //   }
+  // },
 
-  removeMyPreferred: async (req, res) => {
+  // removeMyPreferred: async (req, res) => {
+  //   try {
+  //     let tags = req.body.removeTags
+  //     //console.log(req.body.removeTags)
+  //     if (!tags) return res.json({ status: 'error', msg: '請加入標籤!' })
+  //     for (let i = 0; i < tags.length; i++) {
+  //       await UserPreferred.destroy({ where: { TagId: tags[i].id, UserId: req.user.id } })
+  //     }
+  //     return res.json({ status: 'success', msg: '成功移除!' })
+  //   } catch (error) {
+  //     return res.status(500).json({ status: 'error', msg: error })
+  //   }
+  // },
+
+  getTags: (req, res) => {
     try {
-      let tags = req.body.removeTags
-      //console.log(req.body.removeTags)
-      if (!tags) return res.json({ status: 'error', msg: '請加入標籤!' })
-      for (let i = 0; i < tags.length; i++) {
-        await UserPreferred.destroy({ where: { TagId: tags[i].id, UserId: req.user.id } })
-      }
-      return res.json({ status: 'success', msg: '成功移除!' })
+      Tag.findAll().then(tags => {
+        return res.json(tags)
+      })
     } catch (error) {
       return res.status(500).json({ status: 'error', msg: error })
     }

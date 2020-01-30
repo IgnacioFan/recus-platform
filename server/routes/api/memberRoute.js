@@ -14,9 +14,10 @@ router.get('/user', userController.getCurrentUser)
 router.get('/test', memberController.testRoute)
 router.get('/profile', memberController.getProfile)
 router.put('/profile', profileValidRules(), validate, memberController.updateProfile)
-router.post('/mypreferred', memberController.addMyPreferred)
-router.delete('/mypreferred', memberController.removeMyPreferred)
+// router.post('/mypreferred', memberController.addMyPreferred)
+// router.delete('/mypreferred', memberController.removeMyPreferred)
 router.get('/tag', memberController.searchTag)
+router.get('/tags', memberController.getTags)
 
 // 會員訂單相關API
 router.get('/orders/today', orderController.getTodayOrder)
