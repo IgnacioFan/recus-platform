@@ -94,7 +94,7 @@ describe('# Member::Member Request', () => {
         })
     })
 
-    it("should search somet tags", (done) => {
+    it("should search some tags", (done) => {
       request(app)
         .get('/api/member/tag?name=ne')
         .expect(200)
@@ -107,29 +107,14 @@ describe('# Member::Member Request', () => {
         })
     })
 
-    it("should post the user1's preferred", (done) => {
-
+    it("should get all tags", (done) => {
       request(app)
-        .post('/api/member/mypreferred')
-        .send({ tags: [{ id: 5 }, { id: 6 }] })
+        .get('/api/member/tags')
         .expect(200)
         .end((err, res) => {
           if (err) return done(err)
-          //console.log(res.body)
-          expect(res.body.msg).to.be.equal('新增成功!')
-          return done()
-        })
-    })
-
-    it("should remove the user1's preferred", (done) => {
-      request(app)
-        .delete('/api/member/mypreferred')
-        .send({ removeTags: [{ id: 2 }, { id: 4 }, { id: 6 }] })
-        .expect(200)
-        .end((err, res) => {
-          if (err) return done(err)
-          //console.log(res.body)
-          expect(res.body.msg).to.be.equal('成功移除!')
+          // console.log(res.body)
+          expect(res.body.length).to.be.equal(6)
           return done()
         })
     })
@@ -140,7 +125,7 @@ describe('# Member::Member Request', () => {
         .expect(200)
         .end((err, res) => {
           if (err) return done(err)
-          //console.log(res.body.user)
+          // console.log(res.body.user)
           expect(res.body.user.account).to.be.equal('user1')
           expect(res.body.user.Profile.name).to.be.equal('nacho')
           expect(res.body.user.preferredTags.length).to.be.equal(3)
