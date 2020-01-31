@@ -15,7 +15,7 @@ const member2 = { account: 'user2', phone: '0902', password: '12345', role: 'mem
 const profi1 = { name: 'ryu', email: 'ryu@example.com', UserId: 2 }
 const profi2 = { name: 'yoshi', email: 'yoshi@example.com', UserId: 3 }
 const newMember = {
-  account: 'user3', phone: '0903', password: '12345', passwordCheck: '12345',
+  account: 'user3', phone: '0912345667', password: '12345', passwordCheck: '12345',
   name: 'tim', email: 'tim@example.com'
 }
 const tag1 = { name: "義式" }
@@ -154,7 +154,7 @@ describe('# Admin::Member request', () => {
           .send(newMember)
           .expect(200)
           .end((err, res) => {
-            //console.log(res.body)
+            // console.log(res.body)
             expect(res.body.msg).to.be.include('註冊成功！')
             expect(res.body.user.account).to.be.include('user3')
             return done()

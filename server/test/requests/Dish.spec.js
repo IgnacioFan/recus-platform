@@ -75,7 +75,7 @@ describe('# Admin::Dish Request', () => {
         .expect(200)
         .end(async (err, res) => {
           if (err) return done(err)
-          console.log(res.body.dish)
+          // console.log(res.body.dish)
           expect(res.body.dish.name).to.be.equal('紅茶')
           expect(res.body.dish.price).to.be.equal(40)
           expect(res.body.dish.Category.name).to.be.equal('new')
@@ -88,10 +88,11 @@ describe('# Admin::Dish Request', () => {
     it('should update specific dish', (done) => {
       request(app)
         .put('/api/admin/dishes/4')
-        .send({ name: '阿里山紅茶', price: 60, CategoryId: 1, removeTags: [{ id: 1 }], addTags: [{ id: 3 }] })
+        .send({ name: '阿里山紅茶', price: 60, CategoryId: 1, tags: [{ id: 2 }, { id: 3 }] })
         .expect(200)
         .end(async (err, res) => {
           if (err) return done(err)
+          // console.log(res.body)
           expect(res.body.dish.name).to.be.equal('阿里山紅茶')
           expect(res.body.dish.price).to.be.equal(60);
           return done();
@@ -104,14 +105,14 @@ describe('# Admin::Dish Request', () => {
         .expect(200)
         .end(async (err, res) => {
           if (err) return done(err)
-          //console.log(res.body.dish.hasTags)
+          // console.log(res.body.dish.hasTags)
           expect(res.body.dish.hasTags[0].name).to.be.equal('中焙')
           expect(res.body.dish.hasTags[1].name).to.be.equal('義式豆')
           return done()
         })
     })
 
-    xit('should delete Dish 4', (done) => {
+    it('should delete Dish 4', (done) => {
       request(app)
         .delete('/api/admin/dishes/4')
         .expect(200)

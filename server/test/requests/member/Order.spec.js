@@ -115,41 +115,28 @@ describe('# Member::Order Request', () => {
       }
     })
 
-    it('should see all categories', (done) => {
+    it('should get menu', (done) => {
       request(app)
-        .get('/api/member/categories')
+        .get('/api/member/menu')
         .expect(200)
         .end((err, res) => {
           if (err) return done(err)
-          //console.log(res.body)
-          expect(res.body.categories[0].name).to.be.equal('義式')
-          expect(res.body.categories[1].name).to.be.equal('手沖')
+          // console.log(Object.values(res.body.menu)[0]['2'])
+          expect(Object.values(res.body.menu)[0].name).to.be.equal('義式')
+          expect(Object.values(res.body.menu)[0]['1']).to.be.eql({ name: 'mocha', price: 30, image: 'none', description: 'none' })
+          expect(Object.values(res.body.menu)[0]['2']).to.be.eql({ name: 'latie', price: 40, image: 'none', description: 'none' })
+          expect(Object.values(res.body.menu)[1].name).to.be.equal('手沖')
           return done()
         })
     })
 
-    it('should get all dishes from category 1', (done) => {
-      request(app)
-        .get('/api/member/dishes?categoryId=1')
-        .expect(200)
-        .end((err, res) => {
-          if (err) return done(err)
-          //console.log(res.body.dishes[0].hasTags)
-          expect(res.body.dishes[0].name).to.be.equal('mocha')
-          expect(res.body.dishes[0].hasTags.length).to.be.equal(2)
-          expect(res.body.dishes[1].name).to.be.equal('latie')
-          expect(res.body.dishes[1].hasTags.length).to.be.equal(2)
-          return done()
-        })
-    })
-
-    it('should add a new order', (done) => {
+    it('should add third order', (done) => {
       request(app)
         .post('/api/member/orders')
         .send({
           quantity: 3,
           amount: 100,
-          memo: 'this is a new order',
+          memo: 'this is third order',
           tableNum: 2,
           isTakingAway: false,
           dishes: [{ id: 1, quantity: 2, price: 30 }, { id: 1, quantity: 1, price: 40 }]
@@ -157,10 +144,45 @@ describe('# Member::Order Request', () => {
         .expect(200)
         .end((err, res) => {
           if (err) return done(err)
-          //console.log(res.body)
+          // console.log(res.body)
           expect(res.body.order.amount).to.be.equal(100)
           expect(res.body.order.quantity).to.be.equal(3)
           expect(res.body.msg).to.be.equal('訂單新增成功!')
+          return done()
+        })
+    })
+
+    it('should add fourth order', (done) => {
+      request(app)
+        .post('/api/member/orders')
+        .send({
+          quantity: 2,
+          amount: 60,
+          memo: 'this is fourth order',
+          tableNum: 1,
+          isTakingAway: false,
+          dishes: [{ id: 1, quantity: 2, price: 30 }]
+        })
+        .expect(200)
+        .end((err, res) => {
+          if (err) return done(err)
+          // console.log(res.body)
+          expect(res.body.order.amount).to.be.equal(60)
+          expect(res.body.order.quantity).to.be.equal(2)
+          expect(res.body.msg).to.be.equal('訂單新增成功!')
+          return done()
+        })
+    })
+
+    it('should get today order', (done) => {
+      request(app)
+        .get('/api/member/orders/today')
+        .expect(200)
+        .end((err, res) => {
+          if (err) return done(err)
+          // console.log(res.body.order)
+          expect(res.body.order[0].flowId).to.be.equal(1)
+          expect(res.body.order[1].flowId).to.be.equal(2)
           return done()
         })
     })
@@ -171,11 +193,10 @@ describe('# Member::Order Request', () => {
         .expect(200)
         .end((err, res) => {
           if (err) return done(err)
-          //console.log(res.body.orders)
-          expect(res.body.orders.length).to.be.equal(3)
-          expect(res.body.orders[0].id).to.be.equal(3)
-          expect(res.body.orders[1].id).to.be.equal(1)
-          expect(res.body.orders[2].id).to.be.equal(2)
+          // console.log(res.body.orders)
+          expect(res.body.orders.length).to.be.equal(2)
+          expect(res.body.orders[0].id).to.be.equal(1)
+          expect(res.body.orders[1].id).to.be.equal(2)
           return done()
         })
     })

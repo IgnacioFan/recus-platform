@@ -44,15 +44,6 @@ const dishController = {
     try {
       let { tags, name, price, image, description, CategoryId } = req.body
 
-      if (!name && !price)
-        return res.json({ status: 'error', msg: 'dish name and price cannot be blank' })
-
-      if (!CategoryId)
-        return res.json({ status: 'error', msg: 'category cannot be blank' })
-
-      if (Number(price) < 0)
-        return res.json({ status: 'error', msg: 'price can not be negative' })
-
       let dishObj = {
         name: name,
         price: price,
@@ -77,9 +68,9 @@ const dishController = {
   },
 
   // updateDish 更新某筆品項
-  updateDish: (req, res) => {
+  updateDish: async (req, res) => {
     try {
-      let { removeTags, addTags, name, price, image, description, CategoryId } = req.body
+      let { tags, name, price, image, description, CategoryId } = req.body
 
       let dishObj = {
         name: name,
@@ -89,31 +80,25 @@ const dishController = {
         CategoryId: CategoryId
       }
 
-      Dish.findByPk(req.params.id).then(dish => {
-        if (removeTags) {
-          removeTags.forEach(item => {
-            DishAttachment.destroy({ where: { DishId: dish.id, TagId: item.id } })
-          })
+      dish = await Dish.findByPk(req.params.id)
+
+      await DishAttachment.destroy({ where: { DishId: dish.id } })
+
+      if (tags) {
+        for (let i = 0; i < tags.length; i++) {
+          await DishAttachment.create({ DishId: dish.id, TagId: tags[i].id })
         }
-        if (addTags) {
-          addTags.forEach(item => {
-            console.log(item.id)
-            DishAttachment.findOrCreate({
-              where: { DishId: dish.id, TagId: item.id },
-              defaults: { DishId: dish.id, TagId: item.id }
-            })
-          })
-        }
-        dish.update(dishObj).then(dish => {
-          return res.json({ status: 'success', msg: '更新菜單品項!', dish: dish })
-        })
-      })
+      }
+
+      await dish.update(dishObj)
+
+      return res.json({ status: 'success', msg: '更新菜單品項!', dish: dish })
     } catch (error) {
       return res.status(500).json({ status: 'error', msg: error })
     }
   },
 
-  removeDish: async(req, res) => {
+  removeDish: async (req, res) => {
     try {
       dish = await Dish.findByPk(req.params.id)
       await DishAttachment.destroy({ where: { DishId: dish.id } })

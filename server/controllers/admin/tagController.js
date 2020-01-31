@@ -46,7 +46,6 @@ const tagController = {
   },
 
   addTag: (req, res) => {
-    //if (!req.body.name) return res.json({ status: 'error', msg: '請輸入標籤名稱' })
     try {
       Tag.findOrCreate({ where: { name: req.body.name }, defaults: { name: req.body.name } })
         .then(([tag, created]) => {
@@ -59,7 +58,6 @@ const tagController = {
   },
 
   updateTag: (req, res) => {
-    //if (!req.body.name) return res.json({ status: 'error', msg: '請輸入標籤名稱' })
     try {
       Tag.findByPk(req.params.id).then(tag => {
         if (tag.name === req.body.name) {

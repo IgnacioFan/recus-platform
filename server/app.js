@@ -26,6 +26,13 @@ app.use(cors())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
+io.on('connection', (socket) => {
+  // socket.emit('status', 'hello socket! fuck')
+  // console.log('a user is connected', socket.id)
+  // require('./config/socket')(socket)
+  app.set('socket', socket)
+})
+
 
 //app.use(session({ secret: 'secret', resave: false, saveUninitialized: false }))
 // app.use(flash())
@@ -38,11 +45,16 @@ app.use(bodyParser.json())
 //   next()
 // })
 
+// app.use((req, res, next)=>{
+//   res.io = io;
+//   next();
+// })
+
 // use router
 //app.use('/api/', routes)
 require('./routes/api/index')(app)
-require('./config/socket')(io)
 
+// io.sockets.on('connection', my.respond)
 // app.listen(port, () => console.log(`server is listening to port ${port}`))
 http.listen(port, () => console.log(`server is listening to port ${port}`))
 

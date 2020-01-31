@@ -30,7 +30,6 @@ const categoryController = {
   },
 
   addCategory: (req, res) => {
-    //if (!req.body.name) return res.json({ status: 'error', msg: '請輸入分類名稱!' })
     try {
       Category.findOrCreate({ where: { name: req.body.name }, defaults: { name: req.body.name } })
         .then(([category, created]) => {
@@ -43,7 +42,6 @@ const categoryController = {
   },
 
   updateCategory: (req, res) => {
-    //if (!req.body.name) return res.json({ status: 'error', msg: '請輸入分類名稱!' })
     try {
       Category.findByPk(req.params.id).then((category) => {
         // 如果名稱一致

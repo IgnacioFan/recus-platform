@@ -1,11 +1,14 @@
 const db = require('../../models')
 const events = require('events')
 const stateMachine = new events.EventEmitter()
-//const number = new events.EventEmitter()
+const socketMachine = new events.EventEmitter()
+
 const { Order, DishCombination } = db
 const moment = require('moment')
 
 const app = require('../../app')
+const http = require('http').Server(app);
+// const socket = require('../../config/socket')
 
 stateMachine.on('prev', (order) => {
   let prevState
@@ -14,6 +17,7 @@ stateMachine.on('prev', (order) => {
   if (order.state === 'unpaid') prevState = 'making'
   if (order.state === 'paid') prevState = 'unpaid'
   order.update({ state: prevState })
+  // return prevState
 })
 
 stateMachine.on('next', (order) => {
@@ -23,13 +27,23 @@ stateMachine.on('next', (order) => {
   if (order.state === 'unpaid') nextState = 'paid'
   if (order.state === 'paid') return
   order.update({ state: nextState })
+  // return nextState
 })
 
-// number.on('pendingEvent', (number) => {
-//   Order.scope('todayOrder').count({ where: { state: 'pending' } }).then(ordernums => {
-//     number = ordernums
-//   })
-// })
+socketMachine.on('connect', async (socket, res) => {
+  try {
+    // console.log('you do emmit socket!!!')
+    // console.log('fuck a user is connected', socket.id)
+    socket.emit('status', 'local')
+
+    pending = await Order.scope('todayOrder').count({ where: { state: 'pending' } })
+    unpaid = await Order.scope('todayOrder').count({ where: { state: 'unpaid' } })
+    return socket.emit('realtime', { pending: pending, unpaid: unpaid })
+    // socket.disconnect()
+  } catch (error) {
+    return res.status(500).json({ status: 'error', msg: error })
+  }
+})
 
 
 const orderController = {
@@ -65,11 +79,15 @@ const orderController = {
         }
       }
 
+      // 計算今日訂單總數
+      flowNum = await Order.scope('todayOrder').count()
+
       // 新增訂單
       order = await Order.create({
         quantity: req.body.quantity,
         amount: req.body.amount,
         memo: req.body.memo,
+        flowId: flowNum === 0 ? 1 : flowNum + 1,
         tableNum: req.body.tableNum,
         isTakingAway: req.body.isTakingAway,
         UserId: req.body.UserId !== "" ? req.body.UserId : null
@@ -85,10 +103,8 @@ const orderController = {
         })
       }
 
-      // if(app.emitter && order) {
-      //   app.emitter.emit('pendingEvent', pendingNums)
-      //   //app.emitter.emit('unpaidEvent', unpaidNums)
-      // }
+      // let socket = req.app.get('socket')
+      // socketMachine.emit('connect', socket, res)
 
       return res.json({ status: 'success', msg: '訂單新增成功!', order: order })
 
@@ -121,34 +137,19 @@ const orderController = {
 
       if (state) {
         Order.scope('todayOrder').findAll({
-          attributes: ['id', 'amount', 'quantity', 'isTakingAway', 'tableNum', 'state', 'UserId', 'createdAt'],
+          attributes: ['id', 'amount', 'quantity', 'flowId', 'isTakingAway', 'tableNum', 'state', 'UserId', 'createdAt'],
           include: [{ model: db.Dish, attributes: ['name'], as: 'sumOfDishes', through: { attributes: ['perQuantity'] } }],
           where: { state: state },
           order: [['id', 'DESC']]
         }).then(orders => {
           if (!orders) res.status(400).json({ status: 'error', msg: '今日未有任何訂單!' })
+
           return res.json({ orders: orders })
         })
-
-        // pendingNums = await Order.scope('todayOrder').count({ where: { state: 'pending' } })
-        // unpaidNums = await Order.scope('todayOrder').count({ where: { state: 'unpaid' } })
-
-        // 訂單資料整理
-        // orders = orders.map(order => ({
-        //   ...order.dataValues,
-        //   duration: moment(order.createdAt).fromNow()
-        // }))
-
-        // if(app.emitter && orders) {
-        //   app.emitter.emit('pendingEvent', pendingNums)
-        //   app.emitter.emit('unpaidEvent', unpaidNums)
-        // }
-
       } else {
         return res.json({ status: 'error', msg: '404' })
       }
     } catch (error) {
-      //console.error(error)
       return res.status(500).json({ status: 'error', msg: error })
     }
   },
@@ -157,7 +158,7 @@ const orderController = {
   getOrder: (req, res) => {
     try {
       Order.scope('todayOrder').findByPk(req.params.id, {
-        attributes: ['id','amount','quantity','memo','isTakingAway','tableNum','createdAt'],
+        attributes: ['id', 'amount', 'quantity', 'flowId', 'memo', 'isTakingAway', 'tableNum', 'createdAt'],
         include: [{ model: db.Dish, attributes: ['name'], as: 'sumOfDishes', through: { attributes: ['perQuantity'] } }]
       }).then(order => {
         if (!order) return res.status(400).json({ status: 'error', msg: '查無資料!' })
@@ -171,15 +172,15 @@ const orderController = {
   // 訂單狀態往後
   prevStateOrder: (req, res) => {
     try {
-      Order.findByPk(req.params.id).then(order => {
-        stateMachine.emit('prev', order)
-        if (app.emitter) {
-          console.log('hey')
-          app.emitter.emit('orderNums', 10)
-          //app.emitter.emit('unpaidEvent', unpaidNums)
-        }
-        return res.json(order)
-      })
+      Order.findByPk(req.params.id)
+        .then(order => {
+          stateMachine.emit('prev', order)
+        }).then(order => {
+          let socket = req.app.get('socket')
+          socketMachine.emit('connect', socket, res)
+          return res.json(order)
+        })
+
     } catch (error) {
       return res.status(500).json({ status: 'error', msg: error })
     }
@@ -188,10 +189,14 @@ const orderController = {
   // 訂單狀態往前
   nextStateOrder: (req, res) => {
     try {
-      Order.findByPk(req.params.id).then(order => {
-        stateMachine.emit('next', order)
-        return res.json(order)
-      })
+      Order.findByPk(req.params.id)
+        .then(order => {
+          stateMachine.emit('next', order)
+        }).then(order => {
+          let socket = req.app.get('socket')
+          socketMachine.emit('connect', socket, res)
+          return res.json(order)
+        })
     } catch (error) {
       return res.status(500).json({ status: 'error', msg: error })
     }
@@ -206,6 +211,7 @@ const orderController = {
           order.destroy({ force: true })
           DishCombination.destroy({ where: { OrderId: order.id } }).then(combo => {
             //console.log(combo)
+            socketMachine.emit('connect')
             return res.json({ status: 'success', msg: '成功刪除了此訂單!' })
           })
         }

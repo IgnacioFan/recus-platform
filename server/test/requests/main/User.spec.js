@@ -3,50 +3,54 @@ process.env.NODE_ENV = 'test'
 var chai = require('chai')
 var request = require('supertest')
 var sinon = require('sinon')
-var app = require('../../app')
+var app = require('../../../app')
 
-var helper = require('../../_helpers');
+var helper = require('../../../_helpers');
 var should = chai.should();
 var expect = chai.expect;
-const db = require('../../models')
+const db = require('../../../models')
 const bcrpty = require('bcryptjs')
-const default1 = { account: 'root1', phone: '0900', password: bcrpty.hashSync('12345', 10), role: 'admin' }
-const default2 = { account: 'user1', phone: '0901', password: bcrpty.hashSync('12345', 10), role: 'member' }
+const user1 = { account: 'root', phone: '0900', password: bcrpty.hashSync('12345', 10), role: 'admin' }
+const profile1 = { name: 'nacho', email: 'nacho@example.com', avatar: null, UserId: 1 }
+var testToken = ''
 
 
 describe('# Admin::User request', () => {
 
   context('go to SignIn&SignUp feature', () => {
 
-    describe('if someone want to sign up', () => {
+    context('if someone want to sign up', () => {
 
       before(async () => {
-        await db.User.destroy({ where: {}, force: true, truncate: true })
       })
 
       it('sign up a new member', (done) => {
         request(app)
           .post('/api/signup')
           .send({
-            account: 'root1', phone: '0903', password: '123456', passwordCheck: '123456'
+            account: 'root', phone: '0903567824', password: '123456', passwordCheck: '123456',
+            name: 'nacho', email: 'nacho@example.com', avatar: null
           })
           .expect(200)
           .end((err, res) => {
-            expect(res.user)
-            expect(res.text).to.include('帳號註冊成功！')
+            if (err) return done(err)
+            // console.log(res.body)
+            expect(res.body.msg).to.include('註冊成功!')
+            // expect(res.body.user.account).to.include('root')
+            // expect(res.body.user.phone).to.include('0903')
             return done()
           })
       })
 
-      xit('a new member should signin', (done) => {
+      it('a new member should signin', (done) => {
         request(app)
           .post('/api/signin')
           .send({
-            account: '0900', password: '12345'
+            account: 'root', password: '123456'
           })
           .expect(200)
           .end((err, res) => {
-            // console.log(res.text)
+            if (err) return done(err)
             // console.log(res.body)
             expect(res.body.msg).to.include('ok')
             expect(res.body).to.have.property('user')
@@ -55,40 +59,41 @@ describe('# Admin::User request', () => {
           })
       })
 
-      after(async () => {
-        await db.User.destroy({ where: {}, force: true, truncate: true })
-      })
-    })
-
-    describe('if user not sign in', () => {
-
-      before(async (done) => {
-        done()
-      })
-
-      it('should get Unauthorized', (done) => {
+      it('if not sign in, will get unauthorized', (done) => {
         request(app)
-          .get('/api/admin/users')
+          .get('/api/member/test')
           .expect(401)
           .end((err, res) => {
             if (err) return done(err)
-            res.text.should.include('Unauthorized')
+            expect(res.text).to.include('Unauthorized')
             return done()
           })
       })
+
+      after(async () => {
+        await db.User.destroy({ where: {}, force: true, truncate: true })
+        await db.Profile.destroy({ where: {}, truncate: true })
+      })
     })
 
-    describe('if member sign in', () => {
+    context('if member sign in', () => {
       before(async () => {
         this.ensureAuthenticated = sinon.stub(
           helper, 'ensureAuthenticated'
         ).returns(true)
         this.getUser = sinon.stub(
           helper, 'getUser'
-        ).returns({ id: 1, role: 'member' })
+        ).returns({ id: 1, role: 'member', isValid: true })
       })
 
-      it('should get error message', (done) => {
+      it('should access member feature', (done) => {
+        request(app)
+          .get('/api/member/test')
+          .expect(200)
+          .expect({ status: 'success', msg: '路徑測試！' }, done)
+      })
+
+      it('try to access admin feature', (done) => {
         request(app)
           .get('/api/admin/users')
           .expect(401)
@@ -101,16 +106,15 @@ describe('# Admin::User request', () => {
       })
     })
 
-    describe('admin has signned in', () => {
+    context('admin has signned in', () => {
       before(async () => {
-        let testToken
         this.getUser = sinon.stub(
           helper, 'getUser'
         ).returns({ id: 1, role: 'admin' })
         await db.User.destroy({ where: {}, force: true, truncate: true })
         await db.Profile.destroy({ where: {}, truncate: true })
-        await db.User.create(default1)
-        await db.Profile.create({ name: 'nacho', email: 'nacho@example.com', avatar: '', UserId: 1 })
+        await db.User.create(user1)
+        await db.Profile.create(profile1)
       })
 
       it('admin should signin', (done) => {
@@ -121,28 +125,44 @@ describe('# Admin::User request', () => {
           })
           .expect(200)
           .end((err, res) => {
-            //console.log(res.body)
+            if (err) return done(err)
+            // console.log(res.body.token)
             expect(res.body.msg).to.include('ok')
             expect(res.body).to.have.property('user')
             expect(res.body.user.role).to.be.equal('admin')
+            expect(res.body.token).to.be.not.null
             testToken = res.body.token
-            console.log(testToken)
             return done()
           })
       })
 
-      xit('should get current user', (done) => {
+      it('should get current user', (done) => {
         request(app)
-          .get('/api/admin/user')
+          .get('/api/user')
           .set('Authorization', `bearer ${testToken}`)
           .expect(200)
           .end((err, res) => {
-            // console.log(res.text)
-            //console.log(res.body)
-            expect(res.body.id).to.be.equal(1)
+            if (err) return done(err)
+            // console.log(res.body)
+            // expect(res.body.id).to.be.equal(1)
             expect(res.body.phone).to.be.equal('0900')
             expect(res.body.role).to.be.equal('admin')
             expect(res.body.name).to.be.equal('nacho')
+            expect(res.body.avatar).to.be.null
+            return done()
+          })
+      })
+
+      it('should change password', (done) => {
+        request(app)
+          .post('/api/password/change')
+          .set('Authorization', `bearer ${testToken}`)
+          .send({ passwordOld: '12345', passwordNew: '123456', passwordCheck: '123456' })
+          .expect(200)
+          .end((err, res) => {
+            if (err) return done(err)
+            // console.log(res.body)
+            expect(res.body.msg).to.be.equal('密碼成功更新!')
             return done()
           })
       })
