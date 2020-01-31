@@ -1,28 +1,28 @@
 <template>
   <div>
     <NavbarTop :initial-title="title" />
-      <Spinner v-if="isLoading" />
-      <template v-else>
-        <ul class="nav nav-pills">
-          <li v-for="category in categories" :key="category.id" class="nav-item">
-            <router-link
-              class="nav-link"
-              :to="{ name: 'admin-day-orders', query: { state: category.id } }"
-            >{{ category.name }}</router-link>
-          </li>
-        </ul>
-        <div class="border border-dark p-0 alist">
-          <h1 v-if="!orders.length > 0"  class="warningText">Oops!沒有任何訂單，新增一些訂單吧!</h1>
-          <div v-else>
-            <DayOrderList
-              :initial-orders="orders"
-              :state-button="stateButton"
-              @after-delete-order="afterDeleteOrder"
-              @after-order-state-switch="afterOrderStateSwitch"
-            />
-          </div>
+    <Spinner v-if="isLoading" />
+    <template v-else>
+      <ul class="nav nav-pills">
+        <li v-for="category in categories" :key="category.id" class="nav-item">
+          <router-link
+            class="nav-link"
+            :to="{ name: 'admin-day-orders', query: { state: category.id } }"
+          >{{ category.name }}</router-link>
+        </li>
+      </ul>
+      <div class="border border-dark p-0 alist">
+        <h1 v-if="!orders.length > 0" class="warningText">Oops!沒有任何訂單，新增一些訂單吧!</h1>
+        <div v-else>
+          <DayOrderList
+            :initial-orders="orders"
+            :state-button="stateButton"
+            @after-delete-order="afterDeleteOrder"
+            @after-order-state-switch="afterOrderStateSwitch"
+          />
         </div>
-      </template>
+      </div>
+    </template>
     <NavbarBottm />
   </div>
 </template>
@@ -33,6 +33,7 @@ import NavbarBottm from "../../components/navbar/NavbarBottm";
 import DayOrderList from "../../components/table/DayOrderList";
 import Spinner from "../../components/spinner/Spinner";
 import adminOrderAPI from "../../apis/admin/order";
+import io from "socket.io-client";
 
 export default {
   components: {
@@ -52,7 +53,8 @@ export default {
       ],
       orders: [],
       stateButton: {},
-      isLoading: true
+      isLoading: true,
+      socket: io("http://localhost:3000")
     };
   },
   methods: {
@@ -80,7 +82,6 @@ export default {
           this.stateButton.left = "未結帳";
           this.stateButton.right = "";
         }
-        
         this.isLoading = false;
       } catch (error) {
         this.isLoading = false;
@@ -104,6 +105,8 @@ export default {
           type: "success",
           title: data.msg
         });
+        // add socket
+        this.socket.emit("deleteOrder");
       } catch (error) {
         this.$swal({
           type: "warning",
@@ -124,6 +127,8 @@ export default {
         this.orders = this.orders.filter(
           order => order.id !== stateData.orderId
         );
+        // add socket
+        this.socket.emit("switchState");
       } catch (error) {
         this.$swal({
           type: "warning",
@@ -147,6 +152,8 @@ export default {
     }
   },
   created() {
+    // add socket
+    this.socket.emit("init");
     const { state = "pending" } = this.$route.query;
     this.fetchOrders({ state });
   },

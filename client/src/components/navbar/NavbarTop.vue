@@ -44,7 +44,8 @@ export default {
       // socket setting
       isConnected: false,
       connection: "no connection",
-      socket: io("http://localhost:3000")
+      // socket: io("http://localhost:3000")
+      socket: io("https://recusplatform.herokuapp.com/")
     };
   },
   created() {

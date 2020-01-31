@@ -47,6 +47,7 @@ import PieChart from "../../components/chart/PieChart";
 import DashBoardTable from "../../components/table/DashBoardTable";
 import Spinner from "../../components/spinner/Spinner";
 import adminDashboardAPI from "../../apis/admin/dashboard";
+import io from "socket.io-client";
 
 export default {
   name: "AdminDashBoard",
@@ -68,10 +69,13 @@ export default {
       hotMembers: [],
       startDay: "",
       endDay: "",
-      isLoading: true
+      isLoading: true,
+      socket: io("http://localhost:3000")
     };
   },
   created() {
+    // add socket
+    this.socket.emit("init");
     const { range = "weekly" } = this.$route.query;
     this.fetchDashboard({ range });
     //this.fetchss({ id: 1 });

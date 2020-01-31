@@ -55,6 +55,7 @@ import ManageTabs from "../../components/tabs/ManageTabs";
 import CategoryTable from "../../components/table/CategoryTable";
 import adminCategoryAPI from "../../apis/admin/category";
 import Spinner from "../../components/spinner/Spinner";
+import io from "socket.io-client";
 
 export default {
   components: {
@@ -70,7 +71,8 @@ export default {
       newCategoryName: "",
       categories: [],
       isLoading: true,
-      isProcessing: false
+      isProcessing: false,
+      socket: io("http://localhost:3000")
     };
   },
   computed: {
@@ -96,6 +98,8 @@ export default {
     }
   },
   created() {
+    // add socket
+    this.socket.emit("init");
     this.fetchcategories();
   },
   methods: {

@@ -97,6 +97,7 @@ import Spinner from "../../components/spinner/Spinner";
 import adminDishAPI from "../../apis/admin/dish";
 import adminCategoryAPI from "../../apis/admin/category";
 import adminMemberAPI from "../../apis/admin/member";
+import io from "socket.io-client";
 
 export default {
   name: "AdminOrder",
@@ -127,10 +128,13 @@ export default {
       dishPK: 0,
       searchResultShow: false,
       editUser: false,
-      isLoading: true
+      isLoading: true,
+      socket: io("http://localhost:3000")
     };
   },
   created() {
+    // add socket
+    this.socket.emit("init");
     const { categoryId = 1 } = this.$route.query;
     this.fetchDishes({ categoryId });
     this.fetchCategories();
@@ -182,7 +186,7 @@ export default {
         if (statusText !== "OK") {
           throw new Error(statusText);
         }
-        
+
         if (data.status === "error") {
           this.$swal({
             toast: true,
@@ -194,7 +198,7 @@ export default {
             text: ""
           });
         } else {
-          this.getMemberOrders(data.user.id)
+          this.getMemberOrders(data.user.id);
           this.user = data.user;
           this.searchResultShow = true;
         }
@@ -230,6 +234,8 @@ export default {
       };
       this.userName = "";
       this.dishPK = 0;
+      // add socket emit here
+      this.socket.emit("addPending");
     },
     afterAddUser() {
       this.userName = this.user.Profile.name;
@@ -286,7 +292,7 @@ export default {
         if (statusText !== "OK") {
           throw new Error(statusText);
         }
-        
+
         if (data.status === "error") {
           this.$swal({
             toast: true,
@@ -297,7 +303,7 @@ export default {
             title: data.msg
           });
         } else {
-          this.orders = data.orders
+          this.orders = data.orders;
         }
       } catch (error) {
         // eslint-disable-next-line

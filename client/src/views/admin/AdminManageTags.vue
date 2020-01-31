@@ -56,6 +56,7 @@ import ManageTabs from "../../components/tabs/ManageTabs";
 import CategoryTable from "../../components/table/CategoryTable";
 import adminTagAPI from "../../apis/admin/tag";
 import Spinner from "../../components/spinner/Spinner";
+import io from "socket.io-client";
 
 export default {
   name: "AdminManageTags",
@@ -72,7 +73,8 @@ export default {
       newTagName: "",
       tags: [],
       isLoading: true,
-      isProcessing: false
+      isProcessing: false,
+      socket: io("http://localhost:3000")
     };
   },
   computed: {
@@ -98,6 +100,8 @@ export default {
     }
   },
   created() {
+    // add socket
+    this.socket.emit("init");
     this.fetchTags();
   },
   methods: {

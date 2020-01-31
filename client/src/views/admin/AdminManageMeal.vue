@@ -26,6 +26,7 @@ import ManageTabs from "../../components/tabs/ManageTabs";
 import Spinner from "../../components/spinner/Spinner";
 import adminDishAPI from "../../apis/admin/dish";
 import adminCategoryAPI from "../../apis/admin/category";
+import io from "socket.io-client";
 
 export default {
   components: {
@@ -41,11 +42,14 @@ export default {
       categories: [],
       dishes: [],
       loadedCategories: true,
-      loadedDish: true
+      loadedDish: true,
+      socket: io("http://localhost:3000")
     };
   },
   computed: {},
   created() {
+    // add socket
+    this.socket.emit("init");
     const { categoryId = 1 } = this.$route.query;
     this.fetchCategories();
     this.fetchDishes({ categoryId });

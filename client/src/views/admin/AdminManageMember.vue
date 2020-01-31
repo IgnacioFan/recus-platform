@@ -92,7 +92,7 @@
               >刪除會員</button>
             </div>
             <div class="modal-body">
-              <AdminMemberForm :initial-user="profile" :initial-orders="orders"/>
+              <AdminMemberForm :initial-user="profile" :initial-orders="orders" />
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-primary" @click.stop.prevent="closeProfile">關閉</button>
@@ -132,6 +132,7 @@ import AdminMemberForm from "../../components/form/AdminMemberForm";
 import Spinner from "../../components/spinner/Spinner";
 import adminMemberAPI from "../../apis/admin/member";
 import adminUserAPI from "../../apis/admin/user";
+import io from "socket.io-client";
 
 export default {
   name: "AdminManageMember",
@@ -154,7 +155,8 @@ export default {
       profile: {},
       showProfile: false,
       searchResultShow: false,
-      isLoading: true
+      isLoading: true,
+      socket: io("http://localhost:3000")
     };
   },
   computed: {
@@ -172,6 +174,8 @@ export default {
     }
   },
   created() {
+    // add socket
+    this.socket.emit("init");
     const { page = 1 } = this.$route.query;
     this.fetchProfiles({ page });
   },
@@ -222,7 +226,7 @@ export default {
             title: data.msg
           });
           throw new Error(statusText);
-        }        
+        }
         this.showProfile = false;
         this.searchResultShow = false;
         const { page = 1 } = this.$route.query;
@@ -355,7 +359,7 @@ export default {
         if (statusText !== "OK") {
           throw new Error(statusText);
         }
-        
+
         if (data.status === "error") {
           this.$swal({
             toast: true,
@@ -366,7 +370,7 @@ export default {
             title: data.msg
           });
         } else {
-          this.orders = data.orders
+          this.orders = data.orders;
           this.showProfile = true;
         }
       } catch (error) {
@@ -400,7 +404,7 @@ export default {
           });
         } else {
           this.profile = data.user;
-          this.getMemberOrders(data.user.id)
+          this.getMemberOrders(data.user.id);
         }
       } catch (error) {
         // eslint-disable-next-line
