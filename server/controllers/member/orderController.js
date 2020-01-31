@@ -34,11 +34,15 @@ const orderController = {
         }
       }
 
+      // 計算今日訂單總數
+      flowNum = await Order.scope('todayOrder').count()
+
       // 新增訂單
       order = await Order.create({
         quantity: req.body.quantity,
         amount: req.body.amount,
         memo: req.body.memo,
+        flowId: flowNum === 0 ? 1 : flowNum + 1,
         tableNum: req.body.tableNum,
         isTakingAway: req.body.isTakingAway,
         UserId: req.user.id
@@ -62,7 +66,7 @@ const orderController = {
   getMyOrders: (req, res) => {
     try {
       Order.scope('pastOrder').findAll({
-        attributes: ['id', 'amount', 'quantity', 'isTakingAway', 'state', 'createdAt'],
+        attributes: ['id', 'amount', 'quantity', 'memo', 'flowId', 'isTakingAway', 'tableNum', 'state', 'createdAt'],
         include: [{ model: Dish, as: 'sumOfDishes', attributes: ['name', 'price'] }],
         where: { UserId: req.user.id },
         order: [['createdAt', 'DESC']]
@@ -79,7 +83,7 @@ const orderController = {
   getTodayOrder: (req, res) => {
     try {
       Order.scope('todayOrder').findAll({
-        attributes: ['id', 'amount', 'quantity', 'isTakingAway', 'state', 'isTakingAway', 'tableNum', 'createdAt'],
+        attributes: ['id', 'amount', 'quantity', 'memo', 'flowId', 'isTakingAway', 'state', 'isTakingAway', 'tableNum', 'createdAt'],
         include: [{ model: Dish, as: 'sumOfDishes', attributes: ['name', 'price'] }],
         where: { UserId: req.user.id },
         order: [['createdAt', 'DESC']]
