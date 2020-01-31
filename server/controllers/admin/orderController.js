@@ -79,11 +79,15 @@ const orderController = {
         }
       }
 
+      // 計算今日訂單總數
+      flowNum = await Order.scope('todayOrder').count()
+
       // 新增訂單
       order = await Order.create({
         quantity: req.body.quantity,
         amount: req.body.amount,
         memo: req.body.memo,
+        flowId: flowNum === 0 ? 1 : flowNum + 1,
         tableNum: req.body.tableNum,
         isTakingAway: req.body.isTakingAway,
         UserId: req.body.UserId !== "" ? req.body.UserId : null
