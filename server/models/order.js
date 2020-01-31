@@ -11,6 +11,11 @@ module.exports = (sequelize, DataTypes) => {
     },
     amount: DataTypes.INTEGER,
     quantity: DataTypes.INTEGER,
+    flowId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0
+    },
     memo: {
       type: DataTypes.STRING,
       defaultValue: 'none'

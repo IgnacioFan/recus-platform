@@ -70,7 +70,7 @@ describe('# Member::Member Request', () => {
         .expect(200)
         .end((err, res) => {
           if (err) return done(err)
-          // console.log(res.body)
+          // console.log(res.body.user.preferredTags)
           expect(res.body.user.account).to.be.equal('user1')
           expect(res.body.user.Profile.name).to.be.equal('ryu')
           expect(res.body.user.preferredTags.length).to.be.equal(2)
@@ -125,7 +125,7 @@ describe('# Member::Member Request', () => {
         .expect(200)
         .end((err, res) => {
           if (err) return done(err)
-          // console.log(res.body.user)
+          // console.log(res.body.user.preferredTags)
           expect(res.body.user.account).to.be.equal('user1')
           expect(res.body.user.Profile.name).to.be.equal('nacho')
           expect(res.body.user.preferredTags.length).to.be.equal(3)
