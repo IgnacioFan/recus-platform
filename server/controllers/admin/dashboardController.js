@@ -5,11 +5,11 @@ const { Order, DishCombination, Tag, Dish, User, Profile, UserPreferred } = db
 const sequelize = require('sequelize')
 
 // 使天數的組數一致
-function timeAxis(days, Chart) {
+function timeAxis(range, Chart) {
   Object.values(Chart).forEach(item => {
-    Object.keys(days).map(day => {
-      if (!(day in item)) {
-        item[day] = {
+    range.map(time => {
+      if (!(time in item)) {
+        item[time] = {
           count: 0
         }
       }
@@ -135,6 +135,8 @@ const dashboardController = {
   getLineChart: async (req, res) => {
     try {
       let days = {} // 取得天數組
+      // let week = []
+      let range = []
       let pChart = {} // 取得dish的成長趨勢, p 是product的簡寫
       let uChart = {} // 取得會員拜訪次數的成長趨勢, u 是user的簡寫
       let tChart = {} // 取得標籤被會員加入的成長趨勢, t 是tag的簡寫
@@ -166,10 +168,14 @@ const dashboardController = {
 
         // 計算前一週dish成長的折線圖
         if (req.query.range === 'weekly') {
+          // 計算天數組
+          for (let i = 1; i <= 7; i++) {
+            range.push(moment(new Date()).subtract(1, 'weeks').day(i).format("MM-DD"))
+          }
+
           for (let product of products) {
             let createdAt = moment(product.dataValues.createdAt).format("MM-DD")
-            // 計算天數組
-            if (!days[createdAt]) days[createdAt] = 1
+
             // (初始化)沒有這個dish的key, create a new obj
             if (!pChart[product.dataValues.name]) {
               pChart[product.dataValues.name] = {
@@ -193,9 +199,14 @@ const dashboardController = {
 
         // 計算前一個月dish成長的折線圖
         if (req.query.range === 'monthly') {
+          // 計算天數組
+          for (let i = 1; i <= 31; i += 7) {
+            range.push(moment(new Date()).subtract(1, 'months').startOf('weeks').day(3).add(i - 1, 'days').format("YYYY-MM-DD"))
+          }
+          // console.log(range)
           for (let product of products) {
-            let week = moment(product.dataValues.week, "ggggww").endOf('week').format("YYYY-MM-DD")
-
+            let week = moment(product.dataValues.week, "ggggww").day(3).format("YYYY-MM-DD")
+            // console.log(week)
             // 計算週數組
             if (!days[week]) days[week] = 1
             // (初始化)沒有這個dish的key, create a new obj
@@ -215,11 +226,10 @@ const dashboardController = {
             }
           }
         }
-
         // 整理時間週，使每組的天數一致
-        timeAxis(days, pChart)
+        timeAxis(range, pChart)
 
-        return res.json({ days: Object.keys(days), pChart: pChart, products: products })
+        return res.json({ range: range, pChart: pChart })
       }
 
       // 會員拜訪次數的成長分析
@@ -249,10 +259,13 @@ const dashboardController = {
 
         // 計算前七天內會員拜訪次數成長的折線圖
         if (req.query.range === 'weekly') {
+          // 計算天數組
+          for (let i = 1; i <= 7; i++) {
+            range.push(moment(new Date()).subtract(1, 'weeks').day(i).format("MM-DD"))
+          }
+
           for (let user of users) {
             let createdAt = moment(user.dataValues.createdAt).format("MM-DD")
-            // 計算天數組
-            if (!days[createdAt]) days[createdAt] = 1
             // 沒有會員的key
             if (!uChart[user.dataValues.name]) {
               uChart[user.dataValues.name] = {
@@ -274,9 +287,13 @@ const dashboardController = {
           }
         }
         if (req.query.range === 'monthly') {
-          for (let user of users) {
-            let week = moment(user.dataValues.week, "ggggww").endOf('week').format("YYYY-MM-DD")
+          // 計算天數組
+          for (let i = 1; i <= 31; i += 7) {
+            range.push(moment(new Date()).subtract(1, 'months').startOf('weeks').day(3).add(i - 1, 'days').format("YYYY-MM-DD"))
+          }
 
+          for (let user of users) {
+            let week = moment(user.dataValues.week, "ggggww").day(3).format("YYYY-MM-DD")
             // 計算週數組
             if (!days[week]) days[week] = 1
             // (初始化)沒有這個user的key, create a new obj
@@ -298,9 +315,9 @@ const dashboardController = {
         }
 
         // 使各會員之天數的組數一致
-        timeAxis(days, uChart)
+        timeAxis(range, uChart)
 
-        return res.json({ days: Object.keys(days), uChart: uChart, users: users })
+        return res.json({ range: range, uChart: uChart })
       }
 
       // 被收藏標籤的成長分析
@@ -330,6 +347,10 @@ const dashboardController = {
 
         // 計算前七天內被收藏標籤成長的折線圖
         if (req.query.range === 'weekly') {
+          // 計算天數組
+          for (let i = 1; i <= 7; i++) {
+            range.push(moment(new Date()).subtract(1, 'weeks').day(i).format("MM-DD"))
+          }
           for (let tag of tags) {
             let createdAt = moment(tag.dataValues.createdAt).format("MM-DD")
             // 計算天數組
@@ -355,8 +376,13 @@ const dashboardController = {
           }
         }
         if (req.query.range === 'monthly') {
+          // 計算天數組
+          for (let i = 1; i <= 31; i += 7) {
+            range.push(moment(new Date()).subtract(1, 'months').startOf('weeks').day(3).add(i - 1, 'days').format("YYYY-MM-DD"))
+          }
+
           for (let tag of tags) {
-            let week = moment(tag.dataValues.week, "ggggww").endOf('week').format("YYYY-MM-DD")
+            let week = moment(tag.dataValues.week, "ggggww").day(3).format("YYYY-MM-DD")
 
             // 計算週數組
             if (!days[week]) days[week] = 1
@@ -377,10 +403,10 @@ const dashboardController = {
             }
           }
         }
-        // 使各標籤之天數的組數一致
-        timeAxis(days, tChart)
+        // 整理時間週，使每組的天數一致
+        timeAxis(range, tChart)
 
-        return res.json({ days: Object.keys(days), tChart: tChart, tags: tags })
+        return res.json({ range: range, tChart: tChart })
       }
     } catch (error) {
       return res.status(500).json({ status: 'error', msg: 'not found!' })

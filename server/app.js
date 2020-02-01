@@ -25,7 +25,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
 io.on('connection', (socket) => {
-  console.log('a user is connected', socket.id)
+  // console.log('a user is connected', socket.id)
   require('./middlewares/socket')(socket)
 
 })
