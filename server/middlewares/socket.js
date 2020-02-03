@@ -5,6 +5,7 @@ module.exports = (socket) => {
   try {
 
     socket.emit('status', 'global')
+    socket.emit('addOrder', true)
     socket.on('addPending', async () => {
       pending = await Order.scope('todayOrder').count({ where: { state: 'pending' } })
       unpaid = await Order.scope('todayOrder').count({ where: { state: 'unpaid' } })
