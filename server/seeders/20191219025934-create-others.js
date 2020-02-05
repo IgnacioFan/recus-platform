@@ -63,7 +63,7 @@ function createDish(categories, dishes) {
 
 function createDishCombo(menu) {
   let combo = []
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 500; i++) {
     let dish = menu[Math.floor(Math.random() * menu.length)]
     let obj = {
       id: i + 1,
@@ -82,7 +82,7 @@ function createDishCombo(menu) {
 
 function createOrder(combo) {
   let orders = []
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 500; i++) {
     let obj = {
       id: i + 1,
       amount: combo[i].perAmount,
@@ -125,15 +125,19 @@ function createDishAttach(dishes) {
 
 function createUserPreferred() {
   let userPreferred = []
-  for (let i = 0; i < 32; i++) {
-    let obj = {
-      id: i + 1,
-      UserId: Math.floor(Math.random() * 30) + 2,
-      TagId: Math.floor(Math.random() * 10) + 1,
-      createdAt: faker.date.between(lastMonth, today),
-      updatedAt: new Date()
+  let index = 1
+  for (let i = 2; i <= 32; i++) {
+    for (let j = 0; j < Math.floor(Math.random() * 3) + 1; j++) {
+      let obj = {
+        id: index,
+        UserId: i,
+        TagId: Math.floor(Math.random() * 10) + 1,
+        createdAt: faker.date.between(lastMonth, today),
+        updatedAt: new Date()
+      }
+      userPreferred.push(obj)
+      index++
     }
-    userPreferred.push(obj)
   }
   //console.log(userPreferred)
   return userPreferred

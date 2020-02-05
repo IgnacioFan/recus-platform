@@ -3,7 +3,6 @@ const events = require('events')
 const stateMachine = new events.EventEmitter()
 
 const { Order, DishCombination } = db
-const moment = require('moment')
 
 stateMachine.on('prev', (order) => {
   let prevState
@@ -112,7 +111,7 @@ const orderController = {
 
       if (state) {
         Order.scope('todayOrder').findAll({
-          attributes: ['id', 'amount', 'quantity', 'flowId', 'isTakingAway', 'tableNum', 'state', 'UserId', 'createdAt'],
+          attributes: ['id', 'amount', 'quantity', 'flowId', 'memo', 'isTakingAway', 'tableNum', 'state', 'UserId', 'createdAt'],
           include: [{ model: db.Dish, attributes: ['name'], as: 'sumOfDishes', through: { attributes: ['perQuantity'] } }],
           where: { state: state },
           order: [['id', 'DESC']]

@@ -9,8 +9,6 @@ const dashboardController = require('../../controllers/admin/dashboardController
 // middleware setup
 const { signupValidationRules, nameValidRules, profileValidRules, dishValidRules, validate } = require('../../middlewares/validator')
 
-const { realtime } = require('../../middlewares/socket')
-
 // 個人頁面相關API
 router.get('/profile', profileController.getProfile)
 router.put('/profile', profileValidRules(), validate, profileController.updateProfile)
