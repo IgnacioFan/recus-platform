@@ -194,7 +194,7 @@ Our model relation(ERD)
 - used [Vuelidate](https://github.com/vuelidate/vuelidate) to validate form input formate such as signup, signin etc.
 - used [vue-sweetalert2](https://github.com/avil13/vue-sweetalert2) to customize popup component
 - used [Vuex](https://github.com/vuejs/vuex) to control state of Vue.js
-- used [Sass](https://github.com/sass/node-sass)to make CSS code much reusable.
+- used [Sass](https://github.com/sass/node-sass) to make CSS code much reusable.
 - used [moment.js](https://github.com/moment/moment/) to transform datetime format to match the user's need
 
 
@@ -241,7 +241,7 @@ $ touch .env
 
 **5. Store API Key in .env file and save**
 ```
-JWT_SECRET=
+JWT_SECRET=<YOUR JWT SECRET
 ```
 
 **6. Edit password in config.json**
@@ -279,13 +279,10 @@ $ npm run dev
 
 open browser and type http://localhost:3000/api/test.
 
-if you see a string {status: 'success', msg: 'successfully connected'}, you have finished the backend service.
-
-
-The following instructions will go through the setting needed to run the front-end app on your local machine.
-
+if you see a string {status: 'success', msg: 'successfully connected'}, then it means you have fired the backend service.
 
 ### Set up frontend
+The following instructions will go through the setting needed to run the front-end app on your local machine.
 
 **1. Enter the project folder**
 
@@ -312,4 +309,4 @@ comming soon...
 - Nacho
 [經營你的顧客關係 — 打造CRM系統](https://medium.com/@fan01856472/經營你的顧客關係-打造crm系統-f1d15474af84)
 - Kerwin
-[濾客平台-CRM系統濾客平台](https://medium.com/@sh940718/濾客平台-crm系統濾客平台-9e0af7178eb)
+[CRM-系統濾客平台](https://medium.com/@sh940718/濾客平台-crm系統濾客平台-9e0af7178eb)
