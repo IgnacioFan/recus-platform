@@ -6,9 +6,9 @@ const Op = require('sequelize').Op
 // Json Web Token
 const jwt = require('jsonwebtoken')
 const passportJWT = require('passport-jwt')
-// 
-// const ExtractJwt = passportJWT.ExtractJwt
-// const JwtStrategy = passportJWT.Strategy
+// upload avatar
+const imgur = require('imgur-node-api')
+const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 
 const userController = {
   signIn: (req, res) => {
@@ -49,7 +49,7 @@ const userController = {
 
   signUp: async (req, res) => {
     try {
-      let { account, phone, password, passwordCheck, name, email, avatar } = req.body
+      let { account, phone, password, passwordCheck, name, email } = req.body
 
       if (passwordCheck !== password) {
         return res.status(401).json({ status: 'error', msg: '密碼不一致!' })
@@ -60,16 +60,32 @@ const userController = {
           phone: phone,
           password: bcrypt.hashSync(password, bcrypt.genSaltSync(10), null)
         })
-        if (user) {
-          profile = await Profile.create({
-            name: name,
-            email: email,
-            avatar: avatar,
-            UserId: user.id
-          })
-        }
 
-        return res.json({ status: 'success', msg: '註冊成功!' })
+        const { file } = req
+
+        if (user) {
+          if (file) {
+            imgur.setClientID(IMGUR_CLIENT_ID)
+            imgur.upload(file.path, async (err, avatar) => {
+              await Profile.create({
+                name: name,
+                email: email,
+                avatar: avatar.data.link,
+                UserId: user.id
+              })
+              return res.json({ status: 'success', msg: '圖片上傳/註冊成功!' })
+            })
+          }
+          else {
+            await Profile.create({
+              name: name,
+              email: email,
+              avatar: "https://randomuser.me/api/portraits/lego/1.jpg",
+              UserId: user.id
+            })
+            return res.json({ status: 'success', msg: '註冊成功!' })
+          }
+        }
       }
     } catch (error) {
       return res.status(500).json({ status: 'error', msg: error })

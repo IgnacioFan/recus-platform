@@ -79,8 +79,6 @@ describe('# Admin::Dish Request', () => {
           expect(res.body.dish.name).to.be.equal('紅茶')
           expect(res.body.dish.price).to.be.equal(40)
           expect(res.body.dish.Category.name).to.be.equal('new')
-          expect(res.body.dish.hasTags[0].name).to.be.equal('中焙')
-          expect(res.body.dish.hasTags[1].name).to.be.equal('濃韻')
           return done()
         })
     })

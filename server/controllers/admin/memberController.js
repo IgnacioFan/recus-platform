@@ -40,7 +40,7 @@ const memberController = {
 
   addMember: (req, res) => {
     try {
-      let { account, password, passwordCheck, phone, name, email, avatar } = req.body
+      let { account, password, passwordCheck, phone } = req.body
       if (passwordCheck !== password) {
         //console.log('輸入兩組不同密碼')
         return res.json({ status: 'error', msg: '輸入兩組不同密碼！' })
@@ -56,9 +56,9 @@ const memberController = {
           if (created === false) return res.json({ status: 'success', msg: '已註冊!' })
           else {
             Profile.create({
-              name: name,
-              email: email,
-              avatar: avatar,
+              name: 'none',
+              email: 'none',
+              avatar: "https://randomuser.me/api/portraits/lego/1.jpg",
               UserId: user.id
             }).then(() => {
               return res.json({ status: 'success', msg: '註冊成功！', user: user })

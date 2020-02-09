@@ -8,10 +8,13 @@ const tagController = require('../../controllers/admin/tagController')
 const dashboardController = require('../../controllers/admin/dashboardController')
 // middleware setup
 const { signupValidationRules, nameValidRules, profileValidRules, dishValidRules, validate } = require('../../middlewares/validator')
+// upload
+const multer = require('multer')
+const upload = multer({ dest: 'temp/' })
 
 // 個人頁面相關API
 router.get('/profile', profileController.getProfile)
-router.put('/profile', profileValidRules(), validate, profileController.updateProfile)
+router.put('/profile', profileValidRules(), validate, upload.single('avatar'), profileController.updateProfile)
 
 // 會員相關API
 router.get('/members', memberController.getMemberPagination)

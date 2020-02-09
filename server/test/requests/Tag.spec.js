@@ -106,18 +106,6 @@ describe('# Admin::Dish Request', () => {
         })
     })
 
-    it('if update the same name of tag', (done) => {
-      request(app)
-        .put('/api/admin/tags/4')
-        .send('name=微酸2.0')
-        .expect(200)
-        .end(function (err, res) {
-          if (err) return done(err)
-          expect(res.body.msg).to.be.equal('標籤已建立!')
-          done()
-        })
-    })
-
     it('should delete tag 4', (done) => {
       request(app)
         .delete('/api/admin/tags/3')

@@ -1,6 +1,9 @@
 const db = require('../../models')
 const { User, Profile, Tag, UserPreferred } = db
 const Op = require('sequelize').Op
+// upload avatar
+const imgur = require('imgur-node-api')
+const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 
 const memberController = {
   testRoute: (req, res) => {
@@ -36,12 +39,6 @@ const memberController = {
         phone: phone,
       })
 
-      await user.Profile.update({
-        name: name,
-        email: email,
-        avatar: avatar
-      })
-
       if (tags) {
         await UserPreferred.destroy({ where: { UserId: req.user.id } })
 
@@ -50,38 +47,31 @@ const memberController = {
         }
       }
 
-      return res.json({ status: 'success', msg: '更新成功!', user: user })
+      const { file } = req
+
+      if (file) {
+        imgur.setClientID(IMGUR_CLIENT_ID)
+        imgur.upload(file.path, async (err, avatar) => {
+          await user.Profile.update({
+            name: name,
+            email: email,
+            avatar: avatar.data.link
+          })
+          return res.json({ status: 'success', msg: '圖片上傳/更新成功!' })
+        })
+      }
+      else {
+        await user.Profile.update({
+          name: name,
+          email: email,
+          avatar: avatar
+        })
+        return res.json({ status: 'success', msg: '更新成功!' })
+      }
     } catch (error) {
       return res.status(500).json({ status: 'error', msg: error })
     }
   },
-
-  // addMyPreferred: async (req, res) => {
-  //   try {
-  //     let tags = req.body.tags
-  //     if (!tags) return res.json({ status: 'error', msg: '請加入標籤!' })
-  //     for (let tag of tags) {
-  //       await UserPreferred.create({ TagId: tag.id, UserId: req.user.id })
-  //     }
-  //     return res.json({ status: 'success', msg: '新增成功!' })
-  //   } catch (error) {
-  //     return res.status(500).json({ status: 'error', msg: error })
-  //   }
-  // },
-
-  // removeMyPreferred: async (req, res) => {
-  //   try {
-  //     let tags = req.body.removeTags
-  //     //console.log(req.body.removeTags)
-  //     if (!tags) return res.json({ status: 'error', msg: '請加入標籤!' })
-  //     for (let i = 0; i < tags.length; i++) {
-  //       await UserPreferred.destroy({ where: { TagId: tags[i].id, UserId: req.user.id } })
-  //     }
-  //     return res.json({ status: 'success', msg: '成功移除!' })
-  //   } catch (error) {
-  //     return res.status(500).json({ status: 'error', msg: error })
-  //   }
-  // },
 
   getTags: (req, res) => {
     try {

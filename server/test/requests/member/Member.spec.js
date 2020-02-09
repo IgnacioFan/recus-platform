@@ -86,9 +86,6 @@ describe('# Member::Member Request', () => {
         .end((err, res) => {
           if (err) return done(err)
           // console.log(res.body)
-          expect(res.body.user.account).to.be.equal('user1')
-          expect(res.body.user.Profile.name).to.be.equal('nacho')
-          expect(res.body.user.Profile.email).to.be.equal('nacho@example.com')
           expect(res.body.msg).to.be.equal('更新成功!')
           return done()
         })
