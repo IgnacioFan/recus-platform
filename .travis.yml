@@ -20,12 +20,10 @@ before_script:
 script:
   - npm test
 
-# deploy:
-#   provider: heroku
-#   api_key:
-#     secure: 4e9c83a0-10fd-48ed-b932-d4761e69e76e
-#   app: recusplatform
-#   on:
-#     repo: IgnacioFan/recus-platform
-
-#     // deploy設定是要交給master還是develop呢
+deploy:
+  provider: heroku
+  api_key:
+    secure: 2877ec71-3631-4c2c-ab47-75c1039d1474
+  app: recusplatform
+  on:
+    repo: IgnacioFan/recus-platform
