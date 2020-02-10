@@ -1,4 +1,4 @@
-# Recusplatform 濾客平台
+# Recus Platform 濾客平台
 
 An Online service for small shop owners to manage their daily operation and customer's relationship.
 
@@ -185,7 +185,7 @@ Our model relation(ERD)
 **Menu**
 | Verb  | URL | ACTION |
 | ----- | ----| --------  |
-| GET   | /api/member/menu' | fetch categories and dishes |
+| GET   | /api/member/menu | fetch categories and dishes |
 
 ## Middlewares/ third party APIs 
 **Front End**
@@ -309,4 +309,4 @@ comming soon...
 - Nacho
 [經營你的顧客關係 — 打造CRM系統](https://medium.com/@fan01856472/經營你的顧客關係-打造crm系統-f1d15474af84)
 - Kerwin
-[CRM-系統濾客平台](https://medium.com/@sh940718/濾客平台-crm系統濾客平台-9e0af7178eb)
+[CRM-系統濾客平台](https://medium.com/@sh940718/濾客平台-crm系統濾客平台-9e0af7178ebd)
