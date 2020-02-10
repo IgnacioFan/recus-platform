@@ -27,4 +27,3 @@ deploy:
   app: recusplatform
   on:
     repo: IgnacioFan/recus-platform
-    branch: master:develop
