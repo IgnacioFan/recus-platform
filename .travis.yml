@@ -26,4 +26,5 @@ deploy:
     secure: 2877ec71-3631-4c2c-ab47-75c1039d1474
   app: recusplatform
   on:
+    branch: develop
     repo: IgnacioFan/recus-platform
