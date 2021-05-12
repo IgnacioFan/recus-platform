@@ -10,7 +10,7 @@
   "dependencies": {
     "axios": "^0.19.0",
     "bootstrap": "^4.4.1",
-    "chart.js": "^2.9.3",
+    "chart.js": "^2.9.4",
     "core-js": "^3.4.3",
     "jquery": "^3.4.1",
     "popper.js": "^1.16.0",
